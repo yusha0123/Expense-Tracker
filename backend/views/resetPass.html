@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Expensify || Reset Password</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.4.0/dist/axios.min.js"></script>
+  </head>
+  <body>
+    <nav class="navbar fixed-top" style="background-color: #e3f2fd">
+      <div class="container py-2">
+        <h1 class="navbar-brand text-lg mx-auto">&#36;Expensify</h1>
+      </div>
+    </nav>
+    <section
+      class="vh-100 vw-100 d-flex align-items-center justify-content-center"
+    >
+      <div class="card px-4 py-6 col-10 col-lg-4 col-md-8 shadow-sm rounded-lg">
+        <div class="card-body">
+          <h5 class="card-title py-3 text-center">Reset Your Password</h5>
+          <div id="alert"></div>
+          <form id="form">
+            <div class="mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                placeholder="Enter new Password"
+                autocomplete="off"
+              />
+            </div>
+            <div class="mb-3">
+              <input
+                type="password"
+                class="form-control"
+                id="confirm_password"
+                placeholder="Confirm new Password"
+                autocomplete="off"
+              />
+            </div>
+            <div class="mb-2 text-center">
+              <button type="submit" class="btn btn-secondary" id="submit_btn">
+                Change Password
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+    <script>
+      document.getElementById("form").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const pass = document.getElementById("password").value;
+        const submit_btn = document.getElementById("submit_btn");
+        submit_btn.disabled = true;
+        const confirm_pass = document.getElementById("confirm_password").value;
+        const alertDiv = document.getElementById("alert");
+        alertDiv.innerHTML = "";
+        if (pass !== confirm_pass) {
+          alertDiv.innerHTML = `<div class="alert alert-danger" role="alert">
+  Passwords doesn't match!
+</div>`;
+        }
+        const url = new URL(window.location.href);
+        const token = url.searchParams.get("token");
+        try {
+          const response = await axios.put(
+            `/api/auth/reset-password/${token}`,
+            {
+              password: pass,
+            }
+          );
+          Swal.fire(response.data.message, "", "success");
+          submit_btn.disabled = false;
+        } catch (error) {
+          console.log(error);
+          submit_btn.disabled = false;
+          Swal.fire(error.response.data.message, "", "error");
+        }
+      });
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+      crossorigin="anonymous"
+    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </body>
+</html>
