@@ -35,21 +35,15 @@ import { useError } from "../hooks/useError";
 import { AiFillDelete } from "react-icons/ai";
 import { IconButton } from "@chakra-ui/react";
 import { GrCaretPrevious, GrCaretNext } from "react-icons/gr";
-import Confetti from "react-confetti";
 
 const Dashboard = () => {
-  const { user, showConfetti } = useAuthContext();
-  const { dispatch } = useAuthContext();
+  const { user } = useAuthContext();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [dataId, setDataId] = useState(null);
   const [alertOpen, setAlertOpen] = useState(false);
-  const [windowSize, setWindowSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
   const [rows, setRows] = useState(
     JSON.parse(localStorage.getItem("rows")) || 10
   );
@@ -140,27 +134,6 @@ const Dashboard = () => {
     localStorage.setItem("rows", JSON.stringify(e.target.value));
   };
 
-  const handleResize = () => {
-    setWindowSize({
-      width: window.innerWidth,
-      height: window.innerHeight,
-    });
-  };
-
-  useEffect(() => {
-    if (showConfetti) {
-      window.addEventListener("resize", handleResize);
-      const timeoutId = setTimeout(() => {
-        dispatch({ type: "TOGGLE_CONFETTI" });
-      }, 10000);
-      // Cleanup: remove event listener and clear the timeout when component unmounts
-      return () => {
-        window.removeEventListener("resize", handleResize);
-        clearTimeout(timeoutId);
-      };
-    }
-  }, [showConfetti]);
-
   useEffect(() => {
     if (user) {
       fetchExpenses();
@@ -169,9 +142,6 @@ const Dashboard = () => {
 
   return (
     <>
-      {showConfetti && (
-        <Confetti width={windowSize.width} height={windowSize.height} />
-      )}
       <ScaleFade initialScale={0.9} in={true}>
         <Box
           rounded={"lg"}

@@ -31,11 +31,10 @@ import showToast from "../hooks/showToast";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { user } = useAuthContext();
+  const { user, dispatch } = useAuthContext();
   const navigate = useNavigate();
   const { logout } = useLogout();
   const { upgrade } = useUpgrade();
-  const { dispatch } = useAuthContext();
   const toast = useToast();
 
   const handleNavclick = async (link) => {
