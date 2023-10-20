@@ -1,9 +1,8 @@
-import { Box, Grid, Heading, Image, Icon, Text } from "@chakra-ui/react";
+import { Box, Grid, Heading, Image } from "@chakra-ui/react";
 import React from "react";
 import Image_404 from "../assets/NotFound.png";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { BiMoneyWithdraw } from "react-icons/bi";
+import Logo from "../components/Logo";
 
 const NotFound = () => {
   return (
@@ -16,12 +15,7 @@ const NotFound = () => {
         display="flex"
         justifyContent="center"
       >
-        <Link to={"/"}>
-          <Text fontSize="2xl" as={"b"} display={"flex"} alignItems={"center"}>
-            <Icon as={BiMoneyWithdraw} />
-            Expensify
-          </Text>
-        </Link>
+        <Logo />
       </Box>
       <Box
         display="flex"

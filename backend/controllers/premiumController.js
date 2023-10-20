@@ -39,6 +39,10 @@ const verifyOrder = asyncHandler(async (req, res, next) => {
     .digest("hex");
 
   const isValid = generatedSignature == razorpay_signature;
+
+  try {
+  } catch (error) {}
+
   if (isValid) {
     const updatedRows = await User.update(
       { isPremium: true },

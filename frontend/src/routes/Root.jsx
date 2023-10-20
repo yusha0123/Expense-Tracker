@@ -7,12 +7,11 @@ import {
   Button,
   VStack,
   Text,
-  Icon,
 } from "@chakra-ui/react";
 import HeroImage from "../assets/Landing_image.png";
-import { BiMoneyWithdraw } from "react-icons/bi";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import Logo from "../components/Logo";
 
 const Root = () => {
   const navigate = useNavigate();
@@ -32,19 +31,7 @@ const Root = () => {
             lg: "4",
           }}
         >
-          <Box>
-            <Link to={"/"}>
-              <Text
-                fontSize="2xl"
-                as={"b"}
-                display={"flex"}
-                alignItems={"center"}
-              >
-                <Icon as={BiMoneyWithdraw} />
-                Expensify
-              </Text>
-            </Link>
-          </Box>
+          <Logo />
           <Button colorScheme="linkedin" onClick={() => navigate("/auth")}>
             Sign In / Login
           </Button>

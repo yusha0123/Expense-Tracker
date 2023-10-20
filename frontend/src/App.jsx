@@ -1,11 +1,12 @@
 import React, { lazy, Suspense } from "react";
+import axios from "axios";
 import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { useAuthContext } from "./hooks/useAuthContext";
 import { PublicRoute } from "./utils/PublicRoute";
 import { Loading } from "./components/Loading";
 import { PrivateRoute } from "./utils/PrivateRoute";
-import axios from "axios";
 
 axios.defaults.baseURL = import.meta.env.BACKEND_URL;
 

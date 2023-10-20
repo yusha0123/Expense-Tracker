@@ -2,7 +2,6 @@ import {
   Box,
   Flex,
   HStack,
-  Text,
   IconButton,
   Button,
   Menu,
@@ -16,7 +15,6 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { BsPersonCircle } from "react-icons/bs";
-import { BiMoneyWithdraw } from "react-icons/bi";
 import { AiOutlineClose, AiOutlineMail, AiOutlineLock } from "react-icons/ai";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { PiCrownBold } from "react-icons/pi";
@@ -28,6 +26,7 @@ import { useNavigate } from "react-router-dom";
 import { useUpgrade } from "../hooks/useUpgrade";
 import axios from "axios";
 import showToast from "../hooks/showToast";
+import Logo from "./Logo";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -133,17 +132,7 @@ export default function Navbar() {
             px={4}
             onClick={isOpen ? onClose : onOpen}
           />
-          <Text
-            fontSize="2xl"
-            as={"b"}
-            display={"flex"}
-            alignItems={"center"}
-            onClick={() => navigate("/dashboard")}
-            cursor={"pointer"}
-          >
-            <Icon as={BiMoneyWithdraw} />
-            Expensify
-          </Text>
+          <Logo />
           <HStack alignItems={"center"} spacing={8}>
             <HStack
               alignItems={"center"}

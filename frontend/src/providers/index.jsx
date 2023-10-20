@@ -1,4 +1,6 @@
+import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
+import { ToastContainer } from "react-toastify";
 import { AuthContextProvider } from "../context/authContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactConfetti from "react-confetti";
@@ -7,7 +9,7 @@ import { useAuthContext } from "../hooks/useAuthContext";
 const ConfettiProvider = () => {
   const { showConfetti, dispatch } = useAuthContext();
 
-  const handleClose = () => {
+  const handleComplete = () => {
     dispatch({ type: "TOGGLE_CONFETTI" });
   };
 
@@ -21,7 +23,7 @@ const ConfettiProvider = () => {
       }}
       numberOfPieces={500}
       recycle={false}
-      onConfettiComplete={handleClose}
+      onConfettiComplete={handleComplete}
     />
   );
 };
@@ -29,13 +31,27 @@ const ConfettiProvider = () => {
 export const AppProvider = ({ children }) => {
   const queryClient = new QueryClient();
   return (
-    <QueryClientProvider client={queryClient}>
-      <ChakraProvider>
-        <AuthContextProvider>
-          <ConfettiProvider />
-          {children}
-        </AuthContextProvider>
-      </ChakraProvider>
-    </QueryClientProvider>
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
+        <ChakraProvider>
+          <AuthContextProvider>
+            <ConfettiProvider />
+            <ToastContainer
+              position="top-right"
+              autoClose={4000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover={false}
+              theme="colored"
+            />
+            {children}
+          </AuthContextProvider>
+        </ChakraProvider>
+      </QueryClientProvider>
+    </React.StrictMode>
   );
 };
