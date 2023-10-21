@@ -8,7 +8,7 @@ import { PublicRoute } from "./utils/PublicRoute";
 import { Loading } from "./components/Loading";
 import { PrivateRoute } from "./utils/PrivateRoute";
 
-axios.defaults.baseURL = import.meta.env.BACKEND_URL;
+axios.defaults.baseURL = import.meta.env.VITE_SERVER_ADDRESS;
 
 function App() {
   const { user } = useAuthContext();

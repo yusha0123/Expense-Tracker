@@ -12,7 +12,6 @@ import {
   useDisclosure,
   Stack,
   Icon,
-  useToast,
 } from "@chakra-ui/react";
 import { BsPersonCircle } from "react-icons/bs";
 import { AiOutlineClose, AiOutlineMail, AiOutlineLock } from "react-icons/ai";
@@ -25,7 +24,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useUpgrade } from "../hooks/useUpgrade";
 import axios from "axios";
-import showToast from "../hooks/showToast";
+import { toast } from "react-toastify";
 import Logo from "./Logo";
 
 export default function Navbar() {
@@ -34,13 +33,12 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { logout } = useLogout();
   const { upgrade } = useUpgrade();
-  const toast = useToast();
 
   const handleNavclick = async (link) => {
     onClose();
     if (link == "Buy Premium" && !user.isPremium) {
       try {
-        const result = await axios.get("/api/premium/create", {
+        const result = await axios.get("/api/premium/create-order", {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
@@ -51,12 +49,7 @@ export default function Navbar() {
         showToast(toast, "Something went Wrong!", "error");
       }
     } else if (!user.isPremium) {
-      showToast(
-        toast,
-        "Feature Unavailable!",
-        "warning",
-        "Please Upgrade your account."
-      );
+      toast.warning("Please Upgrade to Pro!");
     } else {
       const Link = link.toLowerCase();
       navigate(`/${Link}`);
@@ -70,18 +63,22 @@ export default function Navbar() {
       order_id: data.id,
       handler: async function (response) {
         try {
-          const result = await axios.post("/api/premium/verify", response, {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          });
+          const result = await axios.post(
+            "/api/premium/verify-order",
+            response,
+            {
+              headers: {
+                Authorization: `Bearer ${user.token}`,
+              },
+            }
+          );
           if (result.data.success) {
-            showToast(
-              toast,
-              "Congratulations!",
-              "success",
-              "You are now a Premium Member"
-            );
+            // showToast(
+            //   toast,
+            //   "Congratulations!",
+            //   "success",
+            //   "You are now a Premium Member"
+            // );
           }
           dispatch({ type: "TOGGLE_CONFETTI" });
           upgrade();

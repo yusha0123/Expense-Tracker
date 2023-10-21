@@ -27,14 +27,14 @@ import {
 } from "@chakra-ui/react";
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { useAuthContext } from "../hooks/useAuthContext";
+import moment from "moment";
 import axios from "axios";
 import { useForm } from "react-hook-form";
-import showToast from "../hooks/showToast";
 import { useError } from "../hooks/useError";
 import { AiFillDelete } from "react-icons/ai";
 import { IconButton } from "@chakra-ui/react";
 import { GrCaretPrevious, GrCaretNext } from "react-icons/gr";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 const Dashboard = () => {
   const { user } = useAuthContext();
@@ -48,20 +48,14 @@ const Dashboard = () => {
     JSON.parse(localStorage.getItem("rows")) || 10
   );
   const cancelRef = useRef();
-  const toast = useToast();
   const { verify } = useError();
   const { register, handleSubmit, reset } = useForm();
-  const dateOptions = {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  };
 
   const createExpense = async (data) => {
     if (!user) return;
     try {
       setLoading(true);
-      const response = await axios.post("/api/expense/create", data, {
+      const response = await axios.post("/api/expense", data, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
@@ -80,17 +74,17 @@ const Dashboard = () => {
 
   const fetchExpenses = async () => {
     try {
-      const response = await axios.get(
-        `/api/expense/user?page=${currentPage}&rows=${rows}`,
+      const { data } = await axios.get(
+        `/api/expense/?page=${currentPage}&rows=${rows}`,
         {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
         }
       );
-      setData(response.data.expenses);
-      setCurrentPage(response.data.currentPage);
-      setTotalPages(response.data.totalPages);
+      setData(data.expenses);
+      setCurrentPage(data.currentPage);
+      setTotalPages(data.totalPages);
     } catch (error) {
       verify(error);
     }
@@ -99,7 +93,7 @@ const Dashboard = () => {
   const handleDelete = async () => {
     setAlertOpen(false);
     try {
-      await axios.delete(`/api/expense/delete/${dataId}`, {
+      await axios.delete(`/api/expense/${dataId}`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
@@ -232,10 +226,7 @@ const Dashboard = () => {
                 >
                   <Td textAlign={"center"}>{index + 1}</Td>
                   <Td textAlign={"center"}>
-                    {new Date(item.createdAt).toLocaleDateString(
-                      "en-US",
-                      dateOptions
-                    )}
+                    {moment(item.createdAt).format("DD MMMM YYYY")}
                   </Td>
                   <Td textAlign={"center"}>{item.amount}</Td>
                   <Td textAlign={"center"}>{item.category}</Td>

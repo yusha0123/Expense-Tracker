@@ -28,19 +28,16 @@ import {
   ModalBody,
   ModalCloseButton,
   useBreakpointValue,
-  useToast,
   ScaleFade,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { BiSolidShow, BiSolidHide } from "react-icons/bi";
-import { useSignup } from "../hooks/useSignup";
-import { Link } from "react-router-dom";
-import { useLogin } from "../hooks/useLogin";
 import { useForm } from "react-hook-form";
-import { AiOutlineMail } from "react-icons/ai";
-import showToast from "../hooks/showToast";
 import axios from "axios";
-import { BiMoneyWithdraw } from "react-icons/bi";
+import { BiSolidShow, BiSolidHide } from "react-icons/bi";
+import { AiOutlineMail } from "react-icons/ai";
+import { useSignup } from "../hooks/useSignup";
+import { useLogin } from "../hooks/useLogin";
+import Logo from "../components/Logo";
 
 const Auth = () => {
   const [showPass1, setShowPass1] = useState(false);
@@ -51,20 +48,15 @@ const Auth = () => {
   const loginForm = useForm();
   const signUpForm = useForm();
   const resetPass = useForm();
-  const toast = useToast();
-  const {
-    signUp,
-    loading: signUpLoading,
-    isError: signUpIsError,
-  } = useSignup();
-  const { login, loading: loginLoading, isError: loginIsError } = useLogin();
+  const login = useLogin();
+  const signUp = useSignup();
 
-  const handleSignup = async (data) => {
-    await signUp(data.email, data.name, data.password);
+  const handleSignup = (data) => {
+    signUp.mutate(data);
   };
 
-  const handleLogin = async (data) => {
-    await login(data.email, data.password);
+  const handleLogin = (data) => {
+    login.mutate(data);
   };
 
   const reset_Pass = (data) => {
@@ -72,12 +64,12 @@ const Auth = () => {
     axios
       .post("/api/auth/token", data)
       .then(() => {
-        showToast(
-          toast,
-          "Password reset mail Sent!",
-          "success",
-          "Don't forget to check Spam Folder."
-        );
+        // showToast(
+        //   toast,
+        //   "Password reset mail Sent!",
+        //   "success",
+        //   "Don't forget to check Spam Folder."
+        // );
       })
       .catch((error) => {
         console.log(error);
@@ -94,17 +86,7 @@ const Auth = () => {
     <>
       <Flex minH={"100vh"} align={"center"} justify={"center"} bg="gray.200">
         <Box position={"fixed"} top={3}>
-          <Link to={"/"}>
-            <Text
-              fontSize="2xl"
-              as={"b"}
-              display={"flex"}
-              alignItems={"center"}
-            >
-              <Icon as={BiMoneyWithdraw} />
-              Expensify
-            </Text>
-          </Link>
+          <Logo />
         </Box>
         <Box
           rounded={"lg"}
@@ -126,10 +108,14 @@ const Auth = () => {
                   {/* Signup Panel */}
                   <form onSubmit={signUpForm.handleSubmit(handleSignup)}>
                     <Stack spacing={1}>
-                      {signUpIsError && (
+                      {signUp.isError && (
                         <Alert status="error" rounded={5}>
                           <AlertIcon />
-                          <AlertTitle>{signUpIsError}</AlertTitle>
+                          <AlertTitle>
+                            {signUp.error?.response?.data?.message
+                              ? signUp.error.response.data.message
+                              : "Something went wrong!"}
+                          </AlertTitle>
                         </Alert>
                       )}
                       <FormControl isRequired>
@@ -174,7 +160,7 @@ const Auth = () => {
                         colorScheme="messenger"
                         type="submit"
                         mt={4}
-                        isLoading={signUpLoading}
+                        isLoading={signUp.isPending}
                         loadingText="Please wait..."
                       >
                         Create Account
@@ -186,10 +172,14 @@ const Auth = () => {
                   {/* Login Panel */}
                   <form onSubmit={loginForm.handleSubmit(handleLogin)}>
                     <Stack spacing={1}>
-                      {loginIsError && (
+                      {login.isError && (
                         <Alert status="error" rounded={5}>
                           <AlertIcon />
-                          <AlertTitle>{loginIsError}</AlertTitle>
+                          <AlertTitle>
+                            {login.error?.response?.data?.message
+                              ? login.error.response.data.message
+                              : "Something went wrong!"}
+                          </AlertTitle>
                         </Alert>
                       )}
                       <FormControl isRequired>
@@ -236,7 +226,7 @@ const Auth = () => {
                         colorScheme="messenger"
                         type="submit"
                         mt={4}
-                        isLoading={loginLoading}
+                        isLoading={login.isPending}
                         loadingText="Please wait..."
                       >
                         Continue

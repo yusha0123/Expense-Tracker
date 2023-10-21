@@ -1,43 +1,27 @@
-import { useState } from "react";
+import { toast } from "react-toastify";
 import { useAuthContext } from "./useAuthContext";
 import axios from "axios";
-import { useToast } from "@chakra-ui/react";
-import showToast from "./showToast";
+import { useMutation } from "@tanstack/react-query";
 
 export const useSignup = () => {
-  const [isError, setError] = useState(null);
-  const [loading, setLoading] = useState(null);
   const { dispatch } = useAuthContext();
-  const toast = useToast();
-
-  const signUp = async (email, name, password) => {
-    setLoading(true);
-    setError(null);
-    try {
-      const response = await axios.post("/api/auth/signup", {
-        email: email,
-        name: name,
-        password: password,
+  return useMutation({
+    mutationFn: async (formData) => {
+      const { data } = await axios.post("/api/auth/signup", formData);
+      return data;
+    },
+    onSuccess: (data) => {
+      const user = {
+        email: data.email,
+        token: data.token,
+        isPremium: data.isPremium,
+      };
+      localStorage.setItem("user", JSON.stringify(user));
+      dispatch({
+        type: "LOGIN",
+        payload: user,
       });
-      if (response.status == 201) {
-        showToast(toast, "Registration Successful!", "success");
-        const user = {
-          email: response.data.email,
-          token: response.data.token,
-          isPremium: response.data.isPremium,
-        };
-        localStorage.setItem("user", JSON.stringify(user));
-        dispatch({
-          type: "LOGIN",
-          payload: user,
-        });
-        setLoading(false);
-      }
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-      setError(error.response.data.message);
-    }
-  };
-  return { signUp, loading, isError };
+      toast.success("Registration Successful!");
+    },
+  });
 };
