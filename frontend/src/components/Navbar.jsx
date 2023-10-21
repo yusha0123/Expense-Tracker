@@ -57,7 +57,7 @@ export default function Navbar() {
         handleOpenRazorPay(result.data.data);
       } catch (error) {
         console.log(error);
-        showToast(toast, "Something went Wrong!", "error");
+        toast.error("Something went wrong!");
       }
     } else if (!user.isPremium) {
       toast.warning("Please Upgrade to Pro!");
@@ -95,7 +95,7 @@ export default function Navbar() {
           upgrade();
         } catch (error) {
           console.log(error);
-          showToast(toast, "Something went Wrong!", "error");
+          // showToast(toast, "Something went Wrong!", "error");
         }
       },
     };
@@ -164,7 +164,7 @@ export default function Navbar() {
                   ) : (
                     <MenuItem display={"flex"} alignItems={"center"} gap={3}>
                       <Icon as={FaUser} />
-                      Regular User
+                      Freemium User
                     </MenuItem>
                   )}
                   <MenuDivider />
@@ -215,7 +215,7 @@ export default function Navbar() {
                         </>
                       ) : (
                         <>
-                          Regular User
+                          Freemium User
                           <Icon as={FaUser} />
                         </>
                       )}

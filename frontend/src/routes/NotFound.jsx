@@ -1,12 +1,14 @@
-import { Box, Grid, Heading, Image } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import React from "react";
-import Image_404 from "../assets/NotFound.png";
-import { motion } from "framer-motion";
 import Logo from "../components/Logo";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useNavigate } from "react-router-dom";
 
 const NotFound = () => {
+  const { user } = useAuthContext();
+  const navigate = useNavigate();
   return (
-    <div style={{ height: "100vh", width: "100vw", overflow: "hidden" }}>
+    <>
       <Box
         position={"fixed"}
         top={3}
@@ -17,45 +19,28 @@ const NotFound = () => {
       >
         <Logo />
       </Box>
-      <Box
-        display="flex"
-        alignItems="center"
-        width="90%"
-        height="100%"
-        mx="auto"
-        justifyContent="center"
+      <Flex
+        minH={"100vh"}
+        flexDirection={"column"}
+        align={"center"}
+        justify={"center"}
+        bg="gray.100"
+        gap={4}
       >
-        <Grid
-          templateColumns={{ base: "1fr", md: "1fr 1fr" }}
-          gap={6}
-          justifyContent="center"
-          alignItems="center"
+        <Heading as="h1" size="4xl">
+          404
+        </Heading>
+        <Text as={"h2"} fontSize="2xl" mb={5}>
+          Error Occured! Page could not be found
+        </Text>
+        <Button
+          colorScheme="teal"
+          onClick={() => navigate(user ? "/dashboard" : "/")}
         >
-          <motion.div
-            transition={{ duration: 1 }}
-            initial={{
-              x: "-100vw",
-              opacity: 0,
-            }}
-            animate={{ x: 0, opacity: 1 }}
-          >
-            <Heading textAlign="center" color={"gray.600"}>
-              Page not Found!
-            </Heading>
-          </motion.div>
-          <motion.div
-            transition={{ duration: 1 }}
-            initial={{
-              x: "100vw",
-              opacity: 0,
-            }}
-            animate={{ x: 0, opacity: 1 }}
-          >
-            <Image src={Image_404} alt="404 image" objectFit="cover" />
-          </motion.div>
-        </Grid>
-      </Box>
-    </div>
+          Back to Homepage
+        </Button>
+      </Flex>
+    </>
   );
 };
 

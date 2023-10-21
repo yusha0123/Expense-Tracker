@@ -141,7 +141,7 @@ const Dashboard = () => {
           p={6}
           my={5}
           mx={"auto"}
-          w={{ base: "95%", md: "60%", lg: "40%" }}
+          w={["95%", "70%", "60%", "40%"]}
           maxWidth={"767px"}
         >
           <Heading fontSize="2xl" mb={3} textAlign={"center"}>
