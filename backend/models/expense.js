@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const ExpenseSchema = new Schema({
+const ExpenseSchema = new mongoose.Schema({
   amount: {
     type: Number,
     allowNull: false,

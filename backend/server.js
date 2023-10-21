@@ -4,7 +4,7 @@ const cors = require("cors");
 const connectDb = require("./utils/database");
 const errorhandler = require("./middleware/errorHandler");
 const authRoutes = require("./routes/auth");
-// const expenseRoutes = require("./routes/expense");
+const expenseRoutes = require("./routes/expense");
 // const premiumRoutes = require("./routes/premium");
 
 const app = express();
@@ -20,7 +20,7 @@ connectDb();
 
 //routes
 app.use("/api/auth", authRoutes);
-// app.use("/api/expense", expenseRoutes);
+app.use("/api/expense", expenseRoutes);
 // app.use("/api/premium", premiumRoutes);
 app.use(errorhandler); //error Handler
 

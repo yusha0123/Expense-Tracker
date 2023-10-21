@@ -84,6 +84,8 @@ const resetPassword = async (req, res, next) => {
     res.status(400);
     throw new Error("Please provide an email!");
   }
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
     const user = await User.findOne({ email });
@@ -101,48 +103,39 @@ const resetPassword = async (req, res, next) => {
       serverAddress
     ); // Adding a dynamic server address
 
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    await ResetPassword.create(
+      {
+        token,
+        userId: user._id,
+      },
+      { session }
+    );
 
-    try {
-      await ResetPassword.create(
-        {
-          token,
-          userId: user._id,
-        },
-        {
-          session: session,
-        }
-      );
+    const transporter = nodemailer.createTransport({
+      host: "smtp-relay.sendinblue.com",
+      port: 587,
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.PASS,
+      },
+    });
 
-      const transporter = nodemailer.createTransport({
-        host: "smtp-relay.sendinblue.com",
-        port: 587,
-        auth: {
-          user: process.env.EMAIL,
-          pass: process.env.PASS,
-        },
-      });
+    // Send the password reset email
+    await transporter.sendMail({
+      from: process.env.EMAIL,
+      to: req.body.email,
+      subject: "Reset Password for Expensify Account",
+      html: emailTemplate,
+    });
 
-      // Send the password reset email
-      await transporter.sendMail({
-        from: process.env.EMAIL,
-        to: req.body.email,
-        subject: "Reset Password for Expensify Account",
-        html: emailTemplate,
-      });
-
-      await session.commitTransaction();
-      res.status(200).json({ success: true, message: "Email sent!" });
-    } catch (error) {
-      await session.abortTransaction();
-      throw new Error("Internal Server Error!");
-    } finally {
-      session.endSession();
-    }
+    await session.commitTransaction();
+    res.status(200).json({ success: true, message: "Email sent!" });
   } catch (error) {
+    await session.abortTransaction();
     res.status(500);
     throw new Error("Internal Server Error!");
+  } finally {
+    session.endSession();
   }
 };
 

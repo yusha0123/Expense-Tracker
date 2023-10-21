@@ -2,7 +2,6 @@ const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const Expense = require("../models/expense");
 const User = require("../models/user");
-const sequelize = require("../utils/database");
 
 const addExpense = asyncHandler(async (req, res, next) => {
   const { amount, category, description } = req.body;
@@ -10,39 +9,43 @@ const addExpense = asyncHandler(async (req, res, next) => {
     res.status(400);
     throw new Error("All fields are Mandatory!");
   }
-  const t = await sequelize.transaction();
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
-    await req.user.createExpense(
+    await Expense.create(
+      [
+        {
+          amount,
+          category,
+          description,
+          userId: req.user,
+        },
+      ],
       {
-        amount: amount,
-        category: category,
-        description: description,
-      },
-      {
-        transaction: t,
+        session,
       }
     );
+
     const totalExpenses = Number(req.user.totalExpenses) + Number(amount);
-    await User.update(
+
+    await User.updateOne(
+      { _id: req.user },
       {
         totalExpenses,
-      },
-      {
-        where: {
-          _id: req.user._id,
-        },
-        transaction: t,
       }
-    );
-    await t.commit();
+    ).session(session);
+    await session.commitTransaction();
     res.status(201).json({
       success: true,
       messsage: "Expense created Successfully!",
     });
   } catch (error) {
-    await t.rollback();
+    await session.abortTransaction();
     res.status(500);
     throw new Error("Something went Wrong!");
+  } finally {
+    session.endSession();
   }
 });
 
@@ -107,7 +110,7 @@ const deleteUserExpense = asyncHandler(async (req, res, next) => {
       .status(200)
       .json({ success: true, message: "Expense deleted successfully" });
   } catch (error) {
-    await t.rollback(); //rollback the changes made since there's an error
+    await t.rollback();
     res.status(500);
     throw new Error("Something went Wrong!");
   }

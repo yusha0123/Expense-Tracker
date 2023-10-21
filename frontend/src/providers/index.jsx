@@ -45,7 +45,7 @@ export const AppProvider = ({ children }) => {
               rtl={false}
               pauseOnFocusLoss
               draggable
-              pauseOnHover={false}
+              pauseOnHover
               theme="colored"
             />
             {children}
