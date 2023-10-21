@@ -5,9 +5,6 @@ import {
   Input,
   VStack,
   Select,
-  InputGroup,
-  InputLeftAddon,
-  useToast,
   Table,
   Thead,
   Tbody,
@@ -144,18 +141,20 @@ const Dashboard = () => {
           p={6}
           my={5}
           mx={"auto"}
-          w={{ base: "90%", md: "60%", lg: "40%" }}
-          maxWidth={"1024px"}
+          w={{ base: "95%", md: "60%", lg: "40%" }}
+          maxWidth={"767px"}
         >
           <Heading fontSize="2xl" mb={3} textAlign={"center"}>
             Add your Expense
           </Heading>
           <form onSubmit={handleSubmit(createExpense)}>
             <VStack spacing={3}>
-              <InputGroup>
-                <InputLeftAddon children="Amount &#x20B9;" />
-                <Input autoComplete="off" isRequired {...register("amount")} />
-              </InputGroup>
+              <Input
+                autoComplete="off"
+                isRequired
+                {...register("amount")}
+                placeholder="Amount &#x20B9;"
+              />
               <Select
                 placeholder="Select Category"
                 isRequired
@@ -178,16 +177,15 @@ const Dashboard = () => {
                 <option value="Home & Utilities">Home & Utilities</option>
                 <option value="Hobbies & Leisure">Hobbies & Leisure</option>
               </Select>
-              <InputGroup>
-                <InputLeftAddon children="Description" />
-                <Input
-                  autoComplete="off"
-                  isRequired
-                  {...register("description")}
-                />
-              </InputGroup>
+              <Input
+                autoComplete="off"
+                isRequired
+                placeholder={"Description"}
+                {...register("description")}
+              />
               <Button
                 colorScheme="teal"
+                minWidth={"150px"}
                 width={"40%"}
                 type="submit"
                 isLoading={loading}
