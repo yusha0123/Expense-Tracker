@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   Table,
   Thead,
@@ -16,38 +16,30 @@ import { useError } from "../hooks/useError";
 import { motion } from "framer-motion";
 import { FaTrophy } from "react-icons/fa";
 import { Loading } from "../components/Loading";
+import { useQuery } from "@tanstack/react-query";
 
 const Leaderboard = () => {
   const { user } = useAuthContext();
-  const [data, setData] = useState([]);
   const { verify } = useError();
-  const [loading, isLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        isLoading(true);
-        const result = await axios.get("/api/premium/leaderboard", {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        });
-        if (result.status == 200) {
-          setData(result.data);
-        }
-        isLoading(false);
-      } catch (error) {
-        isLoading(true);
-        verify(error);
-      }
-    };
-    if (user) fetchData();
-  }, []);
+  const { data, isPending, isError, error } = useQuery({
+    queryKey: ["leaderboard"],
+    queryFn: async () => {
+      const { data } = await axios.get("/api/premium/leaderboard", {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+      return data;
+    },
+  });
+
+  if (isError) verify(error);
 
   return (
     <>
-      {loading && <Loading />}
-      {data.length > 0 && (
+      {isPending && <Loading />}
+      {data?.length > 0 && (
         <TableContainer
           boxShadow={"md"}
           w={{ base: "90%", md: "75%", lg: "60%" }}

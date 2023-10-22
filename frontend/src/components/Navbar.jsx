@@ -49,12 +49,12 @@ export default function Navbar() {
     onClose();
     if (link == "Buy Premium" && !user.isPremium) {
       try {
-        const result = await axios.get("/api/premium/create-order", {
+        const { data } = await axios.get("/api/premium/create-order", {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
         });
-        handleOpenRazorPay(result.data.data);
+        handleOpenRazorPay(data);
       } catch (error) {
         console.log(error);
         toast.error("Something went wrong!");
@@ -74,7 +74,7 @@ export default function Navbar() {
       order_id: data.id,
       handler: async function (response) {
         try {
-          const result = await axios.post(
+          const { data } = await axios.post(
             "/api/premium/verify-order",
             response,
             {
@@ -83,19 +83,14 @@ export default function Navbar() {
               },
             }
           );
-          if (result.data.success) {
-            // showToast(
-            //   toast,
-            //   "Congratulations!",
-            //   "success",
-            //   "You are now a Premium Member"
-            // );
+          if (data.success) {
+            toast.success("You are now a Pro Member!");
           }
           dispatch({ type: "TOGGLE_CONFETTI" });
           upgrade();
         } catch (error) {
           console.log(error);
-          // showToast(toast, "Something went Wrong!", "error");
+          toast.error("Something went wrong!");
         }
       },
     };

@@ -2,9 +2,8 @@ const Razorpay = require("razorpay");
 const asyncHandler = require("express-async-handler");
 const crypto = require("crypto");
 const User = require("../models/user");
-const { Op } = require("sequelize");
-const sequelize = require("../utils/database");
 const { Parser } = require("json2csv");
+const mongoose = require("mongoose");
 const uploadToS3 = require("../utils/upload");
 
 const createOrder = asyncHandler(async (req, res, next) => {
@@ -21,7 +20,7 @@ const createOrder = asyncHandler(async (req, res, next) => {
       res.status(500);
       throw new Error("Internal Server Error!");
     }
-    return res.json({ success: true, message: "Order Created", data: order });
+    return res.status(201).json(order);
   });
 });
 
@@ -39,36 +38,44 @@ const verifyOrder = asyncHandler(async (req, res, next) => {
     .digest("hex");
 
   const isValid = generatedSignature == razorpay_signature;
+  if (!isValid) {
+    res.status(400);
+    throw new Error("Payment Failed!");
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
   try {
-  } catch (error) {}
-
-  if (isValid) {
-    const updatedRows = await User.update(
+    await User.findOneAndUpdate(
+      { _id: req.user._id },
       { isPremium: true },
-      { where: { _id: req.user._id } }
+      { session }
     );
-    if (updatedRows[0] === 1) {
-      res.status(200).json({
-        success: true,
-        message: "Payment Successful!",
-      });
-    } else {
-      res.status(400);
-      throw new Error("User not found or update failed.");
-    }
-  } else {
-    res.status(400);
-    throw new Error("Payment Failed");
+    await session.commitTransaction();
+    return res.status(200).json({
+      success: true,
+      message: "Payment Successful!",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    res.status(500);
+    throw new Error("Something went wrong!");
+  } finally {
+    session.endSession();
   }
 });
 
 const leaderboard = asyncHandler(async (req, res, next) => {
-  const result = await User.findAll({
-    attributes: ["name", "totalExpenses"],
-    order: [["totalExpenses", "DESC"]],
-  });
-  res.status(200).json(result);
+  try {
+    const result = await User.find()
+      .select("name totalExpenses -_id")
+      .sort({ totalExpenses: -1 });
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Something went wrong!");
+  }
 });
 
 const getReport = asyncHandler(async (req, res, next) => {
