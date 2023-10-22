@@ -1,4 +1,4 @@
-import { Box, Spinner } from "@chakra-ui/react";
+import { Box, CircularProgress } from "@chakra-ui/react";
 
 export const Loading = () => {
   return (
@@ -9,13 +9,7 @@ export const Loading = () => {
       transform="translate(-50%, -50%)"
       zIndex="99"
     >
-      <Spinner
-        size="xl"
-        thickness="4px"
-        speed="0.60s"
-        emptyColor="gray.200"
-        color="gray.500"
-      />
+      <CircularProgress isIndeterminate />
     </Box>
   );
 };

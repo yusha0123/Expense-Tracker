@@ -6,7 +6,7 @@ export const useError = () => {
   const { logout } = useLogout();
   const navigate = useNavigate();
   const verify = (error) => {
-    if (error.response.status == 401) {
+    if (error?.response?.status == 401) {
       toast.error("Session expired!");
       logout();
       navigate("/auth");

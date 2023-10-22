@@ -21,12 +21,15 @@ import {
   HStack,
   Tooltip,
   ScaleFade,
+  Spinner,
+  Center,
 } from "@chakra-ui/react";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import { motion } from "framer-motion";
 import moment from "moment";
 import axios from "axios";
 import { useForm } from "react-hook-form";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useError } from "../hooks/useError";
 import { AiFillDelete } from "react-icons/ai";
 import { IconButton } from "@chakra-ui/react";
@@ -35,8 +38,7 @@ import { useAuthContext } from "../hooks/useAuthContext";
 
 const Dashboard = () => {
   const { user } = useAuthContext();
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState([]);
+  const queryClient = useQueryClient();
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [dataId, setDataId] = useState(null);
@@ -48,29 +50,9 @@ const Dashboard = () => {
   const { verify } = useError();
   const { register, handleSubmit, reset } = useForm();
 
-  const createExpense = async (data) => {
-    if (!user) return;
-    try {
-      setLoading(true);
-      const response = await axios.post("/api/expense", data, {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-      if (response.status == 201) {
-        fetchExpenses();
-        reset();
-        showToast(toast, "Expense Added!", "success");
-      }
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      verify(error);
-    }
-  };
-
-  const fetchExpenses = async () => {
-    try {
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["user-expenses", { currentPage, rows }],
+    queryFn: async () => {
       const { data } = await axios.get(
         `/api/expense/?page=${currentPage}&rows=${rows}`,
         {
@@ -79,29 +61,52 @@ const Dashboard = () => {
           },
         }
       );
-      setData(data.expenses);
       setCurrentPage(data.currentPage);
       setTotalPages(data.totalPages);
-    } catch (error) {
-      verify(error);
-    }
-  };
+      return data;
+    },
+  });
+  if (isError) {
+    verify(error);
+  }
 
-  const handleDelete = async () => {
-    setAlertOpen(false);
-    try {
-      await axios.delete(`/api/expense/${dataId}`, {
+  const createExpense = useMutation({
+    mutationFn: (expense) => {
+      return axios.post("/api/expense", expense, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       });
-      fetchExpenses();
-      showToast(toast, "Expense Deleted!", "info");
-    } catch (error) {
-      console.log(error);
-      showToast(toast, "Something went Wrong!", "error");
-    }
-  };
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user-expenses", { currentPage, rows }],
+      });
+      reset();
+    },
+    onError: (error) => {
+      verify(error);
+    },
+  });
+
+  const deleteExpense = useMutation({
+    mutationFn: () => {
+      setAlertOpen(false);
+      return axios.delete(`/api/expense/${dataId}`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["user-expenses", { currentPage, rows }],
+      });
+    },
+    onError: (error) => {
+      verify(error);
+    },
+  });
 
   const handleClick = (id) => {
     setDataId(id);
@@ -125,12 +130,6 @@ const Dashboard = () => {
     localStorage.setItem("rows", JSON.stringify(e.target.value));
   };
 
-  useEffect(() => {
-    if (user) {
-      fetchExpenses();
-    }
-  }, [currentPage, rows]);
-
   return (
     <>
       <ScaleFade initialScale={0.9} in={true}>
@@ -147,11 +146,12 @@ const Dashboard = () => {
           <Heading fontSize="2xl" mb={3} textAlign={"center"}>
             Add your Expense
           </Heading>
-          <form onSubmit={handleSubmit(createExpense)}>
+          <form onSubmit={handleSubmit(createExpense.mutate)}>
             <VStack spacing={3}>
               <Input
                 autoComplete="off"
                 isRequired
+                type="number"
                 {...register("amount")}
                 placeholder="Amount &#x20B9;"
               />
@@ -188,7 +188,7 @@ const Dashboard = () => {
                 minWidth={"150px"}
                 width={"40%"}
                 type="submit"
-                isLoading={loading}
+                isLoading={createExpense.isPending}
               >
                 Add Expense
               </Button>
@@ -196,7 +196,12 @@ const Dashboard = () => {
           </form>
         </Box>
       </ScaleFade>
-      {data.length > 0 && (
+      {isPending && (
+        <Center mt={20}>
+          <Spinner size="lg" />
+        </Center>
+      )}
+      {data?.expenses?.length > 0 && (
         <TableContainer
           boxShadow={"md"}
           w={{ base: "90%", md: "75%", lg: "60%" }}
@@ -215,7 +220,7 @@ const Dashboard = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {data.map((item, index) => (
+              {data?.expenses?.map((item, index) => (
                 <motion.tr
                   key={item._id}
                   initial={{ opacity: 0 }}
@@ -293,7 +298,7 @@ const Dashboard = () => {
               <Button ref={cancelRef} onClick={() => setAlertOpen(false)}>
                 Cancel
               </Button>
-              <Button colorScheme="red" onClick={handleDelete} ml={3}>
+              <Button colorScheme="red" onClick={deleteExpense.mutate} ml={3}>
                 Delete
               </Button>
             </AlertDialogFooter>
