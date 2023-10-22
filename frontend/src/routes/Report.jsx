@@ -32,7 +32,7 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
 import ReportData from "../components/ReportData";
 import { useForm } from "react-hook-form";
-import showToast from "../hooks/showToast";
+import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { FaDownload } from "react-icons/fa";
 
@@ -40,7 +40,6 @@ const Report = () => {
   const [type, setType] = useState("");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const toast = useToast();
   const { user } = useAuthContext();
   const { verify } = useError();
   const { register, handleSubmit } = useForm();
@@ -66,30 +65,27 @@ const Report = () => {
         },
       });
       if (result.status == 200) {
-        console.log(result);
         setData(result.data);
         setType(data.type);
       }
-      setLoading(false);
     } catch (error) {
-      setLoading(false);
       verify(error);
+    } finally {
+      setLoading(false);
     }
   };
 
   const downloadReport = async () => {
     try {
-      const result = await axios.get("/api/premium/report/download", {
+      const { data } = await axios.get("/api/premium/report/download", {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       });
-      if (result.status == 200) {
-        if (!result.data.success) {
-          showToast(toast, "No expenses to Download!", "warning");
-        } else {
-          downloadFile(result.data.url);
-        }
+      if (!data?.success) {
+        toast.info("No expenses to Download!");
+      } else {
+        downloadFile(data?.url);
       }
     } catch (error) {
       verify(error);
@@ -98,23 +94,16 @@ const Report = () => {
 
   const fetchDownloads = async () => {
     try {
-      const result = await axios.get("/api/premium/user/downloads", {
+      const { data } = await axios.get("/api/premium/report/download-history", {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       });
-      if (result.status == 200) {
-        if (result.data.length == 0) {
-          showToast(
-            toast,
-            "No Records!",
-            "warning",
-            "Previous downloads not Found."
-          );
-        } else {
-          setDownloads(result.data);
-          setOpenModal(true);
-        }
+      if (data.length == 0) {
+        toast.info("Previous records not found!");
+      } else {
+        setDownloads(data);
+        setOpenModal(true);
       }
     } catch (error) {
       verify(error);

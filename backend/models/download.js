@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const DownloadSchema = new Schema({
+const DownloadSchema = new mongoose.Schema({
   url: {
     type: String,
     required: true,

@@ -1,9 +1,11 @@
 const Razorpay = require("razorpay");
 const asyncHandler = require("express-async-handler");
 const crypto = require("crypto");
-const User = require("../models/user");
 const { Parser } = require("json2csv");
 const mongoose = require("mongoose");
+const User = require("../models/user");
+const Expense = require("../models/expense");
+const Download = require("../models/download");
 const uploadToS3 = require("../utils/upload");
 
 const createOrder = asyncHandler(async (req, res, next) => {
@@ -84,86 +86,87 @@ const getReport = asyncHandler(async (req, res, next) => {
     res.status(400);
     throw new Error("Invalid Type Specified!");
   }
-  if (type == "monthly") {
-    const currentDate = new Date();
-    const lastMonth = new Date(currentDate);
-    lastMonth.setMonth(currentDate.getMonth() - 1);
-    const monthlyExpenses = await req.user.getExpenses({
-      attributes: ["createdAt", "description", "category", "amount"],
-      where: {
-        createdAt: {
-          [Op.gte]: lastMonth,
-        },
-      },
-      order: [["createdAt", "DESC"]],
-    });
-    res.status(200).json(monthlyExpenses);
+
+  let startDate;
+  if (type === "monthly") {
+    startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - 1);
   } else {
-    const currentDate = new Date();
-    const lastYear = new Date(currentDate);
-    lastYear.setFullYear(currentDate.getFullYear() - 1);
-    const yearlyExpenses = await req.user.getExpenses({
-      attributes: ["createdAt", "description", "category", "amount"],
-      where: {
-        createdAt: {
-          [Op.gte]: lastYear,
-        },
+    startDate = new Date();
+    startDate.setFullYear(startDate.getFullYear() - 1);
+  }
+  const docsToSelect = { createdAt: 1, description: 1, category: 1, amount: 1 };
+  try {
+    const expenses = await Expense.find(
+      {
+        userId: req.user._id,
+        createdAt: { $gte: startDate },
       },
-      order: [["createdAt", "DESC"]],
-    });
-    res.status(200).json(yearlyExpenses);
+      docsToSelect
+    )
+      .sort({ createdAt: -1 })
+      .lean();
+    res.status(200).json(expenses);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Something went wrong!");
   }
 });
 
 const downloadExpenses = asyncHandler(async (req, res, next) => {
-  const t = await sequelize.transaction();
-  try {
-    const result = await req.user.getExpenses({
-      attributes: ["createdAt", "description", "category", "amount"],
-    });
-    if (result.length == 0) {
-      return res.status(200).json({
-        url: "",
-        success: false,
-      });
-    }
-    //Generate CSV file
-    const data = [];
-    result.forEach((element) => {
-      const { createdAt, description, category, amount } = element;
-      data.push({ createdAt, category, description, amount });
-    });
-    const fileName = `Expensify-${req.user._id}/${new Date()}.csv`;
-    const csvFields = ["createdAt", "category", "description", " amount"];
-    const csvParser = new Parser(csvFields);
-    const csv = csvParser.parse(data);
-    const fileUrl = await uploadToS3(csv, fileName);
-    //save to database
-    await req.user.createDownload(
-      {
-        url: fileUrl,
-      },
-      {
-        transaction: t,
-      }
-    );
-    await t.commit();
-    return res.status(200).json({
-      url: fileUrl,
-      success: true,
-    });
-  } catch (error) {
-    await t.rollback();
-    res.status(500);
-    throw new Error("Something went Wrong!", error.message);
-  }
+  // const t = await sequelize.transaction();
+  // try {
+  //   const result = await req.user.getExpenses({
+  //     attributes: ["createdAt", "description", "category", "amount"],
+  //   });
+  //   if (result.length == 0) {
+  //     return res.status(200).json({
+  //       url: "",
+  //       success: false,
+  //     });
+  //   }
+  //   //Generate CSV file
+  //   const data = [];
+  //   result.forEach((element) => {
+  //     const { createdAt, description, category, amount } = element;
+  //     data.push({ createdAt, category, description, amount });
+  //   });
+  //   const fileName = `Expensify-${req.user._id}/${new Date()}.csv`;
+  //   const csvFields = ["createdAt", "category", "description", " amount"];
+  //   const csvParser = new Parser(csvFields);
+  //   const csv = csvParser.parse(data);
+  //   const fileUrl = await uploadToS3(csv, fileName);
+  //   //save to database
+  //   await req.user.createDownload(
+  //     {
+  //       url: fileUrl,
+  //     },
+  //     {
+  //       transaction: t,
+  //     }
+  //   );
+  //   await t.commit();
+  //   return res.status(200).json({
+  //     url: fileUrl,
+  //     success: true,
+  //   });
+  // } catch (error) {
+  //   await t.rollback();
+  //   res.status(500);
+  //   throw new Error("Something went Wrong!", error.message);
+  // }
 });
 
 const getUserDownloads = asyncHandler(async (req, res, next) => {
-  const result = await req.user.getDownloads({
-    attributes: ["createdAt", "url", "_id"],
-  });
-  res.status(200).json(result);
+  try {
+    const result = await Download.find({ userId: req.user._id }).select(
+      "createdAt url"
+    );
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500);
+    throw new Error("Something went wrong!");
+  }
 });
 
 module.exports = {

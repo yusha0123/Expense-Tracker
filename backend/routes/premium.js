@@ -19,6 +19,8 @@ router.route("/report").get(protected, verifyPremium, getReport);
 router
   .route("/report/download")
   .get(protected, verifyPremium, downloadExpenses);
-router.route("/report/history").get(protected, verifyPremium, getUserDownloads);
+router
+  .route("/report/download-history")
+  .get(protected, verifyPremium, getUserDownloads);
 
 module.exports = router;
