@@ -22,8 +22,9 @@ import {
   DrawerCloseButton,
   VStack,
   Divider,
+  Tooltip,
 } from "@chakra-ui/react";
-import { BsPersonCircle } from "react-icons/bs";
+// import { FiMenu } from "react-icons/fi";
 import { AiOutlineClose, AiOutlineMail, AiOutlineLock } from "react-icons/ai";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { PiCrownBold } from "react-icons/pi";
@@ -136,32 +137,21 @@ export default function Navbar() {
                 )}
               </HStack>
               <Menu>
-                <MenuButton
-                  as={Button}
-                  rounded={"full"}
-                  variant={"link"}
-                  cursor={"pointer"}
-                  color={"gray.600"}
-                >
-                  <BsPersonCircle />
-                </MenuButton>
+                <Tooltip label="Open Menu" hasArrow>
+                  <MenuButton as={Button} cursor={"pointer"}>
+                    <GiHamburgerMenu />
+                  </MenuButton>
+                </Tooltip>
                 <MenuList>
                   <MenuItem display={"flex"} alignItems={"center"} gap={3}>
                     <Icon as={AiOutlineMail} />
                     {user.email}
                   </MenuItem>
                   <MenuDivider />
-                  {user.isPremium ? (
-                    <MenuItem display={"flex"} alignItems={"center"} gap={3}>
-                      <Icon as={PiCrownBold} />
-                      Premium User
-                    </MenuItem>
-                  ) : (
-                    <MenuItem display={"flex"} alignItems={"center"} gap={3}>
-                      <Icon as={FaUser} />
-                      Freemium User
-                    </MenuItem>
-                  )}
+                  <MenuItem display={"flex"} alignItems={"center"} gap={3}>
+                    <Icon as={user.isPremium ? PiCrownBold : FaUser} />
+                    {user.isPremium ? "Premium" : "Freemium"} User
+                  </MenuItem>
                   <MenuDivider />
                   <MenuItem
                     onClick={logout}

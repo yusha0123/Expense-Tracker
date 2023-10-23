@@ -15,7 +15,6 @@ import {
   ModalBody,
   ModalCloseButton,
   useBreakpointValue,
-  useToast,
   Table,
   Thead,
   Tbody,
@@ -24,28 +23,34 @@ import {
   Td,
   TableContainer,
   IconButton,
+  HStack,
+  Tooltip,
+  Badge,
+  Center,
 } from "@chakra-ui/react";
-import { AiFillFile } from "react-icons/ai";
-import { BiShowAlt } from "react-icons/bi";
 import axios from "axios";
+import moment from "moment";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
-import ReportData from "../components/ReportData";
-import { useForm } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
-import { FaDownload } from "react-icons/fa";
+import { FaDownload, FaHistory } from "react-icons/fa";
+import { Loading } from "../components/Loading";
+import Chart from "../components/Chart";
 
 const Report = () => {
-  const [type, setType] = useState("");
-  const [data, setData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [type, setType] = useState("monthly");
   const { user } = useAuthContext();
   const { verify } = useError();
-  const { register, handleSubmit } = useForm();
   const [openModal, setOpenModal] = useState(false);
   const [downloads, setDownloads] = useState([]);
-  const modalSize = useBreakpointValue({ base: "xs", md: "md", xl: "xl" });
+  const modalSize = useBreakpointValue({
+    base: "xs",
+    sm: "sm",
+    md: "md",
+    xl: "xl",
+  });
   const options = {
     year: "numeric",
     month: "long",
@@ -56,24 +61,19 @@ const Report = () => {
     hour12: true, // Use 12-hour format with AM/PM
   };
 
-  const fetchReport = async (data) => {
-    setLoading(true);
-    try {
-      const result = await axios.get(`/api/premium/report?type=${data.type}`, {
+  const { isPending, isError, data, error } = useQuery({
+    queryKey: ["user-report", type],
+    queryFn: async () => {
+      const { data } = await axios.get(`/api/premium/report?type=${type}`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
         },
       });
-      if (result.status == 200) {
-        setData(result.data);
-        setType(data.type);
-      }
-    } catch (error) {
-      verify(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+      return data;
+    },
+  });
+
+  if (isError) verify(error);
 
   const downloadReport = async () => {
     try {
@@ -100,7 +100,7 @@ const Report = () => {
         },
       });
       if (data.length == 0) {
-        toast.info("Previous records not found!");
+        toast.info("No Previous records found!");
       } else {
         setDownloads(data);
         setOpenModal(true);
@@ -121,68 +121,72 @@ const Report = () => {
     anchor.click();
   };
 
+  if (isPending) {
+    return <Loading />;
+  }
+
+  const totalAmount = data?.reduce((total, item) => total + item.amount, 0);
+
   return (
     <>
       <Box
         rounded={"lg"}
         bg={"white"}
         boxShadow={"md"}
-        p={6}
+        p={3}
         my={5}
         mx={"auto"}
         w={{ base: "90%", md: "60%", lg: "40%" }}
-        maxWidth={"1024px"}
+        maxWidth={"600px"}
       >
         <Heading textAlign={"center"} as={"h3"} mb={3}>
           Financial Snapshot
         </Heading>
         <Divider />
-        <VStack spacing={2} my={4}>
-          <form onSubmit={handleSubmit(fetchReport)}>
-            <Box
-              display={{ base: "flex", md: "row" }}
-              flexDirection={{ base: "column", md: "row" }}
-              gap={3}
-            >
-              <Select
-                placeholder="Select report type"
-                width={"fit-content"}
-                {...register("type")}
-                isRequired
-              >
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-              </Select>
-              <Button colorScheme="green" type="submit" isDisabled={loading}>
-                Get Report
-              </Button>
-            </Box>
-          </form>
-          <Divider />
-          <Flex
-            direction={{ base: "column", md: "row" }}
-            alignItems={{ base: "center", md: "flex-start" }}
-            justify={{ base: "center", md: "flex-start" }}
-            gap="4"
+        <HStack justifyContent={"space-evenly"} my={4}>
+          <Select
+            width={"40%"}
+            value={type}
+            onChange={(e) => setType(e.target.value)}
           >
-            <Button
-              colorScheme="gray"
-              rightIcon={<AiFillFile />}
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </Select>
+          <Tooltip label="Download Report">
+            <IconButton
+              icon={<FaDownload />}
               onClick={downloadReport}
-            >
-              Download File
-            </Button>
-            <Button
-              colorScheme="gray"
-              rightIcon={<BiShowAlt />}
+              colorScheme="messenger"
+            />
+          </Tooltip>
+          <Tooltip label="Download History">
+            <IconButton
+              icon={<FaHistory />}
               onClick={fetchDownloads}
-            >
-              Show Downloads
-            </Button>
-          </Flex>
-        </VStack>
+              colorScheme="purple"
+            />
+          </Tooltip>
+        </HStack>
+        <Divider />
+        <Center>
+          <Badge
+            colorScheme="red"
+            fontSize="0.9em"
+            my={2}
+            p={1.5}
+            textTransform={"none"}
+            rounded={"md"}
+          >
+            {type === "monthly"
+              ? `Total Expenses in ${moment(new Date()).format("MMMM")} : `
+              : `Total Expenses in the year ${moment(new Date()).format(
+                  "YYYY"
+                )} : `}
+            &#x20B9;{totalAmount}
+          </Badge>
+        </Center>
       </Box>
-      {data.length > 0 && <ReportData data={data} type={type} />}
+      {data?.length > 0 && <Chart data={data} type={type} />}
       <Modal isOpen={openModal} onClose={closeModal} size={modalSize}>
         <ModalOverlay />
         <ModalContent>
@@ -216,8 +220,7 @@ const Report = () => {
                       <Td textAlign="center">
                         <IconButton
                           icon={<FaDownload />}
-                          bg={"green.100"}
-                          _hover={{ bg: "green.200" }}
+                          colorScheme="whatsapp"
                           onClick={() => downloadFile(item.url)}
                         />
                       </Td>
