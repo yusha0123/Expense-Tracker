@@ -82,10 +82,7 @@ const Report = () => {
       );
     },
     onSuccess: (response) => {
-      const url = webkitURL.createObjectURL(response?.data);
-      console.log(url);
-      downloadLink(url);
-      // downloadFileFromURL(response?.data, "Expensify.csv");
+      downloadFile(response?.data?.fileUrl);
     },
     onError: (error) => {
       console.log(error);
@@ -93,13 +90,23 @@ const Report = () => {
     },
   });
 
-  const downloadLink = (uri) => {
-    var link = document.createElement("a");
-    link.setAttribute("download", "Expensify.csv");
-    link.href = uri;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+  const downloadFile = (url) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", url);
+    xhr.responseType = "blob";
+    xhr.send();
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        const blob = xhr.response;
+        const newBlob = new Blob([blob]);
+        const anchor = document.createElement("a");
+        anchor.href = URL.createObjectURL(newBlob);
+        anchor.download = "Expensify.csv";
+        anchor.click();
+      } else {
+        toast.error("Failed to download file!");
+      }
+    };
   };
 
   const fetchDownloads = async () => {
@@ -122,23 +129,6 @@ const Report = () => {
 
   const closeModal = () => {
     setOpenModal(false);
-  };
-
-  const downloadFileFromURL = (url, fileName) => {
-    fetch(url)
-      .then((response) => response.blob())
-      .then((blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-      })
-      .catch((error) => {
-        toast.error("failed to download file!");
-      });
   };
 
   if (isPending) {
@@ -271,7 +261,7 @@ const Report = () => {
                         <IconButton
                           icon={<FaDownload />}
                           colorScheme="whatsapp"
-                          onClick={() => downloadFileFromURL(item.url)}
+                          onClick={() => downloadFile(item.url)}
                         />
                       </Td>
                     </motion.tr>

@@ -143,7 +143,10 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
       userId: req.user,
     });
 
-    return res.status(200).send(fileUrl);
+    return res.status(200).json({
+      success: true,
+      fileUrl,
+    });
   } catch (error) {
     console.log(error);
     res.status(500);
