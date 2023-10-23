@@ -1,16 +1,20 @@
 const { createClient } = require("@supabase/supabase-js");
 const supabase = createClient(process.env.API_URL, process.env.API_KEY);
+const storageName = "user-data";
 
 async function uploadToCloud(file, filename) {
   const { data, error } = await supabase.storage
-    .from("user-data")
+    .from(storageName)
     .upload(filename, file);
 
   return new Promise((resolve, reject) => {
     if (error) {
-      reject("Failed to upload to supabase!");
+      reject(error);
     } else if (data) {
-      resolve(data);
+      const { data } = supabase.storage
+        .from(storageName)
+        .getPublicUrl(filename);
+      resolve(data.publicUrl);
     }
   });
 }

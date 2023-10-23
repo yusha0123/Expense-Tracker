@@ -126,21 +126,23 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
       const { createdAt, description, category, amount } = element;
       array.push({ createdAt, category, description, amount });
     });
-    const fileName = `Expensify-${req.user._id}-${new Date()}.csv`;
+    const fileName = `Expensify-${req.user._id}/${new Date()}.csv`;
     const csvFields = ["createdAt", "category", "description", " amount"];
     const csvParser = new Parser(csvFields);
     const csv = csvParser.parse(array);
     const fileUrl = await uploadToCloud(csv, fileName);
-    console.log(fileUrl);
     //save to database
-    // await Download.create({
-    //   url:fileUrl
-    // })
-    const dummy = "https://cdnstorage.sendbig.com/unreal/female.webp";
-    return res.status(200).json({
-      url: dummy,
-      success: true,
+    await Download.create({
+      url: fileUrl,
+      userId: req.user,
     });
+
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="Expensify.csv"`
+    );
+
+    return res.status(200).send(fileUrl);
   } catch (error) {
     console.log(error);
     res.status(500);

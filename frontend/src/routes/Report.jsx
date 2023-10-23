@@ -51,17 +51,8 @@ const Report = () => {
     base: "xs",
     sm: "sm",
     md: "md",
-    xl: "xl",
+    lg: "lg",
   });
-  const options = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
-    hour12: true, // Use 12-hour format with AM/PM
-  };
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["user-report", type],
@@ -77,24 +68,6 @@ const Report = () => {
 
   if (isError) verify(error);
 
-  // const downloadReport = async () => {
-  //   try {
-  //     const { data } = await axios.get("/api/premium/report/download", data, {
-  //       headers: {
-  //         Authorization: `Bearer ${user.token}`,
-  //       },
-  //     });
-  //     if (!data?.success) {
-  //       toast.info("No expenses to Download!");
-  //     } else {
-  //       downloadFile(data?.url);
-  //     }
-  //   } catch (error) {
-  //     console.log(error);
-  //     verify(error);
-  //   }
-  // };
-
   const downloadReport = useMutation({
     mutationFn: (data) => {
       return axios.post(
@@ -106,19 +79,15 @@ const Report = () => {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
+          responseType: "blob",
         }
       );
     },
     onSuccess: (response) => {
-      if (!response?.data?.success) {
-        toast.info("No expenses to Download!");
-      } else {
-        downloadFile(response?.data?.url);
-      }
+      downloadFile(response?.data);
     },
     onError: (error) => {
-      console.log(error);
-      // verify(error);
+      verify(error);
     },
   });
 
@@ -144,11 +113,33 @@ const Report = () => {
     setOpenModal(false);
   };
 
-  const downloadFile = (link) => {
-    const anchor = document.createElement("a");
-    anchor.href = link;
-    anchor.setAttribute("download", "Expensify.csv");
-    anchor.click();
+  const downloadFile = (blob) => {
+    const url = window.URL.createObjectURL(blob);
+    // Create a link element to initiate the download
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Expensify.csv";
+    document.body.appendChild(a);
+    a.click();
+    // Clean up by revoking the Object URL
+    window.URL.revokeObjectURL(url);
+  };
+
+  const downloadFileFromURL = (url, fileName) => {
+    fetch(url)
+      .then((response) => response.blob())
+      .then((blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+      })
+      .catch((error) => {
+        toast.error("failed to download file!");
+      });
   };
 
   if (isPending) {
@@ -273,16 +264,17 @@ const Report = () => {
                     >
                       <Td textAlign={"center"}>{index + 1}</Td>
                       <Td textAlign="center">
-                        {new Date(item.createdAt).toLocaleDateString(
-                          "en-US",
-                          options
+                        {moment(item.createdAt).format(
+                          "MMMM DD, YYYY hh:mm:ss A"
                         )}
                       </Td>
                       <Td textAlign="center">
                         <IconButton
                           icon={<FaDownload />}
                           colorScheme="whatsapp"
-                          onClick={() => downloadFile(item.url)}
+                          onClick={() =>
+                            downloadFileFromURL(item.url, "Expensify.csv")
+                          }
                         />
                       </Td>
                     </motion.tr>
