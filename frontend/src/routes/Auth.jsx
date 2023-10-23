@@ -18,7 +18,6 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
-  Text,
   Icon,
   Modal,
   ModalOverlay,
@@ -38,13 +37,14 @@ import { AiOutlineMail } from "react-icons/ai";
 import { useSignup } from "../hooks/useSignup";
 import { useLogin } from "../hooks/useLogin";
 import Logo from "../components/Logo";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 const Auth = () => {
   const [showPass1, setShowPass1] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
   const [openModal, setOpenModal] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const modalSize = useBreakpointValue({ base: "xs", md: "md", xl: "xl" });
+  const modalSize = useBreakpointValue({ base: "sm", md: "md", xl: "lg" });
   const loginForm = useForm();
   const signUpForm = useForm();
   const resetPass = useForm();
@@ -59,28 +59,25 @@ const Auth = () => {
     login.mutate(data);
   };
 
-  const reset_Pass = (data) => {
-    setLoading(true);
-    axios
-      .post("/api/auth/token", data)
-      .then(() => {
-        // showToast(
-        //   toast,
-        //   "Password reset mail Sent!",
-        //   "success",
-        //   "Don't forget to check Spam Folder."
-        // );
-      })
-      .catch((error) => {
-        console.log(error);
-        showToast(toast, error.response.data.message, "error");
-      })
-      .finally(() => {
-        setLoading(false);
-        setOpenModal(false);
-        resetPass.reset();
-      });
-  };
+  const resetPassword = useMutation({
+    mutationFn: (data) => {
+      return axios.post("/api/auth/token", data);
+    },
+    onSuccess: () => {
+      toast.success("Password reset email sent!");
+    },
+    onError: (error) => {
+      if (error.response?.status === 404) {
+        toast.error("User not found or invalid email!");
+      } else {
+        toast.error("Something went wrong!");
+      }
+    },
+    onSettled: () => {
+      resetPass.reset();
+      setOpenModal(false);
+    },
+  });
 
   return (
     <>
@@ -239,6 +236,7 @@ const Auth = () => {
           </ScaleFade>
         </Box>
       </Flex>
+      {/* Reset password Modal */}
       <Modal
         isOpen={openModal}
         onClose={() => {
@@ -252,7 +250,7 @@ const Auth = () => {
           <ModalCloseButton />
           <Divider />
           <ModalBody>
-            <form onSubmit={resetPass.handleSubmit(reset_Pass)}>
+            <form onSubmit={resetPass.handleSubmit(resetPassword.mutate)}>
               <Stack spacing={3} alignItems="center">
                 <FormControl isRequired>
                   <FormLabel>Email address</FormLabel>
@@ -266,7 +264,7 @@ const Auth = () => {
                   rightIcon={<Icon as={AiOutlineMail} />}
                   colorScheme="messenger"
                   type="submit"
-                  isLoading={loading}
+                  isLoading={resetPassword.isPending}
                   loadingText="Please wait..."
                 >
                   Send Email

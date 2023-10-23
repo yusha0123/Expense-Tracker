@@ -77,7 +77,7 @@ const login = asyncHandler(async (req, res, next) => {
   });
 });
 
-const resetPassword = async (req, res, next) => {
+const resetPassword = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
 
   if (!email) {
@@ -91,23 +91,27 @@ const resetPassword = async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      res.status(404);
-      throw new Error("User not found!");
+      return res.status(404).json({
+        success: false,
+        message: "User not found!",
+      });
     }
 
     const token = uuidv4();
     const serverAddress = process.env.SERVER_ADDRESS;
-    emailTemplate = emailTemplate.replace("{UUID_PLACEHOLDER}", uuid); // Adding a dynamic token
+    emailTemplate = emailTemplate.replace("{UUID_PLACEHOLDER}", token); // Adding a dynamic token
     emailTemplate = emailTemplate.replace(
       "{SERVER_ADDRESS_PLACEHOLDER}",
       serverAddress
     ); // Adding a dynamic server address
 
     await ResetPassword.create(
-      {
-        token,
-        userId: user._id,
-      },
+      [
+        {
+          token,
+          userId: user._id,
+        },
+      ],
       { session }
     );
 
@@ -131,13 +135,14 @@ const resetPassword = async (req, res, next) => {
     await session.commitTransaction();
     res.status(200).json({ success: true, message: "Email sent!" });
   } catch (error) {
+    console.log(error);
     await session.abortTransaction();
     res.status(500);
     throw new Error("Internal Server Error!");
   } finally {
     session.endSession();
   }
-};
+});
 
 const validateToken = asyncHandler(async (req, res, next) => {
   const token = req.query.token;

@@ -3,10 +3,8 @@ import {
   Box,
   Button,
   Divider,
-  Flex,
   Heading,
   Select,
-  VStack,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -27,6 +25,10 @@ import {
   Tooltip,
   Badge,
   Center,
+  Alert,
+  AlertIcon,
+  AlertTitle,
+  AlertDescription,
 } from "@chakra-ui/react";
 import axios from "axios";
 import moment from "moment";
@@ -157,6 +159,7 @@ const Report = () => {
               icon={<FaDownload />}
               onClick={downloadReport}
               colorScheme="messenger"
+              isDisabled={data?.length === 0}
             />
           </Tooltip>
           <Tooltip label="Download History">
@@ -186,7 +189,37 @@ const Report = () => {
           </Badge>
         </Center>
       </Box>
-      {data?.length > 0 && <Chart data={data} type={type} />}
+      <Box
+        mx={"auto"}
+        w={["100%", "95%", "90%", "85%", "75%"]}
+        maxWidth={"1024px"}
+        my={3}
+      >
+        {data?.length > 0 && <Chart data={data} type={type} />}
+      </Box>
+      {data?.length === 0 && (
+        <Alert
+          status="error"
+          variant="subtle"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
+          textAlign="center"
+          height="200px"
+          maxW={"600px"}
+          mx={"auto"}
+          w={["95%", "85%", "70%", "60%"]}
+          rounded={"lg"}
+        >
+          <AlertIcon boxSize="40px" mr={0} />
+          <AlertTitle mt={4} mb={1} fontSize="lg">
+            No Data Found!
+          </AlertTitle>
+          <AlertDescription maxWidth="sm">
+            Please add an expense from the Dashboard to see it here.
+          </AlertDescription>
+        </Alert>
+      )}
       <Modal isOpen={openModal} onClose={closeModal} size={modalSize}>
         <ModalOverlay />
         <ModalContent>

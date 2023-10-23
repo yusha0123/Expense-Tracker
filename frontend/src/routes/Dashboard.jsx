@@ -235,12 +235,13 @@ const Dashboard = () => {
                   <Td textAlign={"center"}>{item.category}</Td>
                   <Td textAlign={"center"}>{item.description}</Td>
                   <Td textAlign={"center"}>
-                    <IconButton
-                      icon={<AiFillDelete />}
-                      bg={"red.200"}
-                      _hover={{ bg: "red.300" }}
-                      onClick={() => handleClick(item._id)}
-                    />
+                    <Tooltip label="Delete Expense" hasArrow>
+                      <IconButton
+                        icon={<AiFillDelete />}
+                        colorScheme="red"
+                        onClick={() => handleClick(item._id)}
+                      />
+                    </Tooltip>
                   </Td>
                 </motion.tr>
               ))}
