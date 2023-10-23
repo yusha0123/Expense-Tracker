@@ -61,10 +61,8 @@ const Root = () => {
             animate={{ x: 0, opacity: 1 }}
           >
             <VStack gap={5}>
-              <Heading textAlign="center" color={"gray.600"}>
-                Welcome to Expensify!
-              </Heading>
-              <Text textAlign="center" color={"gray.600"} fontSize="3xl">
+              <Heading textAlign="center">Welcome to Expensify!</Heading>
+              <Text textAlign="center" fontSize="3xl">
                 Track your expenses and save money with Ease.
               </Text>
             </VStack>

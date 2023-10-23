@@ -48,8 +48,7 @@ const Report = () => {
   const [openModal, setOpenModal] = useState(false);
   const [downloads, setDownloads] = useState([]);
   const modalSize = useBreakpointValue({
-    base: "xs",
-    sm: "sm",
+    base: "sm",
     md: "md",
     lg: "lg",
   });
@@ -69,7 +68,7 @@ const Report = () => {
   if (isError) verify(error);
 
   const downloadReport = useMutation({
-    mutationFn: (data) => {
+    mutationFn: () => {
       return axios.post(
         "/api/premium/report/download",
         {
@@ -79,17 +78,29 @@ const Report = () => {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
-          responseType: "blob",
         }
       );
     },
     onSuccess: (response) => {
-      downloadFile(response?.data);
+      const url = webkitURL.createObjectURL(response?.data);
+      console.log(url);
+      downloadLink(url);
+      // downloadFileFromURL(response?.data, "Expensify.csv");
     },
     onError: (error) => {
+      console.log(error);
       verify(error);
     },
   });
+
+  const downloadLink = (uri) => {
+    var link = document.createElement("a");
+    link.setAttribute("download", "Expensify.csv");
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
 
   const fetchDownloads = async () => {
     try {
@@ -111,18 +122,6 @@ const Report = () => {
 
   const closeModal = () => {
     setOpenModal(false);
-  };
-
-  const downloadFile = (blob) => {
-    const url = window.URL.createObjectURL(blob);
-    // Create a link element to initiate the download
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "Expensify.csv";
-    document.body.appendChild(a);
-    a.click();
-    // Clean up by revoking the Object URL
-    window.URL.revokeObjectURL(url);
   };
 
   const downloadFileFromURL = (url, fileName) => {
@@ -176,7 +175,7 @@ const Report = () => {
           <Tooltip label="Download Report">
             <IconButton
               icon={<FaDownload />}
-              onClick={() => downloadReport.mutate(data)}
+              onClick={() => downloadReport.mutate()}
               colorScheme="messenger"
               isDisabled={data?.length === 0}
             />
@@ -272,9 +271,7 @@ const Report = () => {
                         <IconButton
                           icon={<FaDownload />}
                           colorScheme="whatsapp"
-                          onClick={() =>
-                            downloadFileFromURL(item.url, "Expensify.csv")
-                          }
+                          onClick={() => downloadFileFromURL(item.url)}
                         />
                       </Td>
                     </motion.tr>

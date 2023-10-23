@@ -7,6 +7,7 @@ const User = require("../models/user");
 const Expense = require("../models/expense");
 const Download = require("../models/download");
 const uploadToCloud = require("../utils/upload");
+const moment = require("moment");
 
 const createOrder = asyncHandler(async (req, res, next) => {
   const instance = new Razorpay({
@@ -114,7 +115,7 @@ const getReport = asyncHandler(async (req, res, next) => {
 });
 
 const downloadExpenses = asyncHandler(async (req, res, next) => {
-  const { data, type } = req.body;
+  const { data } = req.body;
   if (!data || data?.length === 0) {
     res.status(400);
     throw new Error("Data doesn't satisfy the expected requirements!");
@@ -124,7 +125,12 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
     const array = [];
     data.forEach((element) => {
       const { createdAt, description, category, amount } = element;
-      array.push({ createdAt, category, description, amount });
+      array.push({
+        createdAt: moment(createdAt).format("MMMM DD, YYYY hh:mm:ss A"),
+        category,
+        description,
+        amount,
+      });
     });
     const fileName = `Expensify-${req.user._id}/${new Date()}.csv`;
     const csvFields = ["createdAt", "category", "description", " amount"];
@@ -136,11 +142,6 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
       url: fileUrl,
       userId: req.user,
     });
-
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="Expensify.csv"`
-    );
 
     return res.status(200).send(fileUrl);
   } catch (error) {

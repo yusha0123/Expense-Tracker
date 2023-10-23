@@ -37,6 +37,7 @@ import { useUpgrade } from "../hooks/useUpgrade";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Logo from "./Logo";
+import { useError } from "../hooks/useError";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -44,6 +45,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const { logout } = useLogout();
   const { upgrade } = useUpgrade();
+  const { verify } = useError();
   const drawerBtnRef = useRef();
 
   const handleNavclick = async (link) => {
@@ -57,8 +59,7 @@ export default function Navbar() {
         });
         handleOpenRazorPay(data);
       } catch (error) {
-        console.log(error);
-        toast.error("Something went wrong!");
+        verify(error);
       }
     } else if (!user.isPremium) {
       toast.warning("Please Upgrade to Pro!");
@@ -90,8 +91,7 @@ export default function Navbar() {
           dispatch({ type: "TOGGLE_CONFETTI" });
           upgrade();
         } catch (error) {
-          console.log(error);
-          toast.error("Something went wrong!");
+          verify(error);
         }
       },
     };

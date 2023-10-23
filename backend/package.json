@@ -20,6 +20,7 @@
     "express-async-handler": "^1.2.0",
     "json2csv": "^6.0.0-alpha.2",
     "jsonwebtoken": "^9.0.2",
+    "moment": "^2.29.4",
     "mongoose": "^7.6.3",
     "nodemailer": "^6.9.5",
     "razorpay": "^2.9.2",
