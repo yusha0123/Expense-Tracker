@@ -34,7 +34,7 @@ import axios from "axios";
 import moment from "moment";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { FaDownload, FaHistory } from "react-icons/fa";
@@ -77,22 +77,50 @@ const Report = () => {
 
   if (isError) verify(error);
 
-  const downloadReport = async () => {
-    try {
-      const { data } = await axios.get("/api/premium/report/download", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
+  // const downloadReport = async () => {
+  //   try {
+  //     const { data } = await axios.get("/api/premium/report/download", data, {
+  //       headers: {
+  //         Authorization: `Bearer ${user.token}`,
+  //       },
+  //     });
+  //     if (!data?.success) {
+  //       toast.info("No expenses to Download!");
+  //     } else {
+  //       downloadFile(data?.url);
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     verify(error);
+  //   }
+  // };
+
+  const downloadReport = useMutation({
+    mutationFn: (data) => {
+      return axios.post(
+        "/api/premium/report/download",
+        {
+          data,
         },
-      });
-      if (!data?.success) {
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+    },
+    onSuccess: (response) => {
+      if (!response?.data?.success) {
         toast.info("No expenses to Download!");
       } else {
-        downloadFile(data?.url);
+        downloadFile(response?.data?.url);
       }
-    } catch (error) {
-      verify(error);
-    }
-  };
+    },
+    onError: (error) => {
+      console.log(error);
+      // verify(error);
+    },
+  });
 
   const fetchDownloads = async () => {
     try {
@@ -157,7 +185,7 @@ const Report = () => {
           <Tooltip label="Download Report">
             <IconButton
               icon={<FaDownload />}
-              onClick={downloadReport}
+              onClick={() => downloadReport.mutate(data)}
               colorScheme="messenger"
               isDisabled={data?.length === 0}
             />

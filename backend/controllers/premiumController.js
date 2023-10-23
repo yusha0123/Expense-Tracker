@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const Expense = require("../models/expense");
 const Download = require("../models/download");
-const uploadToS3 = require("../utils/upload");
+const uploadToCloud = require("../utils/upload");
 
 const createOrder = asyncHandler(async (req, res, next) => {
   const instance = new Razorpay({
@@ -114,47 +114,38 @@ const getReport = asyncHandler(async (req, res, next) => {
 });
 
 const downloadExpenses = asyncHandler(async (req, res, next) => {
-  // const t = await sequelize.transaction();
-  // try {
-  //   const result = await req.user.getExpenses({
-  //     attributes: ["createdAt", "description", "category", "amount"],
-  //   });
-  //   if (result.length == 0) {
-  //     return res.status(200).json({
-  //       url: "",
-  //       success: false,
-  //     });
-  //   }
-  //   //Generate CSV file
-  //   const data = [];
-  //   result.forEach((element) => {
-  //     const { createdAt, description, category, amount } = element;
-  //     data.push({ createdAt, category, description, amount });
-  //   });
-  //   const fileName = `Expensify-${req.user._id}/${new Date()}.csv`;
-  //   const csvFields = ["createdAt", "category", "description", " amount"];
-  //   const csvParser = new Parser(csvFields);
-  //   const csv = csvParser.parse(data);
-  //   const fileUrl = await uploadToS3(csv, fileName);
-  //   //save to database
-  //   await req.user.createDownload(
-  //     {
-  //       url: fileUrl,
-  //     },
-  //     {
-  //       transaction: t,
-  //     }
-  //   );
-  //   await t.commit();
-  //   return res.status(200).json({
-  //     url: fileUrl,
-  //     success: true,
-  //   });
-  // } catch (error) {
-  //   await t.rollback();
-  //   res.status(500);
-  //   throw new Error("Something went Wrong!", error.message);
-  // }
+  const { data, type } = req.body;
+  if (!data || data?.length === 0) {
+    res.status(400);
+    throw new Error("Data doesn't satisfy the expected requirements!");
+  }
+  try {
+    //Generate CSV file
+    const array = [];
+    data.forEach((element) => {
+      const { createdAt, description, category, amount } = element;
+      array.push({ createdAt, category, description, amount });
+    });
+    const fileName = `Expensify-${req.user._id}-${new Date()}.csv`;
+    const csvFields = ["createdAt", "category", "description", " amount"];
+    const csvParser = new Parser(csvFields);
+    const csv = csvParser.parse(array);
+    const fileUrl = await uploadToCloud(csv, fileName);
+    console.log(fileUrl);
+    //save to database
+    // await Download.create({
+    //   url:fileUrl
+    // })
+    const dummy = "https://cdnstorage.sendbig.com/unreal/female.webp";
+    return res.status(200).json({
+      url: dummy,
+      success: true,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500);
+    throw new Error("Something went Wrong!");
+  }
 });
 
 const getUserDownloads = asyncHandler(async (req, res, next) => {

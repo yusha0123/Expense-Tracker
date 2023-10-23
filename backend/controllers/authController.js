@@ -116,8 +116,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     );
 
     const transporter = nodemailer.createTransport({
-      host: "smtp-relay.sendinblue.com",
-      port: 587,
+      service: "gmail",
       auth: {
         user: process.env.EMAIL,
         pass: process.env.PASS,
@@ -135,7 +134,6 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     await session.commitTransaction();
     res.status(200).json({ success: true, message: "Email sent!" });
   } catch (error) {
-    console.log(error);
     await session.abortTransaction();
     res.status(500);
     throw new Error("Internal Server Error!");

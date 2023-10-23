@@ -18,7 +18,7 @@ router.route("/leaderboard").get(protected, verifyPremium, leaderboard);
 router.route("/report").get(protected, verifyPremium, getReport);
 router
   .route("/report/download")
-  .get(protected, verifyPremium, downloadExpenses);
+  .post(protected, verifyPremium, downloadExpenses);
 router
   .route("/report/download-history")
   .get(protected, verifyPremium, getUserDownloads);
