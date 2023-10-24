@@ -104,9 +104,7 @@ const getReport = asyncHandler(async (req, res, next) => {
         createdAt: { $gte: startDate },
       },
       docsToSelect
-    )
-      .sort({ createdAt: -1 })
-      .lean();
+    ).lean();
     res.status(200).json(expenses);
   } catch (error) {
     res.status(500);
@@ -126,14 +124,14 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
     data.forEach((element) => {
       const { createdAt, description, category, amount } = element;
       array.push({
-        createdAt: moment(createdAt).format("MMMM DD, YYYY hh:mm:ss A"),
-        category,
-        description,
-        amount,
+        Date: moment(createdAt).format("MMMM DD, YYYY hh:mm:ss A"),
+        Category: category,
+        Description: description,
+        Amount: amount,
       });
     });
     const fileName = `Expensify-${req.user._id}/${new Date()}.csv`;
-    const csvFields = ["createdAt", "category", "description", " amount"];
+    const csvFields = ["Date", "Category", "Description", " Amount"];
     const csvParser = new Parser(csvFields);
     const csv = csvParser.parse(array);
     const fileUrl = await uploadToCloud(csv, fileName);
@@ -143,10 +141,12 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
       userId: req.user,
     });
 
-    return res.status(200).json({
-      success: true,
-      fileUrl,
-    });
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="Expensify.csv"`
+    );
+    res.setHeader("Content-Type", "text/csv");
+    return res.status(200).send(csv);
   } catch (error) {
     console.log(error);
     res.status(500);
@@ -156,10 +156,12 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
 
 const getUserDownloads = asyncHandler(async (req, res, next) => {
   try {
-    const result = await Download.find({ userId: req.user._id })
-      .select("createdAt url")
-      .sort({ createdAt: -1 });
-    res.status(200).json(result);
+    setTimeout(async () => {
+      const result = await Download.find({ userId: req.user._id })
+        .select("createdAt url")
+        .sort({ createdAt: -1 });
+      return res.status(200).json(result);
+    }, 3000);
   } catch (error) {
     res.status(500);
     throw new Error("Something went wrong!");

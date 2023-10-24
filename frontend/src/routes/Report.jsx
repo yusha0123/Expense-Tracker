@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -82,11 +82,25 @@ const Report = () => {
           headers: {
             Authorization: `Bearer ${user.token}`,
           },
+          responseType: "blob",
         }
       );
     },
     onSuccess: (response) => {
-      downloadFile(response?.data?.fileUrl, true);
+      const blob = new Blob([response.data], { type: "text/csv" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "Expensify.csv";
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      toast.update(toastRef.current, {
+        type: "success",
+        isLoading: false,
+        render: "File processed successfully!",
+        autoClose: 3000,
+      });
     },
     onError: (error) => {
       toast.dismiss();
@@ -94,7 +108,7 @@ const Report = () => {
     },
   });
 
-  const downloadFile = (url, flag = false) => {
+  const downloadFile = (url) => {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", url);
     xhr.responseType = "blob";
@@ -107,46 +121,35 @@ const Report = () => {
         anchor.href = URL.createObjectURL(newBlob);
         anchor.download = "Expensify.csv";
         anchor.click();
-        if (flag) {
-          toast.update(toastRef.current, {
-            type: "success",
-            isLoading: false,
-            render: "File processed successfully!",
-            autoClose: 3000,
-          });
-        }
       } else {
-        if (flag) {
-          toast.update(toastRef.current, {
-            type: "error",
-            isLoading: false,
-            autoClose: 3000,
-            render: "Something went wrong!",
-          });
-        } else {
-          toast.error("Failed to download file!");
-        }
+        toast.error("Failed to download file!");
       }
     };
   };
 
-  const fetchDownloads = async () => {
-    try {
-      const { data } = await axios.get("/api/premium/report/download-history", {
-        headers: {
-          Authorization: `Bearer ${user.token}`,
-        },
-      });
-      if (data.length == 0) {
-        toast.info("No Previous records found!");
-      } else {
-        setDownloads(data);
-        onOpen();
+  useEffect(() => {
+    if (!isOpen) return;
+    const fetchDownloads = async () => {
+      try {
+        const { data } = await axios.get(
+          "/api/premium/report/download-history",
+          {
+            headers: {
+              Authorization: `Bearer ${user.token}`,
+            },
+          }
+        );
+        if (data.length == 0) {
+          toast.info("No Previous records found!");
+        } else {
+          setDownloads(data);
+        }
+      } catch (error) {
+        verify(error);
       }
-    } catch (error) {
-      verify(error);
-    }
-  };
+    };
+    fetchDownloads();
+  }, [isOpen]);
 
   if (isPending) {
     return <Loading />;
@@ -190,7 +193,7 @@ const Report = () => {
           <Tooltip label="Download History">
             <IconButton
               icon={<FaHistory />}
-              onClick={fetchDownloads}
+              onClick={onOpen}
               colorScheme="purple"
             />
           </Tooltip>
