@@ -24,7 +24,6 @@ import {
   Divider,
   Tooltip,
 } from "@chakra-ui/react";
-// import { FiMenu } from "react-icons/fi";
 import { AiOutlineClose, AiOutlineMail, AiOutlineLock } from "react-icons/ai";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { PiCrownBold } from "react-icons/pi";

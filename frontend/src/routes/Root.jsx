@@ -8,13 +8,19 @@ import {
   VStack,
   Text,
 } from "@chakra-ui/react";
-import HeroImage from "../assets/Landing_image.png";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Logo from "../components/Logo";
+import HeroImage from "../assets/Landing_image.png";
 
 const Root = () => {
   const navigate = useNavigate();
+
+  const variants = {
+    hidden: { opacity: 0, x: -100 },
+    visible: { opacity: 1, x: 0 },
+  };
+
   return (
     <section style={{ overflowX: "hidden" }}>
       <Box as="nav" boxShadow="md">
@@ -53,27 +59,39 @@ const Root = () => {
           alignItems="center"
         >
           <motion.div
-            transition={{ duration: 1 }}
-            initial={{
-              x: "-100vw",
-              opacity: 0,
-            }}
-            animate={{ x: 0, opacity: 1 }}
+            variants={variants}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 1, delay: 0.2 }}
           >
             <VStack gap={5}>
-              <Heading textAlign="center">Welcome to Expensify!</Heading>
-              <Text textAlign="center" fontSize="3xl">
+              <Heading
+                textAlign="center"
+                fontSize={{
+                  base: "2xl",
+                  md: "3xl",
+                  lg: "4xl",
+                }}
+              >
+                Welcome to Expensify!
+              </Heading>
+              <Text
+                textAlign="center"
+                fontSize={{
+                  base: "xl",
+                  md: "2xl",
+                  lg: "3xl",
+                }}
+              >
                 Track your expenses and save money with Ease.
               </Text>
             </VStack>
           </motion.div>
           <motion.div
-            transition={{ duration: 1 }}
-            initial={{
-              x: "100vw",
-              opacity: 0,
-            }}
-            animate={{ x: 0, opacity: 1 }}
+            variants={variants}
+            initial="hidden"
+            animate="visible"
+            transition={{ duration: 1, delay: 0.4 }}
           >
             <Image src={HeroImage} alt="Hero image" objectFit="cover" />
           </motion.div>

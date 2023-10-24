@@ -156,9 +156,9 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
 
 const getUserDownloads = asyncHandler(async (req, res, next) => {
   try {
-    const result = await Download.find({ userId: req.user._id }).select(
-      "createdAt url"
-    );
+    const result = await Download.find({ userId: req.user._id })
+      .select("createdAt url")
+      .sort({ createdAt: -1 });
     res.status(200).json(result);
   } catch (error) {
     res.status(500);

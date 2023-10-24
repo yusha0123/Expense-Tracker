@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -29,6 +29,8 @@ import {
   AlertIcon,
   AlertTitle,
   AlertDescription,
+  useDisclosure,
+  CircularProgress,
 } from "@chakra-ui/react";
 import axios from "axios";
 import moment from "moment";
@@ -45,7 +47,8 @@ const Report = () => {
   const [type, setType] = useState("monthly");
   const { user } = useAuthContext();
   const { verify } = useError();
-  const [openModal, setOpenModal] = useState(false);
+  const toastRef = useRef();
+  const { isOpen, onOpen, onClose } = useDisclosure();
   const [downloads, setDownloads] = useState([]);
   const modalSize = useBreakpointValue({
     base: "sm",
@@ -69,6 +72,7 @@ const Report = () => {
 
   const downloadReport = useMutation({
     mutationFn: () => {
+      toastRef.current = toast.loading("Generating file...");
       return axios.post(
         "/api/premium/report/download",
         {
@@ -82,15 +86,15 @@ const Report = () => {
       );
     },
     onSuccess: (response) => {
-      downloadFile(response?.data?.fileUrl);
+      downloadFile(response?.data?.fileUrl, true);
     },
     onError: (error) => {
-      console.log(error);
+      toast.dismiss();
       verify(error);
     },
   });
 
-  const downloadFile = (url) => {
+  const downloadFile = (url, flag = false) => {
     const xhr = new XMLHttpRequest();
     xhr.open("GET", url);
     xhr.responseType = "blob";
@@ -103,8 +107,25 @@ const Report = () => {
         anchor.href = URL.createObjectURL(newBlob);
         anchor.download = "Expensify.csv";
         anchor.click();
+        if (flag) {
+          toast.update(toastRef.current, {
+            type: "success",
+            isLoading: false,
+            render: "File processed successfully!",
+            autoClose: 3000,
+          });
+        }
       } else {
-        toast.error("Failed to download file!");
+        if (flag) {
+          toast.update(toastRef.current, {
+            type: "error",
+            isLoading: false,
+            autoClose: 3000,
+            render: "Something went wrong!",
+          });
+        } else {
+          toast.error("Failed to download file!");
+        }
       }
     };
   };
@@ -120,15 +141,11 @@ const Report = () => {
         toast.info("No Previous records found!");
       } else {
         setDownloads(data);
-        setOpenModal(true);
+        onOpen();
       }
     } catch (error) {
       verify(error);
     }
-  };
-
-  const closeModal = () => {
-    setOpenModal(false);
   };
 
   if (isPending) {
@@ -228,7 +245,7 @@ const Report = () => {
           </AlertDescription>
         </Alert>
       )}
-      <Modal isOpen={openModal} onClose={closeModal} size={modalSize}>
+      <Modal isOpen={isOpen} onClose={onClose} size={modalSize}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader textAlign={"center"}>Download History</ModalHeader>
@@ -271,7 +288,7 @@ const Report = () => {
             </TableContainer>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" mx={"auto"} onClick={closeModal}>
+            <Button colorScheme="red" mx={"auto"} onClick={onClose}>
               Close
             </Button>
           </ModalFooter>

@@ -1,14 +1,41 @@
-# Expensify
+### Expensify
 
-## Overview
+**A MERN Stack project for expense tracking**
 
-This project is a web application developed with React and Chakra UI for the frontend, featuring user authentication using JWT (JSON Web Tokens). The backend is powered by Node.js and Express.js, with a MySQL database managed by Sequelize ORM. It includes protected routes for the frontend and protected API routes for the backend. Additionally, the project integrates the Razorpay payment gateway to allow users to purchase a premium subscription for the application (in test mode).
+Expensify is a MERN Stack project that allows users to track their expenses and generate reports. It has the following features:
 
-## Features
+🔒 **Authentication with JWT**:
+Expensify uses JWT for authentication. This means that users will receive a JWT token after logging in, which they can use to access protected resources.
 
-- User Authentication: Users can sign up, log in, and log out securely using JWT-based authentication.
-- Razorpay Integration: Users can purchase a premium subscription using the Razorpay payment gateway in test mode.
-- Forgot Password: A "forgot password" feature is implemented, allowing users to reset their password via email.
-- Sequelize ORM: The project uses Sequelize ORM to interact with the MySQL database.
-- Protected Routes: Certain routes on the frontend are protected, ensuring only authenticated users can access them.
-- Protected API Routes: API routes on the backend are also protected, requiring valid JWT tokens for access.
+🔐 **Protected Routing (Frontend & Backend)**:
+Ensuring security, Expensify implements protected routing both on the frontend and backend. This guarantees that only authenticated users with appropriate permissions can access specific routes, enhancing data security.
+
+🔄 **Seamless data fetching using Tan Stack Query**:
+Expensify uses Tan Stack Query to fetch data from the backend. This allows for seamless and efficient data fetching.
+
+💳 **Razorpay payment gateway for upgrading to a pro version with premium features like leaderboard and report generation**:
+Expensify uses Razorpay as its payment gateway. This allows users to upgrade to the pro version and access premium features like the leaderboard and report generation.
+
+📈 **Reports visualized using Recharts**:
+Expensify uses Recharts to visualize reports. This allows for interactive and visually appealing reports.
+
+📊 **Download reports (pro version) as CSV files for monthly or yearly periods, which are also stored in the cloud after generating**:
+Pro users can download their reports as CSV files for monthly or yearly periods. These reports are also stored in the cloud after generating.
+
+📜 **Pagination of Expenses**:
+Expensify provides the ability to paginate expenses, allowing users to view their data in manageable pages.
+
+🔑 **Reset Password Feature**:
+Users can easily reset their passwords through the backend, which utilizes the Nodemailer server for secure password reset processes.
+
+🏆 **Leaderboard (pro version)**:
+Users can see the total expenses of all users in the application, giving a sense of competition and comparison.
+
+📱 **Fully responsive UI using Chakra UI**:
+Expensify has a fully responsive UI using Chakra UI. This means that it looks great on all devices, including mobile devices.
+
+📂 **MongoDB database for storing data**:
+Expensify uses MongoDB to store data. This allows for scalable and flexible data storage.
+
+📚 **Download history for tracking previous downloads**:
+Users can check their previous downloads from the download history page. This allows them to easily track their downloaded reports.
