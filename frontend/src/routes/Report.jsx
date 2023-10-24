@@ -14,7 +14,7 @@ import {
   Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import moment from "moment";
 import React, { useRef, useState } from "react";
@@ -32,6 +32,7 @@ const Report = () => {
   const { verify } = useError();
   const toastRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const queryClient = useQueryClient();
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["user-report", type],
@@ -75,8 +76,11 @@ const Report = () => {
       toast.update(toastRef.current, {
         type: "success",
         isLoading: false,
-        render: "File processed successfully!",
+        render: "File generated successfully!",
         autoClose: 3000,
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["downloads", isOpen], //prevent caching
       });
     },
     onError: (error) => {
@@ -93,6 +97,7 @@ const Report = () => {
 
   return (
     <>
+      <DownloadModal isOpen={isOpen} onClose={onClose} user={user} />
       <Box
         rounded={"lg"}
         bg={"white"}
@@ -155,7 +160,7 @@ const Report = () => {
         mx={"auto"}
         w={["100%", "95%", "90%", "85%", "75%"]}
         maxWidth={"1024px"}
-        my={3}
+        mb={6}
       >
         {data?.length > 0 && <Chart data={data} type={type} />}
       </Box>
@@ -182,7 +187,6 @@ const Report = () => {
           </AlertDescription>
         </Alert>
       )}
-      <DownloadModal isOpen={isOpen} onClose={onClose} user={user} />
     </>
   );
 };

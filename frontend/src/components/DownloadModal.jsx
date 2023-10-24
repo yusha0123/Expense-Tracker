@@ -74,10 +74,6 @@ const DownloadModal = ({ isOpen, onClose, user }) => {
     };
   };
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} size={modalSize}>
       <ModalOverlay />
@@ -85,15 +81,21 @@ const DownloadModal = ({ isOpen, onClose, user }) => {
         <ModalHeader textAlign={"center"}>Download History</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          {(isPending || isError) && (
+          {(isPending || isError || data?.length === 0) && (
             <Center height={"50vh"}>
               {isPending && (
                 <CircularProgress isIndeterminate color="gray.500" />
               )}
-              {isError && (
-                <Alert status="error" rounded={"lg"} width={"fit-content"}>
+              {(isError || data?.length === 0) && (
+                <Alert
+                  status={isError ? "error" : "info"}
+                  rounded={"lg"}
+                  width={"fit-content"}
+                >
                   <AlertIcon />
-                  Something went wrong!
+                  {isError
+                    ? " Something went wrong!"
+                    : "No download records found!"}
                 </Alert>
               )}
             </Center>
