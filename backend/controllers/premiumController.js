@@ -148,7 +148,6 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
     res.setHeader("Content-Type", "text/csv");
     return res.status(200).send(csv);
   } catch (error) {
-    console.log(error);
     res.status(500);
     throw new Error("Something went Wrong!");
   }
@@ -156,12 +155,10 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
 
 const getUserDownloads = asyncHandler(async (req, res, next) => {
   try {
-    setTimeout(async () => {
-      const result = await Download.find({ userId: req.user._id })
-        .select("createdAt url")
-        .sort({ createdAt: -1 });
-      return res.status(200).json(result);
-    }, 3000);
+    const result = await Download.find({ userId: req.user._id })
+      .select("createdAt url")
+      .sort({ createdAt: -1 });
+    return res.status(200).json(result);
   } catch (error) {
     res.status(500);
     throw new Error("Something went wrong!");

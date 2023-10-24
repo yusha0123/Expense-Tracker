@@ -1,47 +1,30 @@
-import React, { useEffect, useRef, useState } from "react";
 import {
-  Box,
-  Button,
-  Divider,
-  Heading,
-  Select,
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useBreakpointValue,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  IconButton,
-  HStack,
-  Tooltip,
-  Badge,
-  Center,
   Alert,
+  AlertDescription,
   AlertIcon,
   AlertTitle,
-  AlertDescription,
+  Badge,
+  Box,
+  Center,
+  Divider,
+  HStack,
+  Heading,
+  IconButton,
+  Select,
+  Tooltip,
   useDisclosure,
-  CircularProgress,
 } from "@chakra-ui/react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import moment from "moment";
+import React, { useRef, useState } from "react";
+import { FaDownload, FaHistory } from "react-icons/fa";
+import { toast } from "react-toastify";
+import Chart from "../components/Chart";
+import DownloadModal from "../components/DownloadModal";
+import { Loading } from "../components/Loading";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { toast } from "react-toastify";
-import { motion } from "framer-motion";
-import { FaDownload, FaHistory } from "react-icons/fa";
-import { Loading } from "../components/Loading";
-import Chart from "../components/Chart";
 
 const Report = () => {
   const [type, setType] = useState("monthly");
@@ -49,12 +32,6 @@ const Report = () => {
   const { verify } = useError();
   const toastRef = useRef();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [downloads, setDownloads] = useState([]);
-  const modalSize = useBreakpointValue({
-    base: "sm",
-    md: "md",
-    lg: "lg",
-  });
 
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["user-report", type],
@@ -107,49 +84,6 @@ const Report = () => {
       verify(error);
     },
   });
-
-  const downloadFile = (url) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-    xhr.responseType = "blob";
-    xhr.send();
-    xhr.onload = function () {
-      if (xhr.status === 200) {
-        const blob = xhr.response;
-        const newBlob = new Blob([blob]);
-        const anchor = document.createElement("a");
-        anchor.href = URL.createObjectURL(newBlob);
-        anchor.download = "Expensify.csv";
-        anchor.click();
-      } else {
-        toast.error("Failed to download file!");
-      }
-    };
-  };
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const fetchDownloads = async () => {
-      try {
-        const { data } = await axios.get(
-          "/api/premium/report/download-history",
-          {
-            headers: {
-              Authorization: `Bearer ${user.token}`,
-            },
-          }
-        );
-        if (data.length == 0) {
-          toast.info("No Previous records found!");
-        } else {
-          setDownloads(data);
-        }
-      } catch (error) {
-        verify(error);
-      }
-    };
-    fetchDownloads();
-  }, [isOpen]);
 
   if (isPending) {
     return <Loading />;
@@ -248,55 +182,7 @@ const Report = () => {
           </AlertDescription>
         </Alert>
       )}
-      <Modal isOpen={isOpen} onClose={onClose} size={modalSize}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader textAlign={"center"}>Download History</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <TableContainer>
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th textAlign={"center"}>#</Th>
-                    <Th textAlign={"center"}>Date</Th>
-                    <Th textAlign={"center"}>Download </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {downloads?.map((item, index) => (
-                    <motion.tr
-                      key={index}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.5, delay: index * 0.1 }}
-                    >
-                      <Td textAlign={"center"}>{index + 1}</Td>
-                      <Td textAlign="center">
-                        {moment(item.createdAt).format(
-                          "MMMM DD, YYYY hh:mm:ss A"
-                        )}
-                      </Td>
-                      <Td textAlign="center">
-                        <IconButton
-                          icon={<FaDownload />}
-                          colorScheme="whatsapp"
-                          onClick={() => downloadFile(item.url)}
-                        />
-                      </Td>
-                    </motion.tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </TableContainer>
-          </ModalBody>
-          <ModalFooter>
-            <Button colorScheme="red" mx={"auto"} onClick={onClose}>
-              Close
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <DownloadModal isOpen={isOpen} onClose={onClose} user={user} />
     </>
   );
 };
