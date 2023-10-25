@@ -9,7 +9,10 @@ const Logo = () => {
   return (
     <Link to={user ? "/dashboard" : "/"}>
       <Text
-        fontSize="2xl"
+        fontSize={{
+          base: "xl",
+          md: "2xl",
+        }}
         as={"b"}
         display={"flex"}
         alignItems={"center"}

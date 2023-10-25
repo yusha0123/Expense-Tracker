@@ -126,7 +126,7 @@ const Report = () => {
               icon={<FaDownload />}
               onClick={() => downloadReport.mutate()}
               colorScheme="messenger"
-              isDisabled={data?.length === 0}
+              isDisabled={data?.length === 0 || downloadReport.isPending}
             />
           </Tooltip>
           <Tooltip label="Download History">

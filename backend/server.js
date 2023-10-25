@@ -18,6 +18,8 @@ app.use(
 
 connectDb();
 
+app.get("/", (req, res, next) => res.send("<h1>Hello World!<h1/>"));
+
 //routes
 app.use("/api/auth", authRoutes);
 app.use("/api/expense", expenseRoutes);

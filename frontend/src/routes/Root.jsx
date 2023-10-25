@@ -5,13 +5,13 @@ import {
   Image,
   Heading,
   Button,
-  VStack,
   Text,
+  GridItem,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import Logo from "../components/Logo";
-import HeroImage from "../assets/Landing_image.png";
+import HeroImage from "../assets/Hero-image.webp";
 
 const Root = () => {
   const navigate = useNavigate();
@@ -22,79 +22,114 @@ const Root = () => {
   };
 
   return (
-    <section style={{ overflowX: "hidden" }}>
+    <section style={{ overflowX: "hidden", width: "100%", height: "100vh" }}>
       <Box as="nav" boxShadow="md">
         <Box
           display="flex"
           justifyContent="space-between"
           alignItems="center"
           px={{
-            base: "3",
-            lg: "6",
+            base: "4",
+            md: "5",
+            lg: 6,
           }}
           py={{
-            base: "3",
-            lg: "4",
+            base: "2.5",
+            lg: "3",
+            xl: "4",
           }}
         >
           <Logo />
-          <Button colorScheme="linkedin" onClick={() => navigate("/auth")}>
+          <Button
+            colorScheme="linkedin"
+            onClick={() => navigate("/auth")}
+            size={{ base: "sm", md: "md" }}
+          >
             Sign In / Login
           </Button>
         </Box>
       </Box>
       <Box
-        sx={{ marginTop: 5 }}
-        display="flex"
-        alignItems="center"
-        width="90%"
-        height="100%"
         mx="auto"
-        justifyContent="center"
+        width={{
+          base: "95%",
+          md: "90%",
+          lg: "85%",
+        }}
+        maxW={"1024px"}
+        mt={6}
       >
         <Grid
           templateColumns={{ base: "1fr", md: "1fr 1fr" }}
-          gap={6}
+          gap={{
+            base: 0.5,
+            md: 4,
+            lg: 6,
+          }}
           justifyContent="center"
           alignItems="center"
         >
-          <motion.div
-            variants={variants}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 1, delay: 0.2 }}
-          >
-            <VStack gap={5}>
+          <GridItem>
+            <motion.div
+              variants={variants}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 1, delay: 0.2 }}
+            >
               <Heading
-                textAlign="center"
+                textAlign={{
+                  base: "center",
+                  lg: "left",
+                }}
                 fontSize={{
                   base: "2xl",
                   md: "3xl",
                   lg: "4xl",
                 }}
+                mb={{
+                  base: 2,
+                  md: 4,
+                  lg: 6,
+                }}
               >
                 Welcome to Expensify!
               </Heading>
               <Text
-                textAlign="center"
+                textAlign={{
+                  base: "center",
+                  lg: "left",
+                }}
                 fontSize={{
-                  base: "xl",
-                  md: "2xl",
-                  lg: "3xl",
+                  base: "lg",
+                  md: "xl",
+                  lg: "2xl",
                 }}
               >
-                Track your expenses and save money with Ease.
+                Keep track of your expenses easily and manage your finances
+                effectively with our user-friendly expense tracker.
               </Text>
-            </VStack>
-          </motion.div>
-          <motion.div
-            variants={variants}
-            initial="hidden"
-            animate="visible"
-            transition={{ duration: 1, delay: 0.4 }}
-          >
-            <Image src={HeroImage} alt="Hero image" objectFit="cover" />
-          </motion.div>
+            </motion.div>
+          </GridItem>
+          <GridItem>
+            <motion.div
+              variants={variants}
+              initial="hidden"
+              animate="visible"
+              transition={{ duration: 1, delay: 0.4 }}
+            >
+              <Image
+                src={HeroImage}
+                alt="Hero image"
+                objectFit="cover"
+                width="auto"
+                height={{
+                  base: "24rem",
+                  md: "28rem",
+                }}
+                mx={"auto"}
+              />
+            </motion.div>
+          </GridItem>
         </Grid>
       </Box>
     </section>

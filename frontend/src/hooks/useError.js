@@ -9,7 +9,7 @@ export const useError = () => {
     if (error?.response?.status == 401) {
       toast.error("Session expired!");
       logout();
-      navigate("/auth");
+      navigate("/auth?action=login");
     } else {
       toast.error("Something went wrong!");
     }

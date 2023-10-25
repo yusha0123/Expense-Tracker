@@ -153,12 +153,20 @@ const Dashboard = () => {
                 isRequired
                 type="number"
                 {...register("amount")}
+                size={{
+                  base: "sm",
+                  md: "md",
+                }}
                 placeholder="Amount &#x20B9;"
               />
               <Select
                 placeholder="Select Category"
                 isRequired
                 {...register("category")}
+                size={{
+                  base: "sm",
+                  md: "md",
+                }}
               >
                 <option value="Mobile & Computers">Mobile & Computers</option>
                 <option value="Books & Education">Books & Education</option>
@@ -182,11 +190,19 @@ const Dashboard = () => {
                 isRequired
                 placeholder={"Description"}
                 {...register("description")}
+                size={{
+                  base: "sm",
+                  md: "md",
+                }}
               />
               <Button
                 colorScheme="teal"
                 minWidth={"150px"}
                 width={"40%"}
+                size={{
+                  base: "sm",
+                  md: "md",
+                }}
                 type="submit"
                 isLoading={createExpense.isPending}
               >

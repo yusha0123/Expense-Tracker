@@ -34,11 +34,12 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { BiSolidShow, BiSolidHide } from "react-icons/bi";
 import { AiOutlineMail } from "react-icons/ai";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { useLocation } from "react-router-dom";
 import { useSignup } from "../hooks/useSignup";
 import { useLogin } from "../hooks/useLogin";
 import Logo from "../components/Logo";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
 
 const Auth = () => {
   const [showPass1, setShowPass1] = useState(false);
@@ -50,6 +51,9 @@ const Auth = () => {
   const resetPass = useForm();
   const login = useLogin();
   const signUp = useSignup();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const activateLoginPanel = queryParams.get("action") === "login";
 
   const handleSignup = (data) => {
     signUp.mutate(data);
@@ -94,12 +98,21 @@ const Auth = () => {
           w={{ base: "90%", md: "50%", lg: "30%" }}
         >
           <ScaleFade initialScale={0.7} in={true}>
-            <Tabs isFitted variant="soft-rounded" colorScheme="green">
+            <Tabs
+              isFitted
+              variant="soft-rounded"
+              colorScheme="green"
+              defaultIndex={activateLoginPanel ? 1 : 0}
+            >
               <TabList mb={"1em"}>
                 <Tab>Sign Up</Tab>
                 <Tab>Login</Tab>
               </TabList>
-              <Divider orientation="horizontal" borderWidth="3px" />
+              <Divider
+                orientation="horizontal"
+                borderWidth="3px"
+                rounded={"lg"}
+              />
               <TabPanels>
                 <TabPanel>
                   {/* Signup Panel */}
@@ -216,6 +229,7 @@ const Auth = () => {
                         onClick={() => {
                           setOpenModal(true);
                         }}
+                        size={"sm"}
                       >
                         Forgot Password ?
                       </Button>

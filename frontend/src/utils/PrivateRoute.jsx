@@ -18,7 +18,7 @@ export const PrivateRoute = ({ user, isPremiumRoute }) => {
     if (user && !user.isPremium) {
       return <Navigate to={"/dashboard"} replace />;
     }
-    return <Navigate to={"/auth"} replace />;
+    return <Navigate to={"/auth?action=login"} replace />;
   } else {
     if (user) {
       return (
@@ -30,6 +30,6 @@ export const PrivateRoute = ({ user, isPremiumRoute }) => {
         </>
       );
     }
-    return <Navigate to={"/auth"} replace />;
+    return <Navigate to={"/auth?action=login"} replace />;
   }
 };
