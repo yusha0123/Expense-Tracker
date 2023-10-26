@@ -106,7 +106,7 @@ const Report = () => {
           p={3}
           my={5}
           mx={"auto"}
-          w={{ base: "90%", md: "60%", lg: "40%" }}
+          w={["90%", "80%", "60%", "40%"]}
           maxWidth={"600px"}
         >
           <Heading textAlign={"center"} as={"h3"} mb={3}>
@@ -160,7 +160,7 @@ const Report = () => {
         {data?.length > 0 && (
           <Box
             maxW={"1180px"}
-            w={["100%", "95%", "90%", "80%"]}
+            w={["98%", "95%", "90%", "80%"]}
             mx={"auto"}
             height={"auto"}
           >

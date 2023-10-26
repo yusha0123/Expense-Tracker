@@ -47,12 +47,10 @@ const Chart = ({ data, type }) => {
       tooltip: {
         mode: "index",
         intersect: false,
-        position: "nearest",
       },
       hover: {
         mode: "index",
         intersect: false,
-        position: "nearest",
       },
     },
   };

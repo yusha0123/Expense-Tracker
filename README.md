@@ -17,7 +17,7 @@ Expensify uses Tan Stack Query to fetch data from the backend. This allows for s
 Expensify uses Razorpay as its payment gateway. This allows users to upgrade to the pro version and access premium features like the leaderboard and report generation.
 
 📈 **Reports visualized using Recharts**:
-Expensify uses Recharts to visualize reports. This allows for interactive and visually appealing reports.
+Expensify uses Chart Js 2 to visualize reports. This allows for interactive and visually appealing reports.
 
 📊 **Download reports (pro version) as CSV files for monthly or yearly periods, which are also stored in the cloud after generating**:
 Pro users can download their reports as CSV files for monthly or yearly periods. These reports are also stored in the cloud after generating.
