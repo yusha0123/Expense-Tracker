@@ -95,7 +95,14 @@ const Auth = () => {
           boxShadow={"lg"}
           py={8}
           px={5}
-          w={{ base: "90%", md: "50%", lg: "30%" }}
+          maxW={{
+            sm: "400px",
+            xl: "576px",
+          }}
+          minW={{
+            lg: "350px",
+          }}
+          w={["90%", "80%", "50%", "30%"]}
         >
           <ScaleFade initialScale={0.7} in={true}>
             <Tabs
@@ -225,18 +232,20 @@ const Auth = () => {
                       <Button
                         colorScheme="teal"
                         variant="link"
-                        mt={2}
                         onClick={() => {
                           setOpenModal(true);
                         }}
-                        size={"sm"}
+                        size={{
+                          base: "sm",
+                          xl: "md",
+                        }}
                       >
                         Forgot Password ?
                       </Button>
                       <Button
                         colorScheme="messenger"
                         type="submit"
-                        mt={4}
+                        mt={2}
                         isLoading={login.isPending}
                         loadingText="Please wait..."
                       >

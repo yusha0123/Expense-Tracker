@@ -11,70 +11,94 @@ const createToken = require("../utils/tokenGenerator");
 let emailTemplate = require("../views/emailTemplate");
 
 const createUser = asyncHandler(async (req, res, next) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    res.status(400);
-    throw new Error("All fields are Mandatory!");
+  try {
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are Mandatory!",
+      });
+    }
+    //check if user already exists
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return res.status(400).json({
+        success: false,
+        message: "User Already Exists!",
+      });
+    }
+    //check if email or password is correct
+    if (!validator.isEmail(email)) {
+      return res.status(400).json({
+        success: false,
+        message: "Please use a Valid Email!",
+      });
+    }
+    if (!validator.isStrongPassword(password)) {
+      return res.status(400).json({
+        success: false,
+        message: "Password is too weak!",
+      });
+    }
+    //Signup the user
+    const hashedPassword = await encryptPassword(password);
+    const result = await User.create({
+      name,
+      email,
+      password: hashedPassword,
+    });
+    const token = createToken(result._id);
+    return res.status(201).json({
+      success: true,
+      message: "User Registered Successfully!",
+      token,
+      email,
+      isPremium: false,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Internal Server Error!");
   }
-  //check if user already exists
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    res.status(400);
-    throw new Error("User Already Exists!");
-  }
-  //check if email or password is correct
-  if (!validator.isEmail(email)) {
-    res.status(400);
-    throw new Error("Please use a Valid Email!");
-  }
-  if (!validator.isStrongPassword(password)) {
-    res.status(400);
-    throw new Error("Password is not Strong Enough!");
-  }
-  //Signup the user
-  const hashedPassword = await encryptPassword(password);
-  const result = await User.create({
-    name,
-    email,
-    password: hashedPassword,
-  });
-  const token = createToken(result._id);
-  res.status(201).json({
-    success: true,
-    message: "User Registered Successfully!",
-    token,
-    email,
-    isPremium: false,
-  });
 });
 
 const login = asyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
-  if (!email || !password) {
-    res.status(400);
-    throw new Error("All fields are Mandatory!");
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields are Mandatory!",
+      });
+    }
+    //check if user exists
+    const result = await User.findOne({ email });
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "User doesn't exists!",
+      });
+    }
+    //check if provided password is correct
+    const isValidUser = await isCorrectPass(result.password, password);
+    if (!isValidUser) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid Credentials!",
+      });
+    }
+    //login the user
+    const token = createToken(result._id);
+    return res.status(200).json({
+      success: true,
+      message: "User Logged in Successfully!",
+      token,
+      email,
+      isPremium: result.isPremium,
+    });
+  } catch (error) {
+    res.status(500);
+    throw new Error("Internal Server Error!");
   }
-  //check if user exists
-  const result = await User.findOne({ email });
-  if (!result) {
-    res.status(404);
-    throw new Error("User doesn't Exists!");
-  }
-  //check if provided password is correct
-  const isValidUser = await isCorrectPass(result.password, password);
-  if (!isValidUser) {
-    res.status(401);
-    throw new Error("Invalid Credentials!");
-  }
-  //login the user
-  const token = createToken(result._id);
-  res.status(200).json({
-    success: true,
-    message: "User Logged in Successfully!",
-    token,
-    email,
-    isPremium: result.isPremium,
-  });
 });
 
 const resetPassword = asyncHandler(async (req, res, next) => {

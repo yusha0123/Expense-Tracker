@@ -23,7 +23,7 @@ const Root = () => {
 
   return (
     <section style={{ overflowX: "hidden", width: "100%", height: "100vh" }}>
-      <Box as="nav" boxShadow="md">
+      <Box as="nav" boxShadow="sm" zIndex={10}>
         <Box
           display="flex"
           justifyContent="space-between"

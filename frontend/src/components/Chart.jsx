@@ -1,15 +1,8 @@
+import { Chart as ReactChart, registerables } from "chart.js";
 import moment from "moment";
 import React from "react";
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
+import { Line } from "react-chartjs-2";
+ReactChart.register(...registerables);
 
 const Chart = ({ data, type }) => {
   const formattedData = data.map((item) => {
@@ -23,33 +16,48 @@ const Chart = ({ data, type }) => {
     };
   });
 
-  return (
-    <ResponsiveContainer width="100%" height={300}>
-      <AreaChart
-        width={500}
-        height={300}
-        data={formattedData}
-        margin={{
-          top: 5,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="createdAt" />
-        <YAxis dataKey="Amount" />
-        <Tooltip />
-        <Legend />
-        <Area
-          type="monotone"
-          dataKey="Amount"
-          stroke="#8884d8"
-          activeDot={{ r: 8 }}
-        />
-      </AreaChart>
-    </ResponsiveContainer>
-  );
+  const labels = formattedData.map((item) => item.createdAt);
+  const amounts = formattedData.map((item) => item.Amount);
+
+  const chartData = {
+    labels: labels,
+    datasets: [
+      {
+        label: "Amount",
+        data: amounts,
+        fill: true,
+        backgroundColor: "rgba(75,192,192,0.2)",
+        borderColor: "rgba(75,192,192,1)",
+        borderWidth: 2,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: {
+        position: "bottom",
+      },
+      title: {
+        display: true,
+        text: "Visualize Your Expenses",
+      },
+      tooltip: {
+        mode: "index",
+        intersect: false,
+        position: "nearest",
+      },
+      hover: {
+        mode: "index",
+        intersect: false,
+        position: "nearest",
+      },
+    },
+  };
+
+  return <Line options={options} data={chartData} />;
 };
 
 export default Chart;

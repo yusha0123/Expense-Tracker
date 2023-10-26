@@ -256,6 +256,7 @@ const Dashboard = () => {
                         icon={<AiFillDelete />}
                         colorScheme="red"
                         onClick={() => handleClick(item._id)}
+                        isDisabled={deleteExpense.isPending}
                       />
                     </Tooltip>
                   </Td>
