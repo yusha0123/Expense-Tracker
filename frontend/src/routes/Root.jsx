@@ -57,7 +57,10 @@ const Root = () => {
           lg: "85%",
         }}
         maxW={"1024px"}
-        mt={6}
+        mt={{
+          base: "52px",
+          md: "64px",
+        }}
       >
         <Grid
           templateColumns={{ base: "1fr", md: "1fr 1fr" }}
@@ -111,24 +114,15 @@ const Root = () => {
             </motion.div>
           </GridItem>
           <GridItem>
-            <motion.div
+            <motion.img
+              src={HeroImage}
+              className="hero-image"
+              alt="Hero image"
               variants={variants}
               initial="hidden"
               animate="visible"
               transition={{ duration: 1, delay: 0.4 }}
-            >
-              <Image
-                src={HeroImage}
-                alt="Hero image"
-                objectFit="cover"
-                width="auto"
-                height={{
-                  base: "24rem",
-                  md: "28rem",
-                }}
-                mx={"auto"}
-              />
-            </motion.div>
+            />
           </GridItem>
         </Grid>
       </Box>

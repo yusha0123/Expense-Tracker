@@ -28,6 +28,7 @@ import {
   ModalCloseButton,
   useBreakpointValue,
   ScaleFade,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -44,7 +45,7 @@ import Logo from "../components/Logo";
 const Auth = () => {
   const [showPass1, setShowPass1] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
+  const { isOpen, onClose, onOpen } = useDisclosure();
   const modalSize = useBreakpointValue({ base: "sm", md: "md", xl: "lg" });
   const loginForm = useForm();
   const signUpForm = useForm();
@@ -79,16 +80,13 @@ const Auth = () => {
     },
     onSettled: () => {
       resetPass.reset();
-      setOpenModal(false);
+      onClose();
     },
   });
 
   return (
     <>
       <Flex minH={"100vh"} align={"center"} justify={"center"} bg="gray.200">
-        <Box position={"fixed"} top={3}>
-          <Logo />
-        </Box>
         <Box
           rounded={"lg"}
           bg="white"
@@ -232,9 +230,7 @@ const Auth = () => {
                       <Button
                         colorScheme="teal"
                         variant="link"
-                        onClick={() => {
-                          setOpenModal(true);
-                        }}
+                        onClick={onOpen}
                         size={{
                           base: "sm",
                           xl: "md",
@@ -260,13 +256,7 @@ const Auth = () => {
         </Box>
       </Flex>
       {/* Reset password Modal */}
-      <Modal
-        isOpen={openModal}
-        onClose={() => {
-          setOpenModal(false);
-        }}
-        size={modalSize}
-      >
+      <Modal isOpen={isOpen} onClose={onClose} size={modalSize}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader textAlign="center">Reset Password</ModalHeader>
@@ -297,14 +287,7 @@ const Auth = () => {
           </ModalBody>
           <Divider />
           <ModalFooter>
-            <Button
-              colorScheme="red"
-              mr={3}
-              onClick={() => {
-                setOpenModal(false);
-              }}
-              mx="auto"
-            >
+            <Button colorScheme="red" mr={3} onClick={onClose} mx="auto">
               Cancel
             </Button>
           </ModalFooter>

@@ -28,3 +28,19 @@ canvas {
   width: 100% !important;
   height: 100% !important;
 }
+
+.hero-image {
+  margin: 0 auto;
+  max-width: 100%;
+  object-fit: cover;
+  width: auto;
+  height: 22rem;
+
+  @media screen and (min-width: 767px) {
+    height: 25rem;
+  }
+
+  @media screen and (min-width: 1440px) {
+    height: 28rem;
+  }
+}
