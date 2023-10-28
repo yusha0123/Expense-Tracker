@@ -22,8 +22,23 @@ const Root = () => {
   };
 
   return (
-    <section style={{ overflowX: "hidden", width: "100%", height: "100vh" }}>
-      <Box as="nav" boxShadow="sm" zIndex={10}>
+    <section
+      style={{
+        overflowX: "hidden",
+        width: "100%",
+        height: "100vh",
+        position: "relative",
+      }}
+    >
+      <Box
+        as="nav"
+        boxShadow="sm"
+        zIndex={10}
+        position={"absolute"}
+        top={0}
+        right={0}
+        left={0}
+      >
         <Box
           display="flex"
           justifyContent="space-between"
@@ -57,10 +72,9 @@ const Root = () => {
           lg: "85%",
         }}
         maxW={"1024px"}
-        mt={{
-          base: "52px",
-          md: "64px",
-        }}
+        height={"100%"}
+        display={"flex"}
+        alignItems={"center"}
       >
         <Grid
           templateColumns={{ base: "1fr", md: "1fr 1fr" }}

@@ -1,40 +1,40 @@
 import {
-  Box,
-  Button,
-  Heading,
-  Input,
-  VStack,
-  Select,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
   AlertDialog,
   AlertDialogBody,
+  AlertDialogContent,
   AlertDialogFooter,
   AlertDialogHeader,
-  AlertDialogContent,
   AlertDialogOverlay,
-  HStack,
-  Tooltip,
-  ScaleFade,
-  Spinner,
+  Box,
+  Button,
   Center,
+  HStack,
+  Heading,
+  IconButton,
+  Input,
+  ScaleFade,
+  Select,
+  Spinner,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  VStack,
 } from "@chakra-ui/react";
-import React, { useState, useRef } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { motion } from "framer-motion";
 import moment from "moment";
-import axios from "axios";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useError } from "../hooks/useError";
 import { AiFillDelete } from "react-icons/ai";
-import { IconButton } from "@chakra-ui/react";
-import { GrCaretPrevious, GrCaretNext } from "react-icons/gr";
+import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
 import { useAuthContext } from "../hooks/useAuthContext";
+import { useError } from "../hooks/useError";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const { user } = useAuthContext();
@@ -101,6 +101,9 @@ const Dashboard = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ["user-expenses", { currentPage, rows }],
+      });
+      toast.info("Expense Deleted!", {
+        autoClose: 2000,
       });
     },
     onError: (error) => {
@@ -251,34 +254,28 @@ const Dashboard = () => {
                   <Td textAlign={"center"}>{item.category}</Td>
                   <Td textAlign={"center"}>{item.description}</Td>
                   <Td textAlign={"center"}>
-                    <Tooltip label="Delete Expense" hasArrow>
-                      <IconButton
-                        icon={<AiFillDelete />}
-                        colorScheme="red"
-                        onClick={() => handleClick(item._id)}
-                        isDisabled={deleteExpense.isPending}
-                      />
-                    </Tooltip>
+                    <IconButton
+                      icon={<AiFillDelete />}
+                      colorScheme="red"
+                      onClick={() => handleClick(item._id)}
+                      isDisabled={deleteExpense.isPending}
+                    />
                   </Td>
                 </motion.tr>
               ))}
             </Tbody>
           </Table>
           <HStack justifyContent={"center"} my={3} spacing={4}>
-            <Tooltip label="Previous">
-              <IconButton
-                icon={<GrCaretPrevious />}
-                onClick={handlePreviousPage}
-                isDisabled={currentPage === 1}
-              />
-            </Tooltip>
-            <Tooltip label="Next">
-              <IconButton
-                icon={<GrCaretNext />}
-                onClick={handleNextPage}
-                isDisabled={currentPage === totalPages}
-              />
-            </Tooltip>
+            <IconButton
+              icon={<GrCaretPrevious />}
+              onClick={handlePreviousPage}
+              isDisabled={currentPage === 1}
+            />
+            <IconButton
+              icon={<GrCaretNext />}
+              onClick={handleNextPage}
+              isDisabled={currentPage === totalPages}
+            />
             <Box>
               Page {currentPage} of {totalPages}
             </Box>

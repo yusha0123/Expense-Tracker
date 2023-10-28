@@ -46,7 +46,13 @@ const Leaderboard = () => {
           mx={"auto"}
           my={10}
         >
-          <Table variant="simple">
+          <Table
+            variant="simple"
+            size={{
+              base: "sm",
+              md: "md",
+            }}
+          >
             <Thead>
               <Tr>
                 <Th textAlign={"center"}>Rank</Th>

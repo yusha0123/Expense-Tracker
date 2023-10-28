@@ -109,7 +109,15 @@ const Report = () => {
           w={["90%", "80%", "60%", "40%"]}
           maxWidth={"600px"}
         >
-          <Heading textAlign={"center"} as={"h3"} mb={3}>
+          <Heading
+            textAlign={"center"}
+            as={"h3"}
+            mb={3}
+            size={{
+              base: "lg",
+              md: "lg",
+            }}
+          >
             Financial Snapshot
           </Heading>
           <Divider />
@@ -117,6 +125,10 @@ const Report = () => {
             <Select
               width={"40%"}
               value={type}
+              size={{
+                base: "sm",
+                md: "md",
+              }}
               onChange={(e) => setType(e.target.value)}
             >
               <option value="monthly">Monthly</option>
@@ -127,6 +139,10 @@ const Report = () => {
                 icon={<FaDownload />}
                 onClick={() => downloadReport.mutate()}
                 colorScheme="messenger"
+                size={{
+                  base: "sm",
+                  md: "md",
+                }}
                 isDisabled={data?.length === 0 || downloadReport.isPending}
               />
             </Tooltip>
@@ -135,6 +151,10 @@ const Report = () => {
                 icon={<FaHistory />}
                 onClick={onOpen}
                 colorScheme="purple"
+                size={{
+                  base: "sm",
+                  md: "md",
+                }}
               />
             </Tooltip>
           </HStack>
@@ -142,7 +162,7 @@ const Report = () => {
           <Center>
             <Badge
               colorScheme="red"
-              fontSize="0.9em"
+              fontSize={{ base: "0.7em", md: "0.9em" }}
               my={2}
               p={1.5}
               textTransform={"none"}
