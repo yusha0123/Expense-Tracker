@@ -1,8 +1,28 @@
-import { Chart as ReactChart, registerables } from "chart.js";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend,
+} from "chart.js";
 import moment from "moment";
 import React from "react";
 import { Line } from "react-chartjs-2";
-ReactChart.register(...registerables);
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend
+);
 
 const Chart = ({ data, type }) => {
   const formattedData = data.map((item) => {
@@ -20,7 +40,7 @@ const Chart = ({ data, type }) => {
   const amounts = formattedData.map((item) => item.Amount);
 
   const chartData = {
-    labels: labels,
+    labels,
     datasets: [
       {
         label: "Amount",
@@ -35,22 +55,13 @@ const Chart = ({ data, type }) => {
 
   const options = {
     responsive: true,
-    maintainAspectRatio: true,
     plugins: {
       legend: {
-        position: "bottom",
+        position: "top",
       },
       title: {
         display: true,
         text: "Visualize Your Expenses",
-      },
-      tooltip: {
-        mode: "index",
-        intersect: false,
-      },
-      hover: {
-        mode: "index",
-        intersect: false,
       },
     },
   };

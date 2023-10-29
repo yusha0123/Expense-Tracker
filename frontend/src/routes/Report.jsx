@@ -106,8 +106,8 @@ const Report = () => {
           p={3}
           my={5}
           mx={"auto"}
-          w={["90%", "80%", "60%", "40%"]}
-          maxWidth={"600px"}
+          w={["90%", "70%", "60%", "40%", "35%"]}
+          maxWidth={"500px"}
         >
           <Heading
             textAlign={"center"}
@@ -178,14 +178,12 @@ const Report = () => {
           </Center>
         </Box>
         {data?.length > 0 && (
-          <Box
-            maxW={"1180px"}
-            w={["98%", "95%", "90%", "80%"]}
-            mx={"auto"}
-            height={"auto"}
-          >
-            <Chart data={data} type={type} />
-          </Box>
+          <>
+            <div className="chart-container">
+              <Chart data={data} type={type} />
+              <div className="spacer" />
+            </div>
+          </>
         )}
         {data?.length === 0 && (
           <Alert

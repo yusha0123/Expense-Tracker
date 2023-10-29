@@ -25,8 +25,7 @@ body,
 }
 
 canvas {
-  width: 100% !important;
-  height: 100% !important;
+  margin: 0 auto;
 }
 
 .hero-image {
@@ -42,5 +41,24 @@ canvas {
 
   @media screen and (min-width: 1440px) {
     height: 28rem;
+  }
+}
+
+.chart-container {
+  position: relative;
+  max-width: 1180px;
+  height: 50vh;
+  margin: 0 auto;
+  @media screen and (min-width: 767px) {
+    height: 70vh;
+  }
+}
+
+.spacer {
+  display: none;
+  @media screen and (min-width: 660px) {
+    display: block;
+    height: 3rem;
+    width: auto;
   }
 }

@@ -36,6 +36,8 @@ import { useUpgrade } from "../hooks/useUpgrade";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Logo from "./Logo";
+import { TbReportAnalytics } from "react-icons/tb";
+import { MdOutlineLeaderboard } from "react-icons/md";
 import { useError } from "../hooks/useError";
 
 export default function Navbar() {
@@ -98,7 +100,13 @@ export default function Navbar() {
     rzp.open();
   };
 
-  const NavLink = ({ children, showLock, showCrown }) => (
+  const NavLink = ({
+    children,
+    showLock,
+    showCrown,
+    showReport,
+    showLeaderBoard,
+  }) => (
     <Box
       px={2}
       py={1}
@@ -116,6 +124,8 @@ export default function Navbar() {
       {children}
       {showLock && <Icon as={AiOutlineLock} />}
       {showCrown && <Icon as={PiCrownBold} ml={1} />}
+      {showReport && <Icon as={TbReportAnalytics} ml={1} />}
+      {showLeaderBoard && <Icon as={MdOutlineLeaderboard} ml={1} />}
     </Box>
   );
 
@@ -129,7 +139,7 @@ export default function Navbar() {
               <HStack alignItems={"center"} spacing={8}>
                 <NavLink showLock={user.isPremium == false}>Reports</NavLink>
                 <NavLink showLock={user.isPremium == false}>
-                  Leaderboard
+                  LeaderBoard
                 </NavLink>
                 {!user.isPremium && (
                   <NavLink showCrown={true}>Buy Premium</NavLink>
@@ -205,11 +215,17 @@ export default function Navbar() {
                       )}
                     </Box>
                     <Divider />
-                    <NavLink showLock={user.isPremium == false}>
+                    <NavLink
+                      showLock={!user.isPremium}
+                      showReport={user.isPremium}
+                    >
                       Reports
                     </NavLink>
-                    <NavLink showLock={user.isPremium == false}>
-                      Leaderboard
+                    <NavLink
+                      showLock={!user.isPremium}
+                      showLeaderBoard={user.isPremium}
+                    >
+                      LeaderBoard
                     </NavLink>
                     {!user.isPremium && (
                       <NavLink showCrown={true}>Buy Premium</NavLink>

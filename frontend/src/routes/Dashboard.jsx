@@ -139,12 +139,15 @@ const Dashboard = () => {
         <Box
           rounded={"lg"}
           bg={"white"}
-          boxShadow={"md"}
+          boxShadow={"base"}
           p={6}
           my={5}
           mx={"auto"}
           w={["95%", "85%", "60%", "40%"]}
-          maxWidth={"767px"}
+          maxWidth={{
+            sm: "400px",
+            md: "767px",
+          }}
         >
           <Heading fontSize="2xl" mb={3} textAlign={"center"}>
             Add your Expense
@@ -270,9 +273,17 @@ const Dashboard = () => {
               icon={<GrCaretPrevious />}
               onClick={handlePreviousPage}
               isDisabled={currentPage === 1}
+              size={{
+                base: "sm",
+                xl: "md",
+              }}
             />
             <IconButton
               icon={<GrCaretNext />}
+              size={{
+                base: "sm",
+                xl: "md",
+              }}
               onClick={handleNextPage}
               isDisabled={currentPage === totalPages}
             />
