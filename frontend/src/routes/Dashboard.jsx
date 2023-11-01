@@ -23,6 +23,7 @@ import {
   Thead,
   Tr,
   VStack,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
@@ -35,14 +36,17 @@ import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
 import { toast } from "react-toastify";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { user } = useAuthContext();
   const queryClient = useQueryClient();
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
+  const { onClose, onOpen, isOpen } = useDisclosure();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const queryParams = new URLSearchParams(location.search);
+  const currentPage = parseInt(queryParams.get("page")) || 1;
   const [dataId, setDataId] = useState(null);
-  const [alertOpen, setAlertOpen] = useState(false);
   const [rows, setRows] = useState(
     JSON.parse(localStorage.getItem("rows")) || 10
   );
@@ -61,11 +65,11 @@ const Dashboard = () => {
           },
         }
       );
-      setCurrentPage(data.currentPage);
-      setTotalPages(data.totalPages);
+      navigate(`/dashboard?page=${data.currentPage}&limit=${rows}`);
       return data;
     },
   });
+
   if (isError) {
     verify(error);
   }
@@ -91,7 +95,7 @@ const Dashboard = () => {
 
   const deleteExpense = useMutation({
     mutationFn: () => {
-      setAlertOpen(false);
+      onClose();
       return axios.delete(`/api/expense/${dataId}`, {
         headers: {
           Authorization: `Bearer ${user.token}`,
@@ -113,28 +117,60 @@ const Dashboard = () => {
 
   const handleClick = (id) => {
     setDataId(id);
-    setAlertOpen(true);
+    onOpen();
   };
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
+      navigate(`/dashboard?page=${currentPage - 1}&limit=${rows}`);
     }
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
+    if (currentPage < data?.totalPages) {
+      navigate(`/dashboard?page=${currentPage + 1}&limit=${rows}`);
     }
   };
 
   const handleRowChange = (e) => {
-    setRows(e.target.value);
-    localStorage.setItem("rows", JSON.stringify(e.target.value));
+    const newRowValue = e.target.value;
+    setRows(newRowValue);
+    localStorage.setItem("rows", JSON.stringify(newRowValue));
+    const totalItems = data?.totalItems;
+    const newTotalPages = Math.ceil(totalItems / newRowValue);
+    let newPage = Math.min(currentPage, newTotalPages);
+    if (currentPage > newTotalPages) {
+      newPage = newTotalPages;
+    }
+    navigate(`/dashboard?page=${newPage}&rows=${newRowValue}`);
   };
 
   return (
     <>
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Expense
+            </AlertDialogHeader>
+            <AlertDialogBody>
+              Are you sure? You can't undo this action afterwards.
+            </AlertDialogBody>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={deleteExpense.mutate} ml={3}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
       <ScaleFade initialScale={0.9} in={true}>
         <Box
           rounded={"lg"}
@@ -226,9 +262,10 @@ const Dashboard = () => {
       {data?.expenses?.length > 0 && (
         <TableContainer
           boxShadow={"md"}
-          w={{ base: "90%", md: "75%", lg: "60%" }}
+          w={{ base: "90%", md: "80%", lg: "60%" }}
           mx={"auto"}
-          my={10}
+          maxW={"1180px"}
+          my={5}
         >
           <Table variant="striped" size={"sm"} colorScheme="blackAlpha">
             <Thead>
@@ -285,10 +322,10 @@ const Dashboard = () => {
                 xl: "md",
               }}
               onClick={handleNextPage}
-              isDisabled={currentPage === totalPages}
+              isDisabled={currentPage === data?.totalPages}
             />
             <Box>
-              Page {currentPage} of {totalPages}
+              Page {currentPage} of {data?.totalPages}
             </Box>
             <Select
               size="sm"
@@ -307,30 +344,13 @@ const Dashboard = () => {
           </HStack>
         </TableContainer>
       )}
-      <AlertDialog
-        isOpen={alertOpen}
-        leastDestructiveRef={cancelRef}
-        onClose={() => setAlertOpen(false)}
-      >
-        <AlertDialogOverlay>
-          <AlertDialogContent>
-            <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Expense
-            </AlertDialogHeader>
-            <AlertDialogBody>
-              Are you sure? You can't undo this action afterwards.
-            </AlertDialogBody>
-            <AlertDialogFooter>
-              <Button ref={cancelRef} onClick={() => setAlertOpen(false)}>
-                Cancel
-              </Button>
-              <Button colorScheme="red" onClick={deleteExpense.mutate} ml={3}>
-                Delete
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialogOverlay>
-      </AlertDialog>
+      {data?.expenses?.length > 0 && (
+        <div
+          style={{
+            height: "0.5rem",
+          }}
+        />
+      )}
     </>
   );
 };

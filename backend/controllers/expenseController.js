@@ -68,10 +68,11 @@ const getUserExpenses = asyncHandler(async (req, res, next) => {
 
     const totalPages = Math.ceil(count / perPage);
 
-    res.json({
+    res.status(200).json({
       expenses,
       currentPage: page,
       totalPages,
+      totalItems: count,
     });
   } catch (error) {
     res.status(500);

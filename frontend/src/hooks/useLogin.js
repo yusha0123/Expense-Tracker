@@ -20,8 +20,5 @@ export const useLogin = () => {
         payload: user,
       });
     },
-    onError: (error) => {
-      console.log(error);
-    },
   });
 };
