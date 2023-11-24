@@ -120,14 +120,20 @@ const resetPassword = asyncHandler(async (req, res, next) => {
         message: "User not found!",
       });
     }
+    await ResetPassword.deleteMany(
+      {
+        userId: user._id,
+      },
+      session
+    ); //delete all previous sessions/request of reset password
 
     const token = uuidv4();
     const serverAddress = process.env.SERVER_ADDRESS;
-    emailTemplate = emailTemplate.replace("{UUID_PLACEHOLDER}", token); // Adding a dynamic token
+    emailTemplate = emailTemplate.replace("{UUID_PLACEHOLDER}", token);
     emailTemplate = emailTemplate.replace(
       "{SERVER_ADDRESS_PLACEHOLDER}",
       serverAddress
-    ); // Adding a dynamic server address
+    );
 
     await ResetPassword.create(
       [
@@ -180,7 +186,7 @@ const validateToken = asyncHandler(async (req, res, next) => {
   res.sendFile(path.join(__dirname, "../", "views", "resetPass.html"));
 });
 
-const changePassword = async (req, res, next) => {
+const changePassword = asyncHandler(async (req, res, next) => {
   const token = req.params.token;
   const { password } = req.body;
 
@@ -188,30 +194,30 @@ const changePassword = async (req, res, next) => {
     res.status(400);
     throw new Error("Please enter a new password!");
   }
+  const result = await ResetPassword.findOne({ token });
+
+  if (!result) {
+    res.status(400);
+    throw new Error("Invalid Session!");
+  }
+
+  if (!validator.isStrongPassword(password)) {
+    res.status(400);
+    throw new Error("Password is not strong enough!");
+  }
+
+  const expiresInDate = new Date(result.expiresIn);
+  const currentDate = new Date();
+  if (expiresInDate < currentDate) {
+    await ResetPassword.deleteOne({ token }); //delete the expired token
+    res.status(400);
+    throw new Error("Session Expired!");
+  }
 
   const session = await mongoose.startSession();
   session.startTransaction();
 
   try {
-    const result = await ResetPassword.findOne({ token }).session(session);
-
-    if (!result) {
-      res.status(400);
-      throw new Error("Invalid Session!");
-    }
-
-    if (!validator.isStrongPassword(password)) {
-      res.status(400);
-      throw new Error("Password is not strong enough!");
-    }
-
-    const expiresInDate = new Date(result.expiresIn);
-    const currentDate = new Date();
-    if (expiresInDate < currentDate) {
-      res.status(400);
-      throw new Error("Session Expired!");
-    }
-
     // hash the password before saving to the database
     const hashedPassword = await encryptPassword(password);
 
@@ -231,13 +237,14 @@ const changePassword = async (req, res, next) => {
       message: "Password updated successfully!",
     });
   } catch (error) {
+    console.log(error);
     await session.abortTransaction();
     res.status(500);
     throw new Error("Internal Server Error!");
   } finally {
     session.endSession();
   }
-};
+});
 
 module.exports = {
   createUser,

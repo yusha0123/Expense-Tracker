@@ -1,7 +1,14 @@
 import { createContext, useEffect, useReducer, useState } from "react";
 import { Loading } from "../components/Loading";
 
-export const AuthContext = createContext();
+export const AuthContext = createContext({
+  user: {
+    email: null,
+    token: null,
+    isPremium: null,
+  },
+  showConfetti: false,
+});
 
 export const authReducer = (state, action) => {
   switch (action.type) {
@@ -34,7 +41,6 @@ export const AuthContextProvider = ({ children }) => {
         payload: user,
       });
     }
-    // Set isLoading to false after checking for user data
     setLoading(false);
   }, []);
 

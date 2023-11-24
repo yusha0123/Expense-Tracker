@@ -65,7 +65,7 @@ const Dashboard = () => {
           },
         }
       );
-      navigate(`/dashboard?page=${data.currentPage}&limit=${rows}`);
+      navigate(`/dashboard?page=${data.currentPage}`);
       return data;
     },
   });
@@ -122,13 +122,13 @@ const Dashboard = () => {
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
-      navigate(`/dashboard?page=${currentPage - 1}&limit=${rows}`);
+      navigate(`/dashboard?page=${currentPage - 1}`);
     }
   };
 
   const handleNextPage = () => {
     if (currentPage < data?.totalPages) {
-      navigate(`/dashboard?page=${currentPage + 1}&limit=${rows}`);
+      navigate(`/dashboard?page=${currentPage + 1}`);
     }
   };
 
@@ -142,7 +142,7 @@ const Dashboard = () => {
     if (currentPage > newTotalPages) {
       newPage = newTotalPages;
     }
-    navigate(`/dashboard?page=${newPage}&rows=${newRowValue}`);
+    navigate(`/dashboard?page=${newPage}`);
   };
 
   return (
