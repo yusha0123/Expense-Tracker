@@ -58,15 +58,16 @@
         e.preventDefault();
         const pass = document.getElementById("password").value;
         const submit_btn = document.getElementById("submit_btn");
-        submit_btn.disabled = true;
         const confirm_pass = document.getElementById("confirm_password").value;
         const alertDiv = document.getElementById("alert");
         alertDiv.innerHTML = "";
         if (pass !== confirm_pass) {
           alertDiv.innerHTML = `<div class="alert alert-danger" role="alert">
-  Passwords doesn't match!
-</div>`;
+            Passwords doesn't match!
+            </div>`;
+          return;
         }
+        submit_btn.disabled = true;
         const url = new URL(window.location.href);
         const token = url.searchParams.get("token");
         try {
@@ -77,11 +78,10 @@
             }
           );
           Swal.fire(response.data.message, "", "success");
-          submit_btn.disabled = false;
         } catch (error) {
-          console.log(error);
-          submit_btn.disabled = false;
           Swal.fire(error.response.data.message, "", "error");
+        } finally {
+          submit_btn.disabled = false;
         }
       });
     </script>

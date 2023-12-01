@@ -183,6 +183,12 @@ const validateToken = asyncHandler(async (req, res, next) => {
   if (!result) {
     return res.status(404).send("Please request a new Link!");
   }
+  const expiresInDate = new Date(result.expiresIn);
+  const currentDate = new Date();
+  if (expiresInDate < currentDate) {
+    await ResetPassword.deleteOne({ token }); //delete the expired token
+    return res.status(404).send("Link expired, Please request a new One!");
+  }
   res.sendFile(path.join(__dirname, "../", "views", "resetPass.html"));
 });
 

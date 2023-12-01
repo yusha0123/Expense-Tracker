@@ -23,6 +23,7 @@ import {
   Thead,
   Tr,
   VStack,
+  Grid,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -189,7 +190,11 @@ const Dashboard = () => {
             Add your Expense
           </Heading>
           <form onSubmit={handleSubmit(createExpense.mutate)}>
-            <VStack spacing={3}>
+            <Grid
+              templateColumns={{ base: "1fr", md: "1fr 1fr" }}
+              gap={3}
+              marginBottom={3}
+            >
               <Input
                 autoComplete="off"
                 isRequired
@@ -227,6 +232,8 @@ const Dashboard = () => {
                 <option value="Home & Utilities">Home & Utilities</option>
                 <option value="Hobbies & Leisure">Hobbies & Leisure</option>
               </Select>
+            </Grid>
+            <VStack spacing={3}>
               <Input
                 autoComplete="off"
                 isRequired
