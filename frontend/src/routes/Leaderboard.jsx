@@ -103,6 +103,13 @@ const Leaderboard = () => {
           </Table>
         </TableContainer>
       )}
+      {data?.length > 0 && (
+        <div
+          style={{
+            height: "1rem",
+          }}
+        />
+      )}
     </>
   );
 };

@@ -1,24 +1,30 @@
-const { createClient } = require("@supabase/supabase-js");
-const supabase = createClient(
-  process.env.SUPABASE_API_URL,
-  process.env.SUPABASE_API_KEY
-);
-const storageName = "user-data";
+const cloudinary = require("cloudinary").v2;
+const { Readable } = require("stream");
 
-function uploadToCloud(file, filename) {
-  return new Promise(async (resolve, reject) => {
-    const { data, error } = await supabase.storage
-      .from(storageName)
-      .upload(filename, file);
-    if (error) {
-      reject(error);
-    } else if (data) {
-      const { data } = supabase.storage
-        .from(storageName)
-        .getPublicUrl(filename);
-      resolve(data.publicUrl);
-    }
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET_KEY,
+});
+
+function uploadToCloudinary(csvContent, filename) {
+  return new Promise((resolve, reject) => {
+    const uploadStream = cloudinary.uploader.upload_stream(
+      { folder: "Expensify", resource_type: "raw", public_id: filename },
+      (error, result) => {
+        if (error) {
+          reject(error);
+        } else {
+          resolve(result.secure_url);
+        }
+      }
+    );
+
+    const bufferStream = Buffer.from(csvContent, "utf-8");
+    const readableStream = Readable.from([bufferStream]);
+
+    readableStream.pipe(uploadStream);
   });
 }
 
-module.exports = uploadToCloud;
+module.exports = uploadToCloudinary;

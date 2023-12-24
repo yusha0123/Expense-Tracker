@@ -6,8 +6,6 @@ const path = require("path");
 const mongoose = require("mongoose");
 const User = require("../models/user");
 const ResetPassword = require("../models/resetPassword");
-const { encryptPassword, isCorrectPass } = require("../utils/hashing");
-const createToken = require("../utils/tokenGenerator");
 let emailTemplate = require("../views/emailTemplate");
 
 const createUser = asyncHandler(async (req, res, next) => {
@@ -41,13 +39,13 @@ const createUser = asyncHandler(async (req, res, next) => {
       });
     }
     //Signup the user
-    const hashedPassword = await encryptPassword(password);
+
     const result = await User.create({
       name,
       email,
-      password: hashedPassword,
+      password,
     });
-    const token = createToken(result._id);
+    const token = result.generateAuthToken();
     return res.status(201).json({
       success: true,
       message: "User Registered Successfully!",
@@ -79,7 +77,7 @@ const login = asyncHandler(async (req, res, next) => {
       });
     }
     //check if provided password is correct
-    const isValidUser = await isCorrectPass(result.password, password);
+    const isValidUser = await result.comparePassword(password);
     if (!isValidUser) {
       return res.status(401).json({
         success: false,
@@ -87,7 +85,7 @@ const login = asyncHandler(async (req, res, next) => {
       });
     }
     //login the user
-    const token = createToken(result._id);
+    const token = result.generateAuthToken();
     return res.status(200).json({
       success: true,
       message: "User Logged in Successfully!",

@@ -1,7 +1,7 @@
+import { useMutation } from "@tanstack/react-query";
+import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuthContext } from "./useAuthContext";
-import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
 
 export const useSignup = () => {
   const { dispatch } = useAuthContext();

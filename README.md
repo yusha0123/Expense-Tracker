@@ -20,7 +20,7 @@ Expensify uses Razorpay as its payment gateway. This allows users to upgrade to 
 Expensify uses Chart JS 2 to visualize reports. This allows for interactive and visually appealing reports.
 
 📊 **Download reports (pro version) as CSV files for monthly or yearly periods, which are also stored in the cloud after generating**:
-Pro users can download their reports as CSV files for monthly or yearly periods. These reports are also stored in the cloud after generating.
+Pro users can download their reports as CSV files for monthly or yearly periods. These reports are also stored in cloudinary after generating.
 
 📜 **Pagination of Expenses**:
 Expensify provides the ability to paginate expenses, allowing users to view their data in manageable pages.

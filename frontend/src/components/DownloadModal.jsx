@@ -56,22 +56,12 @@ const DownloadModal = ({ isOpen, onClose, user }) => {
   }
 
   const downloadFile = (url) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", url);
-    xhr.responseType = "blob";
-    xhr.send();
-    xhr.onload = function () {
-      if (xhr.status === 200) {
-        const blob = xhr.response;
-        const newBlob = new Blob([blob]);
-        const anchor = document.createElement("a");
-        anchor.href = URL.createObjectURL(newBlob);
-        anchor.download = "Expensify.csv";
-        anchor.click();
-      } else {
-        toast.error("Failed to download file!");
-      }
-    };
+    const anchor = document.createElement("a");
+    document.body.appendChild(anchor);
+    anchor.href = url;
+    anchor.download = "Expensify.csv";
+    anchor.click();
+    document.body.removeChild(anchor);
   };
 
   return (
@@ -102,7 +92,7 @@ const DownloadModal = ({ isOpen, onClose, user }) => {
           )}
           {data?.length > 0 && (
             <TableContainer>
-              <Table variant="simple">
+              <Table variant="simple" size={"sm"}>
                 <Thead>
                   <Tr>
                     <Th textAlign={"center"}>#</Th>
@@ -120,9 +110,7 @@ const DownloadModal = ({ isOpen, onClose, user }) => {
                     >
                       <Td textAlign={"center"}>{index + 1}</Td>
                       <Td textAlign="center">
-                        {moment(item.createdAt).format(
-                          "MMMM DD, YYYY hh:mm:ss A"
-                        )}
+                        {moment(item.createdAt).format("MM/DD/YYYY [at] h:mma")}
                       </Td>
                       <Td textAlign="center">
                         <IconButton

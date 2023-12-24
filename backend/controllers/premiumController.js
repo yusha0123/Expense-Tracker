@@ -6,7 +6,7 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const Expense = require("../models/expense");
 const Download = require("../models/download");
-const uploadToCloud = require("../utils/upload");
+const uploadToCloudinary = require("../utils/upload");
 const moment = require("moment");
 
 const createOrder = asyncHandler(async (req, res, next) => {
@@ -134,8 +134,8 @@ const downloadExpenses = asyncHandler(async (req, res, next) => {
     const csvFields = ["Date", "Category", "Description", " Amount"];
     const csvParser = new Parser(csvFields);
     const csv = csvParser.parse(array);
-    const fileUrl = await uploadToCloud(csv, fileName);
-    //save to database
+    const fileUrl = await uploadToCloudinary(csv, fileName);
+    // //save to database
     await Download.create({
       url: fileUrl,
       userId: req.user,
