@@ -132,7 +132,14 @@ export default function Navbar() {
   return (
     <>
       <Box bg={"gray.100"} px={4} boxShadow={"sm"}>
-        <Flex h={16} alignItems={"center"} justifyContent={"space-between"}>
+        <Flex
+          h={{
+            base: 12,
+            md: 16,
+          }}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+        >
           <Logo />
           <Show breakpoint="(min-width: 767px)">
             <HStack alignItems={"center"} spacing={8}>

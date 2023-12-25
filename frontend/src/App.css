@@ -11,7 +11,7 @@ body,
 
 ::-webkit-scrollbar {
   width: 5px;
-  height: 6px;
+  height: 2.5px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -44,21 +44,6 @@ canvas {
   }
 }
 
-.chart-container {
-  position: relative;
-  max-width: 1180px;
-  height: 50vh;
-  margin: 0 auto;
-  @media screen and (min-width: 767px) {
-    height: 70vh;
-  }
-}
-
 .spacer {
-  display: none;
-  @media screen and (min-width: 660px) {
-    display: block;
-    height: 3rem;
-    width: auto;
-  }
+  height: 0.7rem;
 }

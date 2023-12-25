@@ -11,7 +11,6 @@ import {
   Heading,
   IconButton,
   Select,
-  Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,8 +24,10 @@ import DownloadModal from "../components/DownloadModal";
 import { Loading } from "../components/Loading";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
+import useTitle from "../hooks/useTitle";
 
 const Report = () => {
+  useTitle("Expensify - Reports");
   const [type, setType] = useState("monthly");
   const { user } = useAuthContext();
   const { verify } = useError();
@@ -134,29 +135,25 @@ const Report = () => {
               <option value="monthly">Monthly</option>
               <option value="yearly">Yearly</option>
             </Select>
-            <Tooltip label="Download Report">
-              <IconButton
-                icon={<FaDownload />}
-                onClick={() => downloadReport.mutate()}
-                colorScheme="messenger"
-                size={{
-                  base: "sm",
-                  md: "md",
-                }}
-                isDisabled={data?.length === 0 || downloadReport.isPending}
-              />
-            </Tooltip>
-            <Tooltip label="Download History">
-              <IconButton
-                icon={<FaHistory />}
-                onClick={onOpen}
-                colorScheme="purple"
-                size={{
-                  base: "sm",
-                  md: "md",
-                }}
-              />
-            </Tooltip>
+            <IconButton
+              icon={<FaDownload />}
+              onClick={() => downloadReport.mutate()}
+              colorScheme="messenger"
+              size={{
+                base: "sm",
+                md: "md",
+              }}
+              isDisabled={data?.length === 0 || downloadReport.isPending}
+            />
+            <IconButton
+              icon={<FaHistory />}
+              onClick={onOpen}
+              colorScheme="purple"
+              size={{
+                base: "sm",
+                md: "md",
+              }}
+            />
           </HStack>
           <Divider />
           <Center>
@@ -178,12 +175,9 @@ const Report = () => {
           </Center>
         </Box>
         {data?.length > 0 && (
-          <>
-            <div className="chart-container">
-              <Chart data={data} type={type} />
-              <div className="spacer" />
-            </div>
-          </>
+          <Box maxW={"1024px"} marginY={"0.7rem"} marginX={"auto"}>
+            <Chart data={data} type={type} />
+          </Box>
         )}
         {data?.length === 0 && (
           <Alert

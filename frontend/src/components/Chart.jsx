@@ -1,30 +1,10 @@
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Filler,
-  Legend,
-} from "chart.js";
+import ReactECharts from "echarts-for-react";
 import moment from "moment";
-import React from "react";
-import { Line } from "react-chartjs-2";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Filler,
-  Legend
-);
+import React, { useRef, useEffect } from "react";
 
 const Chart = ({ data, type }) => {
+  const chartRef = useRef(null);
+
   const formattedData = data.map((item) => {
     const { amount, ...rest } = item;
     return {
@@ -39,34 +19,49 @@ const Chart = ({ data, type }) => {
   const labels = formattedData.map((item) => item.createdAt);
   const amounts = formattedData.map((item) => item.Amount);
 
-  const chartData = {
-    labels,
-    datasets: [
+  const options = {
+    grid: {
+      left: "5%",
+      top: "5%",
+      bottom: "5%",
+      right: "5%",
+      containLabel: true,
+    },
+    xAxis: {
+      type: "category",
+      data: labels,
+    },
+    yAxis: {
+      type: "value",
+    },
+    series: [
       {
-        label: "Amount",
         data: amounts,
-        fill: true,
-        backgroundColor: "rgba(75,192,192,0.2)",
-        borderColor: "rgba(75,192,192,1)",
-        borderWidth: 2,
+        type: "line",
+        smooth: true,
       },
     ],
-  };
-
-  const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top",
-      },
-      title: {
-        display: true,
-        text: "Visualize Your Expenses",
-      },
+    tooltip: {
+      trigger: "axis",
     },
   };
 
-  return <Line options={options} data={chartData} />;
+  useEffect(() => {
+    const chartInstance = chartRef.current.getEchartsInstance();
+    if (chartInstance) {
+      window.addEventListener("resize", () => {
+        chartInstance.resize();
+      });
+    }
+
+    return () => {
+      window.removeEventListener("resize", () => {
+        chartInstance.resize();
+      });
+    };
+  }, []);
+
+  return <ReactECharts ref={chartRef} option={options} />;
 };
 
 export default Chart;

@@ -3,10 +3,12 @@ import React from "react";
 import Logo from "../components/Logo";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";
+import useTitle from "../hooks/useTitle";
 
 const NotFound = () => {
   const { user } = useAuthContext();
   const navigate = useNavigate();
+  useTitle("Expensify - Page not found");
   return (
     <>
       <Box

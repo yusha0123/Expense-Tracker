@@ -38,9 +38,11 @@ import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
 import { toast } from "react-toastify";
 import { useLocation, useNavigate } from "react-router-dom";
+import useTitle from "../hooks/useTitle";
 
 const Dashboard = () => {
   const { user } = useAuthContext();
+  useTitle("Expensify - Dashboard");
   const queryClient = useQueryClient();
   const { onClose, onOpen, isOpen } = useDisclosure();
   const location = useLocation();
@@ -351,13 +353,7 @@ const Dashboard = () => {
           </HStack>
         </TableContainer>
       )}
-      {data?.expenses?.length > 0 && (
-        <div
-          style={{
-            height: "0.5rem",
-          }}
-        />
-      )}
+      {data?.expenses?.length > 0 && <div className="spacer" />}
     </>
   );
 };

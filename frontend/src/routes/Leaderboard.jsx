@@ -17,10 +17,12 @@ import { motion } from "framer-motion";
 import { FaTrophy } from "react-icons/fa";
 import { Loading } from "../components/Loading";
 import { useQuery } from "@tanstack/react-query";
+import useTitle from "../hooks/useTitle";
 
 const Leaderboard = () => {
   const { user } = useAuthContext();
   const { verify } = useError();
+  useTitle("Expensify - Leaderboard");
 
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["leaderboard"],
@@ -92,7 +94,7 @@ const Leaderboard = () => {
                             transition: { duration: 1, delay: 0.5 },
                           }}
                         >
-                          {user.totalExpenses}
+                          {user?.totalExpenses?.toLocaleString()}
                         </motion.span>
                       </Text>
                     </motion.span>
@@ -103,13 +105,7 @@ const Leaderboard = () => {
           </Table>
         </TableContainer>
       )}
-      {data?.length > 0 && (
-        <div
-          style={{
-            height: "1rem",
-          }}
-        />
-      )}
+      {data?.length > 0 && <div className="spacer" />}
     </>
   );
 };

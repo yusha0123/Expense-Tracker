@@ -1,48 +1,48 @@
-import React from "react";
 import {
-  Flex,
-  Box,
-  FormControl,
-  FormLabel,
-  Input,
-  Stack,
-  Button,
-  InputGroup,
-  InputRightElement,
-  Divider,
-  Tabs,
-  TabList,
-  TabPanels,
-  Tab,
-  TabPanel,
   Alert,
   AlertIcon,
   AlertTitle,
+  Box,
+  Button,
+  Divider,
+  Flex,
+  FormControl,
+  FormLabel,
   Icon,
+  Input,
+  InputGroup,
+  InputRightElement,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
-  useBreakpointValue,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
   ScaleFade,
+  Stack,
+  Tab,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Tabs,
+  useBreakpointValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import axios from "axios";
-import { BiSolidShow, BiSolidHide } from "react-icons/bi";
-import { AiOutlineMail } from "react-icons/ai";
 import { useMutation } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import axios from "axios";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { AiOutlineMail } from "react-icons/ai";
+import { BiSolidHide, BiSolidShow } from "react-icons/bi";
 import { useLocation } from "react-router-dom";
-import { useSignup } from "../hooks/useSignup";
+import { toast } from "react-toastify";
 import { useLogin } from "../hooks/useLogin";
-import Logo from "../components/Logo";
+import { useSignup } from "../hooks/useSignup";
+import useTitle from "../hooks/useTitle";
 
 const Auth = () => {
+  useTitle("Expensify - Login/Signup");
   const [showPass1, setShowPass1] = useState(false);
   const [showPass2, setShowPass2] = useState(false);
   const { isOpen, onClose, onOpen } = useDisclosure();
