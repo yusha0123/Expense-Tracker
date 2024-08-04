@@ -126,7 +126,7 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     ); //delete all previous sessions/request of reset password
 
     const token = uuidv4();
-    const serverAddress = process.env.SERVER_ADDRESS;
+    const serverAddress = `${req.protocol}://${req.get('host')}`;
     emailTemplate = emailTemplate.replace("{UUID_PLACEHOLDER}", token);
     emailTemplate = emailTemplate.replace(
       "{SERVER_ADDRESS_PLACEHOLDER}",
@@ -241,7 +241,6 @@ const changePassword = asyncHandler(async (req, res, next) => {
       message: "Password updated successfully!",
     });
   } catch (error) {
-    console.log(error);
     await session.abortTransaction();
     res.status(500);
     throw new Error("Internal Server Error!");

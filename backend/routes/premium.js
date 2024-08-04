@@ -1,4 +1,4 @@
-const express = require("express");
+const router = require("express").Router();
 const {
   createOrder,
   verifyOrder,
@@ -10,17 +10,13 @@ const {
 const protected = require("../middleware/auth");
 const verifyPremium = require("../middleware/premium");
 
-const router = express.Router();
+router.use(protected);
 
-router.route("/create-order").get(protected, createOrder);
-router.route("/verify-order").post(protected, verifyOrder);
-router.route("/leaderboard").get(protected, verifyPremium, leaderboard);
-router.route("/report").get(protected, verifyPremium, getReport);
-router
-  .route("/report/download")
-  .post(protected, verifyPremium, downloadExpenses);
-router
-  .route("/report/download-history")
-  .get(protected, verifyPremium, getUserDownloads);
+router.route("/create-order").get(createOrder);
+router.route("/verify-order").post(verifyOrder);
+router.route("/leaderboard").get(verifyPremium, leaderboard);
+router.route("/report").get(verifyPremium, getReport);
+router.route("/report/download").post(verifyPremium, downloadExpenses);
+router.route("/report/download-history").get(verifyPremium, getUserDownloads);
 
 module.exports = router;
