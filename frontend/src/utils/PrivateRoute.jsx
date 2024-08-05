@@ -1,7 +1,8 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import { Loading } from "../components/Loading";
+import PropTypes from "prop-types";
 
 export const PrivateRoute = ({ user, isPremiumRoute }) => {
   if (isPremiumRoute) {
@@ -15,9 +16,11 @@ export const PrivateRoute = ({ user, isPremiumRoute }) => {
         </>
       );
     }
+
     if (user && !user.isPremium) {
       return <Navigate to={"/dashboard"} replace />;
     }
+
     return <Navigate to={"/auth?action=login"} replace />;
   } else {
     if (user) {
@@ -32,4 +35,13 @@ export const PrivateRoute = ({ user, isPremiumRoute }) => {
     }
     return <Navigate to={"/auth?action=login"} replace />;
   }
+};
+
+PrivateRoute.propTypes = {
+  isPremiumRoute: PropTypes.bool,
+  user: PropTypes.shape({
+    email: PropTypes.string.isRequired,
+    token: PropTypes.string.isRequired,
+    isPremium: PropTypes.bool.isRequired,
+  }),
 };

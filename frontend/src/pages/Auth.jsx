@@ -31,15 +31,16 @@ import {
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineMail } from "react-icons/ai";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
-import { useLocation } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useLogin } from "../hooks/useLogin";
 import { useSignup } from "../hooks/useSignup";
 import useTitle from "../hooks/useTitle";
+import Logo from "../components/Logo";
 
 const Auth = () => {
   useTitle("Expensify - Login/Signup");
@@ -52,9 +53,8 @@ const Auth = () => {
   const resetPass = useForm();
   const login = useLogin();
   const signUp = useSignup();
-  const location = useLocation();
-  const queryParams = new URLSearchParams(location.search);
-  const activateLoginPanel = queryParams.get("action") === "login";
+  const [searchParams] = useSearchParams();
+  const activateLoginPanel = searchParams.get("action") === "login";
 
   const handleSignup = (data) => {
     signUp.mutate(data);
@@ -91,7 +91,7 @@ const Auth = () => {
           rounded={"lg"}
           bg="white"
           boxShadow={"lg"}
-          py={8}
+          py={4}
           px={5}
           maxW={{
             sm: "400px",
@@ -103,9 +103,12 @@ const Auth = () => {
           w={["90%", "80%", "50%", "30%"]}
         >
           <ScaleFade initialScale={0.7} in={true}>
+            <Box mb={3} display={"flex"} justifyContent={"center"}>
+              <Logo />
+            </Box>
             <Tabs
               isFitted
-              variant="soft-rounded"
+              variant="enclosed-colored"
               colorScheme="green"
               defaultIndex={activateLoginPanel ? 1 : 0}
             >
@@ -113,11 +116,6 @@ const Auth = () => {
                 <Tab>Sign Up</Tab>
                 <Tab>Login</Tab>
               </TabList>
-              <Divider
-                orientation="horizontal"
-                borderWidth="3px"
-                rounded={"lg"}
-              />
               <TabPanels>
                 <TabPanel>
                   {/* Signup Panel */}

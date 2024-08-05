@@ -12,12 +12,12 @@ axios.defaults.baseURL = import.meta.env.VITE_SERVER_ADDRESS;
 
 function App() {
   const { user } = useAuthContext();
-  const Auth = lazy(() => import("./routes/Auth"));
-  const Root = lazy(() => import("./routes/Root"));
-  const NotFound = lazy(() => import("./routes/NotFound"));
-  const Leaderboard = lazy(() => import("./routes/Leaderboard"));
-  const Dashboard = lazy(() => import("./routes/Dashboard"));
-  const Report = lazy(() => import("./routes/Report"));
+  const Auth = lazy(() => import("./pages/Auth"));
+  const Root = lazy(() => import("./pages/Root"));
+  const NotFound = lazy(() => import("./pages/NotFound"));
+  const Leaderboard = lazy(() => import("./pages/Leaderboard"));
+  const Dashboard = lazy(() => import("./pages/Dashboard"));
+  const Report = lazy(() => import("./pages/Report"));
 
   return (
     <Suspense fallback={<Loading />}>

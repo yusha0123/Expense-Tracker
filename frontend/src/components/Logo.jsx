@@ -1,5 +1,4 @@
 import { Text, Icon } from "@chakra-ui/react";
-import React from "react";
 import { Link } from "react-router-dom";
 import { BiMoneyWithdraw } from "react-icons/bi";
 import { useAuthContext } from "../hooks/useAuthContext";

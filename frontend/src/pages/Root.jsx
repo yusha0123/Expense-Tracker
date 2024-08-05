@@ -1,17 +1,8 @@
-import React from "react";
-import {
-  Box,
-  Grid,
-  Image,
-  Heading,
-  Button,
-  Text,
-  GridItem,
-} from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { Box, Button, Grid, GridItem, Heading, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
-import Logo from "../components/Logo";
+import { useNavigate } from "react-router-dom";
 import HeroImage from "../assets/Hero-image.webp";
+import Logo from "../components/Logo";
 
 const Root = () => {
   const navigate = useNavigate();

@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ReactConfetti from "react-confetti";
 import { useAuthContext } from "../hooks/useAuthContext";
 import useWindowSize from "react-use/lib/useWindowSize";
+import PropTypes from "prop-types";
 
 const ConfettiProvider = () => {
   const { showConfetti, dispatch } = useAuthContext();
@@ -43,6 +44,7 @@ export const AppProvider = ({ children }) => {
       },
     },
   });
+
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
@@ -67,4 +69,8 @@ export const AppProvider = ({ children }) => {
       </QueryClientProvider>
     </React.StrictMode>
   );
+};
+
+AppProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };

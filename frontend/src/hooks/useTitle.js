@@ -12,8 +12,7 @@ function useTitle(title, prevailOnUnmount = false) {
       if (!prevailOnUnmount) {
         document.title = defaultTitle.current;
       }
-    },
-    []
+    }, [prevailOnUnmount]
   );
 }
 
