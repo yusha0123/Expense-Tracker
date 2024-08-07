@@ -16,7 +16,7 @@ import {
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import moment from "moment";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { FaDownload, FaHistory } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Chart from "../components/Chart";

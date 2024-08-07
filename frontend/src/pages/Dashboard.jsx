@@ -30,7 +30,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { motion } from "framer-motion";
 import moment from "moment";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillDelete } from "react-icons/ai";
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
@@ -161,7 +161,7 @@ const Dashboard = () => {
               Delete Expense
             </AlertDialogHeader>
             <AlertDialogBody>
-              Are you sure? You can't undo this action afterwards.
+              Are you sure? You can&apos;t undo this action afterwards.
             </AlertDialogBody>
             <AlertDialogFooter>
               <Button ref={cancelRef} onClick={onClose}>
@@ -188,7 +188,7 @@ const Dashboard = () => {
             md: "767px",
           }}
         >
-          <Heading fontSize="2xl" mb={3} textAlign={"center"}>
+          <Heading fontSize="2xl" mb={5} textAlign={"center"}>
             Add your Expense
           </Heading>
           <form onSubmit={handleSubmit(createExpense.mutate)}>
@@ -222,7 +222,7 @@ const Dashboard = () => {
                 <option value="Sports, Outdoor & Travel">
                   Sports, Outdoor & Travel
                 </option>
-                <option value="Bills & EMI's">Bills & EMI's</option>
+                <option value="Bills & EMI's">Bills & EMI&apos;s</option>
                 <option value="Groceries & Pet Supplies">
                   Groceries & Pet Supplies
                 </option>

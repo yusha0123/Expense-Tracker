@@ -36,6 +36,7 @@ import { useUpgrade } from "../hooks/useUpgrade";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Logo from "./Logo";
+import PropTypes from "prop-types";
 import { TbReportAnalytics } from "react-icons/tb";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { useError } from "../hooks/useError";
@@ -128,6 +129,14 @@ export default function Navbar() {
       {showLeaderBoard && <Icon as={MdOutlineLeaderboard} ml={1} />}
     </Box>
   );
+
+  NavLink.propTypes = {
+    children: PropTypes.node.isRequired,
+    showLock: PropTypes.bool,
+    showCrown: PropTypes.bool,
+    showReport: PropTypes.bool,
+    showLeaderBoard: PropTypes.bool,
+  };
 
   return (
     <>

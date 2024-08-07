@@ -1,12 +1,12 @@
-import axios from "axios";
-import { lazy, Suspense } from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
+import { lazy, Suspense } from "react";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import axios from "axios";
 import { Loading } from "./components/Loading";
 import { useAuthContext } from "./hooks/useAuthContext";
-import { PrivateRoute } from "./utils/PrivateRoute";
-import { PublicRoute } from "./utils/PublicRoute";
+import { PrivateRoute } from "./hoc/PrivateRoute";
+import { PublicRoute } from "./hoc/PublicRoute";
 
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_ADDRESS;
 
@@ -18,6 +18,7 @@ function App() {
   const Leaderboard = lazy(() => import("./pages/Leaderboard"));
   const Dashboard = lazy(() => import("./pages/Dashboard"));
   const Report = lazy(() => import("./pages/Report"));
+  const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 
   return (
     <Suspense fallback={<Loading />}>
@@ -35,6 +36,7 @@ function App() {
             <Route path="/reports" element={<Report />} />
           </Route>
           <Route path="*" element={<NotFound />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </Router>
     </Suspense>
