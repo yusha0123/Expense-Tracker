@@ -1,35 +1,39 @@
 import {
-  Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
-  ModalFooter,
-  ModalBody,
-  ModalCloseButton,
-  useBreakpointValue,
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  IconButton,
+  Alert,
+  AlertIcon,
   Button,
   Center,
   CircularProgress,
-  Alert,
-  AlertIcon,
+  IconButton,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  useBreakpointValue,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import React from "react";
 import { motion } from "framer-motion";
 import moment from "moment";
 import { FaDownload } from "react-icons/fa";
+import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
+import useModalStore, { modalTypes } from "../hooks/useModalStore";
 
-const DownloadModal = ({ isOpen, onClose, user }) => {
+const DownloadModal = () => {
+  const { user } = useAuthContext();
+  const { onClose, isOpen, type } = useModalStore();
+
   const modalSize = useBreakpointValue({
     base: "xs",
     sm: "sm",
@@ -43,12 +47,12 @@ const DownloadModal = ({ isOpen, onClose, user }) => {
     queryFn: async () => {
       const { data } = await axios.get("/api/premium/report/download-history", {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user?.token}`,
         },
       });
       return data;
     },
-    enabled: isOpen,
+    enabled: isOpen && type == modalTypes.DOWNLOAD_MODAL,
   });
 
   if (isError) {
@@ -65,7 +69,11 @@ const DownloadModal = ({ isOpen, onClose, user }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} size={modalSize}>
+    <Modal
+      isOpen={isOpen && type == modalTypes.DOWNLOAD_MODAL}
+      onClose={onClose}
+      size={modalSize}
+    >
       <ModalOverlay />
       <ModalContent>
         <ModalHeader textAlign={"center"}>Download History</ModalHeader>

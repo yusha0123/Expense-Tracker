@@ -37,9 +37,12 @@ const Leaderboard = () => {
 
   if (isError) verify(error);
 
+  if (isPending) {
+    return <Loading />;
+  }
+
   return (
-    <>
-      {isPending && <Loading />}
+    <section>
       {data?.length > 0 && (
         <TableContainer
           boxShadow={"md"}
@@ -104,8 +107,7 @@ const Leaderboard = () => {
           </Table>
         </TableContainer>
       )}
-      {data?.length > 0 && <div className="spacer" />}
-    </>
+    </section>
   );
 };
 

@@ -7,6 +7,7 @@ import ReactConfetti from "react-confetti";
 import { useAuthContext } from "../hooks/useAuthContext";
 import useWindowSize from "react-use/lib/useWindowSize";
 import PropTypes from "prop-types";
+import ModalProvider from "../modals/ModalProvider";
 
 const ConfettiProvider = () => {
   const { showConfetti, dispatch } = useAuthContext();
@@ -64,6 +65,7 @@ export const AppProvider = ({ children }) => {
               theme="colored"
             />
             {children}
+            <ModalProvider />
           </AuthContextProvider>
         </ChakraProvider>
       </QueryClientProvider>

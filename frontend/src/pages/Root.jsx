@@ -13,38 +13,9 @@ const Root = () => {
   };
 
   return (
-    <section
-      style={{
-        overflowX: "hidden",
-        width: "100%",
-        height: "100vh",
-        position: "relative",
-      }}
-    >
-      <Box
-        as="nav"
-        boxShadow="sm"
-        zIndex={10}
-        position={"absolute"}
-        top={0}
-        right={0}
-        left={0}
-      >
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          px={{
-            base: "4",
-            md: "5",
-            lg: 6,
-          }}
-          py={{
-            base: "2.5",
-            lg: "3",
-            xl: "4",
-          }}
-        >
+    <section className="overflow-x-hidden relative h-[100dvh] w-full">
+      <header className="absolute top-0 inset-x-0 z-10 shadow-sm">
+        <div className="flex justify-between items-center p-3 md:px-5 xl:px-8 md:py-4 max-w-screen-xl">
           <Logo />
           <Button
             colorScheme="linkedin"
@@ -53,8 +24,8 @@ const Root = () => {
           >
             Sign In / Login
           </Button>
-        </Box>
-      </Box>
+        </div>
+      </header>
       <Box
         mx="auto"
         width={{

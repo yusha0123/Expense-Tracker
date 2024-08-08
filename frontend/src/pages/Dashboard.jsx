@@ -174,186 +174,187 @@ const Dashboard = () => {
           </AlertDialogContent>
         </AlertDialogOverlay>
       </AlertDialog>
-      <ScaleFade initialScale={0.9} in={true}>
-        <Box
-          rounded={"lg"}
-          bg={"white"}
-          boxShadow={"base"}
-          p={6}
-          my={5}
-          mx={"auto"}
-          w={["95%", "85%", "60%", "40%"]}
-          maxWidth={{
-            sm: "400px",
-            md: "767px",
-          }}
-        >
-          <Heading fontSize="2xl" mb={5} textAlign={"center"}>
-            Add your Expense
-          </Heading>
-          <form onSubmit={handleSubmit(createExpense.mutate)}>
-            <Grid
-              templateColumns={{ base: "1fr", md: "1fr 1fr" }}
-              gap={3}
-              marginBottom={3}
-            >
-              <Input
-                autoComplete="off"
-                isRequired
-                type="number"
-                {...register("amount")}
-                size={{
-                  base: "sm",
-                  md: "md",
-                }}
-                placeholder="Amount &#x20B9;"
-              />
-              <Select
-                placeholder="Select Category"
-                isRequired
-                {...register("category")}
-                size={{
-                  base: "sm",
-                  md: "md",
-                }}
+      <section className="pb-5">
+        <ScaleFade initialScale={0.9} in={true}>
+          <Box
+            rounded={"lg"}
+            bg={"white"}
+            boxShadow={"base"}
+            p={6}
+            my={5}
+            mx={"auto"}
+            w={["95%", "85%", "60%", "40%"]}
+            maxWidth={{
+              sm: "400px",
+              md: "767px",
+            }}
+          >
+            <Heading fontSize="2xl" mb={5} textAlign={"center"}>
+              Add your Expense
+            </Heading>
+            <form onSubmit={handleSubmit(createExpense.mutate)}>
+              <Grid
+                templateColumns={{ base: "1fr", md: "1fr 1fr" }}
+                gap={3}
+                marginBottom={3}
               >
-                <option value="Mobile & Computers">Mobile & Computers</option>
-                <option value="Books & Education">Books & Education</option>
-                <option value="Sports, Outdoor & Travel">
-                  Sports, Outdoor & Travel
-                </option>
-                <option value="Bills & EMI's">Bills & EMI&apos;s</option>
-                <option value="Groceries & Pet Supplies">
-                  Groceries & Pet Supplies
-                </option>
-                <option value="Fashion & Beauty">Fashion & Beauty</option>
-                <option value="Gifts & Donations">Gifts & Donations</option>
-                <option value="Investments">Investments</option>
-                <option value="Insurance">Insurance</option>
-                <option value="Entertainment">Entertainment</option>
-                <option value="Home & Utilities">Home & Utilities</option>
-                <option value="Hobbies & Leisure">Hobbies & Leisure</option>
-              </Select>
-            </Grid>
-            <VStack spacing={3}>
-              <Input
-                autoComplete="off"
-                isRequired
-                placeholder={"Description"}
-                {...register("description")}
-                size={{
-                  base: "sm",
-                  md: "md",
-                }}
-              />
-              <Button
-                colorScheme="teal"
-                minWidth={"150px"}
-                width={"40%"}
-                size={{
-                  base: "sm",
-                  md: "md",
-                }}
-                type="submit"
-                isLoading={createExpense.isPending}
-              >
-                Add Expense
-              </Button>
-            </VStack>
-          </form>
-        </Box>
-      </ScaleFade>
-      {isPending && (
-        <Center mt={20}>
-          <Spinner size="lg" />
-        </Center>
-      )}
-      {data?.expenses?.length > 0 && (
-        <TableContainer
-          boxShadow={"md"}
-          w={{ base: "90%", md: "80%", lg: "60%" }}
-          mx={"auto"}
-          maxW={"1180px"}
-          my={5}
-        >
-          <Table variant="striped" size={"sm"} colorScheme="blackAlpha">
-            <Thead>
-              <Tr>
-                <Th textAlign={"center"}>#</Th>
-                <Th textAlign={"center"}>Date</Th>
-                <Th textAlign={"center"}>Amount</Th>
-                <Th textAlign={"center"}>Category</Th>
-                <Th textAlign={"center"}>Description</Th>
-                <Th textAlign={"center"}>Action</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {data?.expenses?.map((item, index) => (
-                <motion.tr
-                  key={item._id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                <Input
+                  autoComplete="off"
+                  isRequired
+                  type="number"
+                  {...register("amount")}
+                  size={{
+                    base: "sm",
+                    md: "md",
+                  }}
+                  placeholder="Amount &#x20B9;"
+                />
+                <Select
+                  placeholder="Select Category"
+                  isRequired
+                  {...register("category")}
+                  size={{
+                    base: "sm",
+                    md: "md",
+                  }}
                 >
-                  <Td textAlign={"center"}>{index + 1}</Td>
-                  <Td textAlign={"center"}>
-                    {moment(item.createdAt).format("DD MMMM YYYY")}
-                  </Td>
-                  <Td textAlign={"center"}>{item.amount}</Td>
-                  <Td textAlign={"center"}>{item.category}</Td>
-                  <Td textAlign={"center"}>{item.description}</Td>
-                  <Td textAlign={"center"}>
-                    <IconButton
-                      icon={<AiFillDelete />}
-                      colorScheme="red"
-                      onClick={() => handleClick(item._id)}
-                      isDisabled={deleteExpense.isPending}
-                    />
-                  </Td>
-                </motion.tr>
-              ))}
-            </Tbody>
-          </Table>
-          <HStack justifyContent={"center"} my={3} spacing={4}>
-            <IconButton
-              icon={<GrCaretPrevious />}
-              onClick={handlePreviousPage}
-              isDisabled={currentPage === 1}
-              size={{
-                base: "sm",
-                xl: "md",
-              }}
-            />
-            <IconButton
-              icon={<GrCaretNext />}
-              size={{
-                base: "sm",
-                xl: "md",
-              }}
-              onClick={handleNextPage}
-              isDisabled={currentPage === data?.totalPages}
-            />
-            <Box>
-              Page {currentPage} of {data?.totalPages}
-            </Box>
-            <Select
-              size="sm"
-              width={"fit-content"}
-              value={rows}
-              onChange={handleRowChange}
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
-            </Select>
-          </HStack>
-        </TableContainer>
-      )}
-      {data?.expenses?.length > 0 && <div className="spacer" />}
+                  <option value="Mobile & Computers">Mobile & Computers</option>
+                  <option value="Books & Education">Books & Education</option>
+                  <option value="Sports, Outdoor & Travel">
+                    Sports, Outdoor & Travel
+                  </option>
+                  <option value="Bills & EMI's">Bills & EMI&apos;s</option>
+                  <option value="Groceries & Pet Supplies">
+                    Groceries & Pet Supplies
+                  </option>
+                  <option value="Fashion & Beauty">Fashion & Beauty</option>
+                  <option value="Gifts & Donations">Gifts & Donations</option>
+                  <option value="Investments">Investments</option>
+                  <option value="Insurance">Insurance</option>
+                  <option value="Entertainment">Entertainment</option>
+                  <option value="Home & Utilities">Home & Utilities</option>
+                  <option value="Hobbies & Leisure">Hobbies & Leisure</option>
+                </Select>
+              </Grid>
+              <VStack spacing={3}>
+                <Input
+                  autoComplete="off"
+                  isRequired
+                  placeholder={"Description"}
+                  {...register("description")}
+                  size={{
+                    base: "sm",
+                    md: "md",
+                  }}
+                />
+                <Button
+                  colorScheme="teal"
+                  minWidth={"150px"}
+                  width={"40%"}
+                  size={{
+                    base: "sm",
+                    md: "md",
+                  }}
+                  type="submit"
+                  isLoading={createExpense.isPending}
+                >
+                  Add Expense
+                </Button>
+              </VStack>
+            </form>
+          </Box>
+        </ScaleFade>
+        {isPending && (
+          <Center mt={20}>
+            <Spinner size="lg" />
+          </Center>
+        )}
+        {data?.expenses?.length > 0 && (
+          <TableContainer
+            boxShadow={"md"}
+            w={{ base: "90%", md: "80%", lg: "60%" }}
+            mx={"auto"}
+            maxW={"1180px"}
+            my={5}
+          >
+            <Table variant="striped" size={"sm"} colorScheme="blackAlpha">
+              <Thead>
+                <Tr>
+                  <Th textAlign={"center"}>#</Th>
+                  <Th textAlign={"center"}>Date</Th>
+                  <Th textAlign={"center"}>Amount</Th>
+                  <Th textAlign={"center"}>Category</Th>
+                  <Th textAlign={"center"}>Description</Th>
+                  <Th textAlign={"center"}>Action</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {data?.expenses?.map((item, index) => (
+                  <motion.tr
+                    key={item._id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                  >
+                    <Td textAlign={"center"}>{index + 1}</Td>
+                    <Td textAlign={"center"}>
+                      {moment(item.createdAt).format("DD MMMM YYYY")}
+                    </Td>
+                    <Td textAlign={"center"}>{item.amount}</Td>
+                    <Td textAlign={"center"}>{item.category}</Td>
+                    <Td textAlign={"center"}>{item.description}</Td>
+                    <Td textAlign={"center"}>
+                      <IconButton
+                        icon={<AiFillDelete />}
+                        colorScheme="red"
+                        onClick={() => handleClick(item._id)}
+                        isDisabled={deleteExpense.isPending}
+                      />
+                    </Td>
+                  </motion.tr>
+                ))}
+              </Tbody>
+            </Table>
+            <HStack justifyContent={"center"} my={3} spacing={4}>
+              <IconButton
+                icon={<GrCaretPrevious />}
+                onClick={handlePreviousPage}
+                isDisabled={currentPage === 1}
+                size={{
+                  base: "sm",
+                  xl: "md",
+                }}
+              />
+              <IconButton
+                icon={<GrCaretNext />}
+                size={{
+                  base: "sm",
+                  xl: "md",
+                }}
+                onClick={handleNextPage}
+                isDisabled={currentPage === data?.totalPages}
+              />
+              <Box>
+                Page {currentPage} of {data?.totalPages}
+              </Box>
+              <Select
+                size="sm"
+                width={"fit-content"}
+                value={rows}
+                onChange={handleRowChange}
+              >
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+                <option value="100">100</option>
+              </Select>
+            </HStack>
+          </TableContainer>
+        )}
+      </section>
     </>
   );
 };

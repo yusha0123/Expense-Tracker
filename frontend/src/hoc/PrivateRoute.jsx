@@ -11,7 +11,9 @@ export const PrivateRoute = ({ user, isPremiumRoute }) => {
         <>
           <Navbar />
           <Suspense fallback={<Loading />}>
-            <Outlet />
+            <main className="mt-16 md:mt-20">
+              <Outlet />
+            </main>
           </Suspense>
         </>
       );
@@ -28,7 +30,9 @@ export const PrivateRoute = ({ user, isPremiumRoute }) => {
         <>
           <Navbar />
           <Suspense fallback={<Loading />}>
-            <Outlet />
+            <main className="mt-16 md:mt-20">
+              <Outlet />
+            </main>
           </Suspense>
         </>
       );

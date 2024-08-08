@@ -1,45 +1,44 @@
-import { useRef } from "react";
 import {
   Box,
-  Flex,
-  HStack,
-  IconButton,
   Button,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  MenuDivider,
-  useDisclosure,
-  Show,
-  Icon,
+  Divider,
   Drawer,
   DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
   DrawerFooter,
   DrawerHeader,
   DrawerOverlay,
-  DrawerContent,
-  DrawerCloseButton,
+  Flex,
+  HStack,
+  Icon,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuDivider,
+  MenuItem,
+  MenuList,
+  Show,
+  useDisclosure,
   VStack,
-  Divider,
-  Tooltip,
 } from "@chakra-ui/react";
-import { AiOutlineClose, AiOutlineMail, AiOutlineLock } from "react-icons/ai";
-import { GiHamburgerMenu } from "react-icons/gi";
-import { PiCrownBold } from "react-icons/pi";
-import { HiOutlineLogout } from "react-icons/hi";
-import { FaUser } from "react-icons/fa";
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useLogout } from "../hooks/useLogout";
-import { useNavigate } from "react-router-dom";
-import { useUpgrade } from "../hooks/useUpgrade";
 import axios from "axios";
-import { toast } from "react-toastify";
-import Logo from "./Logo";
 import PropTypes from "prop-types";
-import { TbReportAnalytics } from "react-icons/tb";
+import { useRef } from "react";
+import { AiOutlineClose, AiOutlineLock, AiOutlineMail } from "react-icons/ai";
+import { FaUser, FaUserCircle } from "react-icons/fa";
+import { GiHamburgerMenu } from "react-icons/gi";
+import { HiOutlineLogout } from "react-icons/hi";
 import { MdOutlineLeaderboard } from "react-icons/md";
+import { PiCrownBold } from "react-icons/pi";
+import { TbReportAnalytics } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
+import { useLogout } from "../hooks/useLogout";
+import { useUpgrade } from "../hooks/useUpgrade";
+import Logo from "./Logo";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -140,7 +139,7 @@ export default function Navbar() {
 
   return (
     <>
-      <Box bg={"gray.100"} px={4} boxShadow={"sm"}>
+      <nav className="px-4 bg-gray-100 shadow fixed top-0 inset-x-0 z-10">
         <Flex
           h={{
             base: 12,
@@ -162,11 +161,13 @@ export default function Navbar() {
                 )}
               </HStack>
               <Menu>
-                <Tooltip label="Open Menu" hasArrow>
-                  <MenuButton as={Button} cursor={"pointer"}>
-                    <GiHamburgerMenu />
-                  </MenuButton>
-                </Tooltip>
+                <MenuButton
+                  as={Button}
+                  cursor={"pointer"}
+                  colorScheme="blackAlpha"
+                >
+                  <FaUserCircle />
+                </MenuButton>
                 <MenuList>
                   <MenuItem display={"flex"} alignItems={"center"} gap={3}>
                     <Icon as={AiOutlineMail} />
@@ -263,7 +264,7 @@ export default function Navbar() {
             </Drawer>
           </Show>
         </Flex>
-      </Box>
+      </nav>
     </>
   );
 }
