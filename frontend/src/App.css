@@ -2,16 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-html,
-body,
-:root {
-  width: 100%;
-  height: 100%;
-}
-
 ::-webkit-scrollbar {
   width: 5px;
-  height: 2.5px;
+  height: 3px;
 }
 
 ::-webkit-scrollbar-thumb {

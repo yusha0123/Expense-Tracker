@@ -183,10 +183,10 @@ const Dashboard = () => {
             p={6}
             my={5}
             mx={"auto"}
-            w={["95%", "85%", "60%", "40%"]}
+            w={["95%", "85%", "60%", "50%"]}
             maxWidth={{
               sm: "400px",
-              md: "767px",
+              md: "520px",
             }}
           >
             <Heading fontSize="2xl" mb={5} textAlign={"center"}>
@@ -272,7 +272,7 @@ const Dashboard = () => {
         {data?.expenses?.length > 0 && (
           <TableContainer
             boxShadow={"md"}
-            w={{ base: "90%", md: "80%", lg: "60%" }}
+            w={{ base: "90%", md: "80%", lg: "70%" }}
             mx={"auto"}
             maxW={"1180px"}
             my={5}

@@ -7,16 +7,15 @@ import {
   Td,
   TableContainer,
   Icon,
-  Text,
 } from "@chakra-ui/react";
 import { useAuthContext } from "../hooks/useAuthContext";
 import axios from "axios";
 import { useError } from "../hooks/useError";
-import { motion } from "framer-motion";
 import { FaTrophy } from "react-icons/fa";
 import { Loading } from "../components/Loading";
 import { useQuery } from "@tanstack/react-query";
 import useTitle from "../hooks/useTitle";
+import CountUp from "react-countup";
 
 const Leaderboard = () => {
   const { user } = useAuthContext();
@@ -66,12 +65,7 @@ const Leaderboard = () => {
             </Thead>
             <Tbody>
               {data.map((user, index) => (
-                <motion.tr
-                  key={index}
-                  initial={{ opacity: 0, x: -50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
+                <Tr key={index}>
                   <Td textAlign={"center"}>
                     {index === 0 && <Icon as={FaTrophy} color="gold" />}
                     {index === 1 && <Icon as={FaTrophy} color="silver" />}
@@ -80,28 +74,14 @@ const Leaderboard = () => {
                   </Td>
                   <Td textAlign={"center"}>{user.name}</Td>
                   <Td textAlign={"center"}>
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{
-                        opacity: 1,
-                        scale: 1,
-                        transition: { duration: 1 },
-                      }}
-                    >
-                      <Text>
-                        <motion.span
-                          initial={{ scale: 0.5 }}
-                          animate={{
-                            scale: 1,
-                            transition: { duration: 1, delay: 0.5 },
-                          }}
-                        >
-                          {user?.totalExpenses?.toLocaleString()}
-                        </motion.span>
-                      </Text>
-                    </motion.span>
+                    <CountUp
+                      start={0}
+                      end={user?.totalExpenses || 0}
+                      duration={2}
+                      separator=","
+                    />
                   </Td>
-                </motion.tr>
+                </Tr>
               ))}
             </Tbody>
           </Table>

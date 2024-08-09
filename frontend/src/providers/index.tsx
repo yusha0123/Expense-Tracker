@@ -1,12 +1,11 @@
-import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
-import { ToastContainer } from "react-toastify";
-import { AuthContextProvider } from "../context/authContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
 import ReactConfetti from "react-confetti";
-import { useAuthContext } from "../hooks/useAuthContext";
+import { ToastContainer } from "react-toastify";
 import useWindowSize from "react-use/lib/useWindowSize";
-import PropTypes from "prop-types";
+import { AuthContextProvider } from "../context/authContext";
+import { useAuthContext } from "../hooks/useAuthContext";
 import ModalProvider from "../modals/ModalProvider";
 
 const ConfettiProvider = () => {
@@ -34,7 +33,7 @@ const ConfettiProvider = () => {
   );
 };
 
-export const AppProvider = ({ children }) => {
+export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
@@ -71,8 +70,4 @@ export const AppProvider = ({ children }) => {
       </QueryClientProvider>
     </React.StrictMode>
   );
-};
-
-AppProvider.propTypes = {
-  children: PropTypes.node.isRequired,
 };
