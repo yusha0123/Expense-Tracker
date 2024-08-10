@@ -23,7 +23,7 @@ import { HiOutlineLogout } from "react-icons/hi";
 import { PiCrownBold } from "react-icons/pi";
 
 const SideDrawer = () => {
-  const { isOpen, onClose } = useOverlayStore();
+  const { isOpen, onClose, type } = useOverlayStore();
   const {
     state: { user },
   } = useAuthContext();
@@ -31,7 +31,11 @@ const SideDrawer = () => {
 
   return (
     <Show breakpoint="(max-width: 767px)">
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+      <Drawer
+        isOpen={isOpen && type === "DRAWER"}
+        placement="right"
+        onClose={onClose}
+      >
         <DrawerOverlay />
         <DrawerContent>
           <DrawerCloseButton />

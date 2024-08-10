@@ -52,7 +52,7 @@ const DownloadModal = () => {
           Authorization: `Bearer ${user?.token}`,
         },
       });
-      return data;
+      return data as DownloadData[];
     },
     enabled: isOpen && type === "DOWNLOAD_MODAL",
   });
@@ -100,7 +100,7 @@ const DownloadModal = () => {
               )}
             </Center>
           )}
-          {data?.length > 0 && (
+          {data?.length && data.length > 0 && (
             <TableContainer>
               <Table variant="simple" size={"sm"}>
                 <Thead>

@@ -17,21 +17,23 @@ import axios from "axios";
 import moment from "moment";
 import { useRef, useState } from "react";
 import { FaDownload, FaHistory } from "react-icons/fa";
-import { toast } from "react-toastify";
-import Chart from "../components/Chart";
+import { toast, Id } from "react-toastify";
 import { Loading } from "../components/Loading";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
 import useTitle from "../hooks/useTitle";
-import useModalStore, { modalTypes } from "../hooks/useModalStore";
+import useOverlayStore from "@/hooks/useOverlayStore";
+import Chart from "@/components/Chart";
 
 const Report = () => {
   useTitle("Expensify - Reports");
-  const [type, setType] = useState("monthly");
-  const { user } = useAuthContext();
+  const [type, setType] = useState<"monthly" | "yearly">("monthly");
+  const {
+    state: { user },
+  } = useAuthContext();
   const { verify } = useError();
-  const toastRef = useRef();
-  const { onOpen, isOpen } = useModalStore();
+  const toastRef = useRef<Id | null>(null);
+  const { onOpen, isOpen } = useOverlayStore();
   const queryClient = useQueryClient();
 
   const { isPending, isError, data, error } = useQuery({
@@ -39,10 +41,10 @@ const Report = () => {
     queryFn: async () => {
       const { data } = await axios.get(`/api/premium/report?type=${type}`, {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user?.token}`,
         },
       });
-      return data;
+      return data as ReportData[];
     },
   });
 
@@ -58,7 +60,7 @@ const Report = () => {
         },
         {
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${user?.token}`,
           },
           responseType: "blob",
         }
@@ -73,12 +75,14 @@ const Report = () => {
       document.body.appendChild(a);
       a.click();
       window.URL.revokeObjectURL(url);
-      toast.update(toastRef.current, {
-        type: "success",
-        isLoading: false,
-        render: "File generated successfully!",
-        autoClose: 3000,
-      });
+      if (toastRef.current !== null) {
+        toast.update(toastRef.current, {
+          type: "success",
+          isLoading: false,
+          render: "File generated successfully!",
+          autoClose: 3000,
+        });
+      }
       queryClient.invalidateQueries({
         queryKey: ["downloads", isOpen], //prevent caching
       });
@@ -89,9 +93,9 @@ const Report = () => {
     },
   });
 
-  const handleOpenDownloadModal = () => {
-    console.log("Opening Download Modal");
-    onOpen(modalTypes.DOWNLOAD_MODAL);
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = e.target.value as "monthly" | "yearly";
+    setType(value);
   };
 
   if (isPending) {
@@ -109,7 +113,7 @@ const Report = () => {
         p={3}
         my={5}
         mx={"auto"}
-        w={["90%", "70%", "60%", "40%", "35%"]}
+        w={["95%", "70%", "60%", "40%", "35%"]}
         maxWidth={"500px"}
       >
         <Heading
@@ -132,12 +136,13 @@ const Report = () => {
               base: "sm",
               md: "md",
             }}
-            onChange={(e) => setType(e.target.value)}
+            onChange={handleChange}
           >
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
           </Select>
           <IconButton
+            aria-label="download-btn"
             icon={<FaDownload />}
             onClick={() => downloadReport.mutate()}
             colorScheme="messenger"
@@ -149,7 +154,8 @@ const Report = () => {
           />
           <IconButton
             icon={<FaHistory />}
-            onClick={handleOpenDownloadModal}
+            aria-label="history-btn"
+            onClick={() => onOpen("DOWNLOAD_MODAL")}
             colorScheme="purple"
             size={{
               base: "sm",
@@ -176,7 +182,7 @@ const Report = () => {
           </Badge>
         </Center>
       </Box>
-      {data?.length > 0 && (
+      {data?.length !== undefined && data.length > 0 && (
         <Box maxW={"1024px"} marginY={"0.7rem"} marginX={"auto"}>
           <Chart data={data} type={type} />
         </Box>

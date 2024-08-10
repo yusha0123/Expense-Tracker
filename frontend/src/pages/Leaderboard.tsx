@@ -8,17 +8,19 @@ import {
   TableContainer,
   Icon,
 } from "@chakra-ui/react";
-import { useAuthContext } from "../hooks/useAuthContext";
+import { useAuthContext } from "@/hooks/useAuthContext";
 import axios from "axios";
-import { useError } from "../hooks/useError";
+import { useError } from "@/hooks/useError";
 import { FaTrophy } from "react-icons/fa";
-import { Loading } from "../components/Loading";
+import { Loading } from "@/components/Loading";
 import { useQuery } from "@tanstack/react-query";
-import useTitle from "../hooks/useTitle";
+import useTitle from "@/hooks/useTitle";
 import CountUp from "react-countup";
 
 const Leaderboard = () => {
-  const { user } = useAuthContext();
+  const {
+    state: { user },
+  } = useAuthContext();
   const { verify } = useError();
   useTitle("Expensify - Leaderboard");
 
@@ -27,10 +29,10 @@ const Leaderboard = () => {
     queryFn: async () => {
       const { data } = await axios.get("/api/premium/leaderboard", {
         headers: {
-          Authorization: `Bearer ${user.token}`,
+          Authorization: `Bearer ${user?.token}`,
         },
       });
-      return data;
+      return data as LeaderboardData[];
     },
   });
 
@@ -42,7 +44,7 @@ const Leaderboard = () => {
 
   return (
     <section>
-      {data?.length > 0 && (
+      {data?.length !== undefined && data.length > 0 && (
         <TableContainer
           boxShadow={"md"}
           w={{ base: "90%", md: "75%", lg: "60%" }}

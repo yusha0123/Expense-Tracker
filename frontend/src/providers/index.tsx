@@ -6,7 +6,7 @@ import { ToastContainer } from "react-toastify";
 import useWindowSize from "react-use/lib/useWindowSize";
 import { AuthContextProvider } from "@/context/authContext";
 import { useAuthContext } from "@/hooks/useAuthContext";
-import ModalProvider from "@/overlays/ModalProvider";
+import OverlayProvider from "@/overlays/OverlayProvider";
 
 const ConfettiProvider = () => {
   const {
@@ -67,7 +67,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
               theme="colored"
             />
             {children}
-            <ModalProvider />
+            <OverlayProvider />
           </AuthContextProvider>
         </ChakraProvider>
       </QueryClientProvider>

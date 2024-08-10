@@ -1,15 +1,29 @@
 import ReactECharts from "echarts-for-react";
 import moment from "moment";
-import React, { useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
 
-const Chart = ({ data, type }) => {
-  const chartRef = useRef(null);
+type ReportData = {
+  _id: string;
+  amount: number;
+  category: string;
+  createdAt: Date;
+  description: string;
+};
 
-  const formattedData = data.map((item) => {
+const Chart = ({
+  data,
+  type,
+}: {
+  type: "monthly" | "yearly";
+  data: ReportData[];
+}) => {
+  const chartRef = useRef<ReactECharts>(null);
+
+  const formattedData = data?.map((item) => {
     const { amount, ...rest } = item;
     return {
       ...rest,
-      Amount: item.amount,
+      Amount: amount,
       createdAt: moment(item.createdAt).format(
         type === "monthly" ? "D MMMM" : "DD MMMM YYYY"
       ),
@@ -47,17 +61,16 @@ const Chart = ({ data, type }) => {
   };
 
   useEffect(() => {
-    const chartInstance = chartRef.current.getEchartsInstance();
-    if (chartInstance) {
-      window.addEventListener("resize", () => {
-        chartInstance.resize();
-      });
-    }
+    const chartInstance = chartRef.current?.getEchartsInstance();
+
+    const handleResize = () => {
+      chartInstance?.resize();
+    };
+
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("resize", () => {
-        chartInstance.resize();
-      });
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 

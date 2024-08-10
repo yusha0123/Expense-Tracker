@@ -7,9 +7,10 @@ import { PiCrownBold } from "react-icons/pi";
 import { TbReportAnalytics } from "react-icons/tb";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useError } from "../hooks/useError";
-import { useUpgrade } from "../hooks/useUpgrade";
+import { useAuthContext } from "@/hooks/useAuthContext";
+import { useError } from "@/hooks/useError";
+import { useUpgrade } from "@/hooks/useUpgrade";
+import useRazorpay from "react-razorpay";
 
 type NavLinkProps = {
   children: string;
@@ -34,6 +35,7 @@ const Navlink = ({
   const { upgrade } = useUpgrade();
   const { verify } = useError();
   const { onClose } = useOverlayStore();
+  const [Razorpay] = useRazorpay();
 
   const handleNavclick = async (link: string) => {
     onClose();
@@ -49,19 +51,21 @@ const Navlink = ({
         verify(error);
       }
     } else if (!user?.isPremium) {
-      toast.warning("Please Upgrade to Pro!");
+      toast.warning("Purchase premium membership!");
     } else {
       const Link = link.toLowerCase();
       navigate(`/${Link}`);
     }
   };
 
-  const handleOpenRazorPay = (data) => {
+  const handleOpenRazorPay = (data: Order) => {
     const options = {
       key: import.meta.env.RAZOR_PAY_KEY,
       name: "Expensify",
       order_id: data.id,
-      handler: async function (response) {
+      amount: data.amount_due.toString(),
+      currency: data.currency,
+      handler: async function (response: RazorpayResponse) {
         try {
           const { data } = await axios.post(
             "/api/premium/verify-order",
@@ -82,8 +86,15 @@ const Navlink = ({
         }
       },
     };
-    const rzp = new window.Razorpay(options);
+    const rzp = new Razorpay(options);
     rzp.open();
+
+    rzp.on(
+      "payment.failed",
+      function (response: RazorpayPaymentFailedResponse) {
+        toast.error(response.error.description);
+      }
+    );
   };
 
   return (

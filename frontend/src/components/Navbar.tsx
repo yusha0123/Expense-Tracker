@@ -1,3 +1,4 @@
+import useOverlayStore from "@/hooks/useOverlayStore";
 import {
   Button,
   Flex,
@@ -10,7 +11,6 @@ import {
   MenuItem,
   MenuList,
   Show,
-  useDisclosure,
 } from "@chakra-ui/react";
 import { AiOutlineClose, AiOutlineMail } from "react-icons/ai";
 import { FaUser, FaUserCircle } from "react-icons/fa";
@@ -23,11 +23,19 @@ import Logo from "./Logo";
 import Navlink from "./Navlink";
 
 export default function Navbar() {
-  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen, onOpen, onClose } = useOverlayStore();
   const {
     state: { user },
   } = useAuthContext();
   const { logout } = useLogout();
+
+  const handleClick = () => {
+    if (isOpen) {
+      onClose();
+    } else {
+      onOpen("DRAWER");
+    }
+  };
 
   return (
     <nav className="px-4 bg-gray-100 shadow fixed top-0 inset-x-0 z-10">
@@ -86,7 +94,7 @@ export default function Navbar() {
             size={"md"}
             icon={isOpen ? <AiOutlineClose /> : <GiHamburgerMenu />}
             aria-label={"Open Menu"}
-            onClick={isOpen ? onClose : onOpen}
+            onClick={handleClick}
           />
         </Show>
       </Flex>
