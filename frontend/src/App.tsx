@@ -5,13 +5,15 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import axios from "axios";
 import { Loading } from "./components/Loading";
 import { useAuthContext } from "./hooks/useAuthContext";
-import { PrivateRoute } from "./hoc/PrivateRoute";
 import { PublicRoute } from "./hoc/PublicRoute";
+import { PrivateRoute } from "./hoc/PrivateRoute";
 
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_ADDRESS;
 
 function App() {
-  const { user } = useAuthContext();
+  const {
+    state: { user },
+  } = useAuthContext();
   const Auth = lazy(() => import("./pages/Auth"));
   const Root = lazy(() => import("./pages/Root"));
   const NotFound = lazy(() => import("./pages/NotFound"));

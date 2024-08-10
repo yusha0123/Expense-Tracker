@@ -9,10 +9,10 @@ import {
   Tabs,
 } from "@chakra-ui/react";
 import { useSearchParams } from "react-router-dom";
-import Login from "../components/Login";
-import Logo from "../components/Logo";
-import Signup from "../components/Signup";
-import useTitle from "../hooks/useTitle";
+import Logo from "@/components/Logo";
+import Signup from "@/components/Signup";
+import useTitle from "@/hooks/useTitle";
+import Login from "@/components/Login";
 
 const Auth = () => {
   useTitle("Expensify - Login/Signup");

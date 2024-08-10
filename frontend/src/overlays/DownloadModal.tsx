@@ -26,13 +26,15 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import moment from "moment";
 import { FaDownload } from "react-icons/fa";
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useError } from "../hooks/useError";
-import useModalStore, { modalTypes } from "../hooks/useModalStore";
+import { useAuthContext } from "@/hooks/useAuthContext";
+import { useError } from "@/hooks/useError";
+import useOverlayStore from "@/hooks/useOverlayStore";
 
 const DownloadModal = () => {
-  const { user } = useAuthContext();
-  const { onClose, isOpen, type } = useModalStore();
+  const {
+    state: { user },
+  } = useAuthContext();
+  const { onClose, isOpen, type } = useOverlayStore();
 
   const modalSize = useBreakpointValue({
     base: "xs",
@@ -52,14 +54,14 @@ const DownloadModal = () => {
       });
       return data;
     },
-    enabled: isOpen && type == modalTypes.DOWNLOAD_MODAL,
+    enabled: isOpen && type === "DOWNLOAD_MODAL",
   });
 
   if (isError) {
     verify(error);
   }
 
-  const downloadFile = (url) => {
+  const downloadFile = (url: string) => {
     const anchor = document.createElement("a");
     document.body.appendChild(anchor);
     anchor.href = url;
@@ -70,7 +72,7 @@ const DownloadModal = () => {
 
   return (
     <Modal
-      isOpen={isOpen && type == modalTypes.DOWNLOAD_MODAL}
+      isOpen={isOpen && type === "DOWNLOAD_MODAL"}
       onClose={onClose}
       size={modalSize}
     >
@@ -123,6 +125,7 @@ const DownloadModal = () => {
                       <Td textAlign="center">
                         <IconButton
                           icon={<FaDownload />}
+                          aria-label="download"
                           colorScheme="whatsapp"
                           onClick={() => downloadFile(item.url)}
                         />

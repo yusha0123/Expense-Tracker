@@ -1,15 +1,23 @@
+import useOverlayStore from "@/hooks/useOverlayStore";
 import { Box, Icon } from "@chakra-ui/react";
-import PropTypes from "prop-types";
 import axios from "axios";
 import { AiOutlineLock } from "react-icons/ai";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { PiCrownBold } from "react-icons/pi";
 import { TbReportAnalytics } from "react-icons/tb";
-import { useAuthContext } from "../hooks/useAuthContext";
 import { useNavigate } from "react-router-dom";
-import { useUpgrade } from "../hooks/useUpgrade";
-import { useError } from "../hooks/useError";
 import { toast } from "react-toastify";
+import { useAuthContext } from "../hooks/useAuthContext";
+import { useError } from "../hooks/useError";
+import { useUpgrade } from "../hooks/useUpgrade";
+
+type NavLinkProps = {
+  children: string;
+  showLock?: boolean;
+  showCrown?: boolean;
+  showReport?: boolean;
+  showLeaderBoard?: boolean;
+};
 
 const Navlink = ({
   children,
@@ -17,26 +25,30 @@ const Navlink = ({
   showCrown,
   showReport,
   showLeaderBoard,
-}) => {
-  const { user, dispatch } = useAuthContext();
+}: NavLinkProps) => {
+  const {
+    state: { user },
+    dispatch,
+  } = useAuthContext();
   const navigate = useNavigate();
   const { upgrade } = useUpgrade();
   const { verify } = useError();
+  const { onClose } = useOverlayStore();
 
-  const handleNavclick = async (link) => {
-    // onClose();
-    if (link == "Buy Premium" && !user.isPremium) {
+  const handleNavclick = async (link: string) => {
+    onClose();
+    if (link == "Buy Premium" && !user?.isPremium) {
       try {
         const { data } = await axios.get("/api/premium/create-order", {
           headers: {
-            Authorization: `Bearer ${user.token}`,
+            Authorization: `Bearer ${user?.token}`,
           },
         });
         handleOpenRazorPay(data);
       } catch (error) {
         verify(error);
       }
-    } else if (!user.isPremium) {
+    } else if (!user?.isPremium) {
       toast.warning("Please Upgrade to Pro!");
     } else {
       const Link = link.toLowerCase();
@@ -56,7 +68,7 @@ const Navlink = ({
             response,
             {
               headers: {
-                Authorization: `Bearer ${user.token}`,
+                Authorization: `Bearer ${user?.token}`,
               },
             }
           );
@@ -99,11 +111,3 @@ const Navlink = ({
 };
 
 export default Navlink;
-
-Navlink.propTypes = {
-  children: PropTypes.node.isRequired,
-  showLock: PropTypes.bool,
-  showCrown: PropTypes.bool,
-  showReport: PropTypes.bool,
-  showLeaderBoard: PropTypes.bool,
-};

@@ -1,27 +1,25 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
-import { toast } from "react-toastify";
 import { useAuthContext } from "./useAuthContext";
 
-export const useSignup = () => {
+export const useLogin = () => {
   const { dispatch } = useAuthContext();
+
   return useMutation({
-    mutationFn: async (formData) => {
-      const { data } = await axios.post("/api/auth/signup", formData);
-      return data;
+    mutationFn: (formData: Record<string, unknown>) => {
+      return axios.post("/api/auth/login", formData);
     },
-    onSuccess: (data) => {
+    onSuccess: (response) => {
       const user = {
-        email: data.email,
-        token: data.token,
-        isPremium: data.isPremium,
+        email: response.data.email,
+        token: response.data.token,
+        isPremium: response.data.isPremium,
       };
       localStorage.setItem("user", JSON.stringify(user));
       dispatch({
         type: "LOGIN",
         payload: user,
       });
-      toast.success("Registration Successful!");
     },
   });
 };

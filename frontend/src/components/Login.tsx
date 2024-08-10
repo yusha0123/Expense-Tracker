@@ -1,4 +1,4 @@
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import {
   Alert,
   AlertIcon,
@@ -15,7 +15,8 @@ import {
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
 import { useLogin } from "../hooks/useLogin";
 import { useState } from "react";
-import useModalStore, { modalTypes } from "../hooks/useModalStore";
+import useModalStore from "../hooks/useOverlayStore";
+import { isAxiosError } from "axios";
 
 const Login = () => {
   const login = useLogin();
@@ -23,7 +24,7 @@ const Login = () => {
   const [showPass, setShowPass] = useState(false);
   const { onOpen } = useModalStore();
 
-  const handleLogin = (data) => {
+  const handleLogin = (data: FieldValues) => {
     login.mutate(data);
   };
 
@@ -34,7 +35,7 @@ const Login = () => {
           <Alert status="error" rounded={5}>
             <AlertIcon />
             <AlertTitle>
-              {login.error?.response?.data?.message
+              {isAxiosError(login.error) && login.error.response?.data?.message
                 ? login.error.response.data.message
                 : "Something went wrong!"}
             </AlertTitle>
@@ -73,7 +74,7 @@ const Login = () => {
         <Button
           colorScheme="teal"
           variant="link"
-          onClick={() => onOpen(modalTypes.RESET_PASSWORD_MODAL)}
+          onClick={() => onOpen("RESET_PASSWORD_MODAL")}
           size={{
             base: "sm",
             xl: "md",

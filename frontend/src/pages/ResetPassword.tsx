@@ -1,7 +1,3 @@
-import { Navigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import useTitle from "../hooks/useTitle";
 import {
   Box,
   Button,
@@ -15,7 +11,11 @@ import {
   ScaleFade,
   Stack,
 } from "@chakra-ui/react";
-import Logo from "../components/Logo";
+import { Navigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import useTitle from "@/hooks/useTitle";
+import Logo from "@/components/Logo";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
 
 const ResetPassword = () => {

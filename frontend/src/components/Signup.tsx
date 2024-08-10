@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { useSignup } from "../hooks/useSignup";
 import {
   Alert,
@@ -15,13 +15,14 @@ import {
   Stack,
 } from "@chakra-ui/react";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
+import { isAxiosError } from "axios";
 
 const Signup = () => {
   const [showPass, setShowPass] = useState(false);
   const signUpForm = useForm();
   const signUp = useSignup();
 
-  const handleSignup = (data) => {
+  const handleSignup = (data: FieldValues) => {
     signUp.mutate(data);
   };
 
@@ -32,7 +33,8 @@ const Signup = () => {
           <Alert status="error" rounded={5}>
             <AlertIcon />
             <AlertTitle>
-              {signUp.error?.response?.data?.message
+              {isAxiosError(signUp.error) &&
+              signUp.error?.response?.data?.message
                 ? signUp.error.response.data.message
                 : "Something went wrong!"}
             </AlertTitle>

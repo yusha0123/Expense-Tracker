@@ -4,12 +4,15 @@ import React from "react";
 import ReactConfetti from "react-confetti";
 import { ToastContainer } from "react-toastify";
 import useWindowSize from "react-use/lib/useWindowSize";
-import { AuthContextProvider } from "../context/authContext";
-import { useAuthContext } from "../hooks/useAuthContext";
-import ModalProvider from "../modals/ModalProvider";
+import { AuthContextProvider } from "@/context/authContext";
+import { useAuthContext } from "@/hooks/useAuthContext";
+import ModalProvider from "@/overlays/ModalProvider";
 
 const ConfettiProvider = () => {
-  const { showConfetti, dispatch } = useAuthContext();
+  const {
+    state: { showConfetti },
+    dispatch,
+  } = useAuthContext();
   const { width, height } = useWindowSize();
 
   const handleComplete = () => {
