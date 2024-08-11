@@ -70,7 +70,7 @@ const emailTemplate = `
                       password here:
                     </p>
                     <a
-                      href="{SERVER_ADDRESS_PLACEHOLDER}/api/auth/reset-password/?token={UUID_PLACEHOLDER}"
+                      href="{SERVER_ADDRESS_PLACEHOLDER}/reset-password?token={UUID_PLACEHOLDER}"
                       target="_blank"
                       style="
                         background-color: #007ee6;

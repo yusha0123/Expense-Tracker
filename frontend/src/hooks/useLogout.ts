@@ -1,13 +1,15 @@
 import { useAuthContext } from "./useAuthContext";
 import { useQueryClient } from "@tanstack/react-query";
+import useOverlayStore from "./useOverlayStore";
 
 export const useLogout = () => {
   const { dispatch } = useAuthContext();
   const queryClient = useQueryClient();
+  const { onClose } = useOverlayStore();
 
-  const logout = async () => {
+  const logout = () => {
     queryClient.clear();
-    localStorage.removeItem("user");
+    onClose();
     dispatch({
       type: "LOGOUT",
     });

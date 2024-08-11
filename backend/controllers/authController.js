@@ -7,6 +7,7 @@ const mongoose = require("mongoose");
 const User = require("../models/user");
 const ResetPassword = require("../models/resetPassword");
 let emailTemplate = require("../views/emailTemplate");
+const bcrypt = require('bcrypt');
 
 const createUser = asyncHandler(async (req, res, next) => {
   try {
@@ -126,12 +127,9 @@ const resetPassword = asyncHandler(async (req, res, next) => {
     ); //delete all previous sessions/request of reset password
 
     const token = uuidv4();
-    const serverAddress = `${req.protocol}://${req.get('host')}`;
+    const url = `${process.env.FRONT_END_URL}`;
     emailTemplate = emailTemplate.replace("{UUID_PLACEHOLDER}", token);
-    emailTemplate = emailTemplate.replace(
-      "{SERVER_ADDRESS_PLACEHOLDER}",
-      serverAddress
-    );
+    emailTemplate = emailTemplate.replace("{SERVER_ADDRESS_PLACEHOLDER}", url);
 
     await ResetPassword.create(
       [
@@ -179,15 +177,17 @@ const validateToken = asyncHandler(async (req, res, next) => {
 
   const result = await ResetPassword.findOne({ token });
   if (!result) {
-    return res.status(404).send("Please request a new Link!");
+    return res.status(404).send("Invalid or expired link!");
   }
+
   const expiresInDate = new Date(result.expiresIn);
   const currentDate = new Date();
   if (expiresInDate < currentDate) {
     await ResetPassword.deleteOne({ token }); //delete the expired token
-    return res.status(404).send("Link expired, Please request a new One!");
+    return res.status(400).send("Link expired, Please request a new One!");
   }
-  res.sendFile(path.join(__dirname, "../", "views", "resetPass.html"));
+
+  res.send("Token validated successfully!")
 });
 
 const changePassword = asyncHandler(async (req, res, next) => {
@@ -196,7 +196,7 @@ const changePassword = asyncHandler(async (req, res, next) => {
 
   if (!password) {
     res.status(400);
-    throw new Error("Please enter a new password!");
+    throw new Error("Password is required!");
   }
   const result = await ResetPassword.findOne({ token });
 
@@ -222,13 +222,11 @@ const changePassword = asyncHandler(async (req, res, next) => {
   session.startTransaction();
 
   try {
-    // hash the password before saving to the database
-    const hashedPassword = await encryptPassword(password);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Update the user's password
     await User.updateOne(
       { _id: result.userId },
-      { password: hashedPassword }
+      { password: hashedPassword },
     ).session(session);
 
     // Delete the token from the database to ensure that each link works only once

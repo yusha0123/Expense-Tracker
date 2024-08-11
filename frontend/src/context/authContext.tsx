@@ -22,10 +22,15 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
-    case "LOGIN":
-      return { user: action.payload, showConfetti: state.showConfetti };
-    case "LOGOUT":
+    case "LOGIN": {
+      const user = action.payload;
+      localStorage.setItem("user", JSON.stringify(user));
+      return { user, showConfetti: state.showConfetti };
+    }
+    case "LOGOUT": {
+      localStorage.removeItem("user");
       return { user: null, showConfetti: state.showConfetti };
+    }
     case "UPGRADE":
       return { ...state, user: { ...state.user!, isPremium: true } };
     case "TOGGLE_CONFETTI":

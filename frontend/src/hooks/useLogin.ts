@@ -15,7 +15,6 @@ export const useLogin = () => {
         token: response.data.token,
         isPremium: response.data.isPremium,
       };
-      localStorage.setItem("user", JSON.stringify(user));
       dispatch({
         type: "LOGIN",
         payload: user,
