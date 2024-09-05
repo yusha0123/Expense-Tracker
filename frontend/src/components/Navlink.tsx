@@ -1,16 +1,16 @@
+import { useAuthContext } from "@/hooks/useAuthContext";
+import { useError } from "@/hooks/useError";
 import useOverlayStore from "@/hooks/useOverlayStore";
+import { useUpgrade } from "@/hooks/useUpgrade";
 import { Box, Icon } from "@chakra-ui/react";
 import axios from "axios";
 import { AiOutlineLock } from "react-icons/ai";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { PiCrownBold } from "react-icons/pi";
 import { TbReportAnalytics } from "react-icons/tb";
+import useRazorpay from "react-razorpay";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useAuthContext } from "@/hooks/useAuthContext";
-import { useError } from "@/hooks/useError";
-import { useUpgrade } from "@/hooks/useUpgrade";
-import useRazorpay from "react-razorpay";
 
 type NavLinkProps = {
   children: string;
@@ -29,7 +29,6 @@ const Navlink = ({
 }: NavLinkProps) => {
   const {
     state: { user },
-    dispatch,
   } = useAuthContext();
   const navigate = useNavigate();
   const { upgrade } = useUpgrade();
@@ -77,10 +76,8 @@ const Navlink = ({
             }
           );
           if (data.success) {
-            toast.success("You are now a Pro Member!");
+            upgrade();
           }
-          dispatch({ type: "TOGGLE_CONFETTI" });
-          upgrade();
         } catch (error) {
           verify(error);
         }

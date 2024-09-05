@@ -27,7 +27,7 @@ import Chart from "@/components/Chart";
 
 const Report = () => {
   useTitle("Expensify - Reports");
-  const [type, setType] = useState<"monthly" | "yearly">("monthly");
+  const [type, setType] = useState<"monthly" | "yearly" | "weekly">("monthly");
   const {
     state: { user },
   } = useAuthContext();
@@ -94,7 +94,7 @@ const Report = () => {
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value as "monthly" | "yearly";
+    const value = e.target.value as "monthly" | "yearly" | "weekly";
     setType(value);
   };
 
@@ -138,6 +138,7 @@ const Report = () => {
             }}
             onChange={handleChange}
           >
+            <option value="weekly">Weekly</option>
             <option value="monthly">Monthly</option>
             <option value="yearly">Yearly</option>
           </Select>

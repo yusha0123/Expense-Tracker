@@ -21,11 +21,6 @@ function App() {
   const Dashboard = lazy(() => import("./pages/Dashboard"));
   const Report = lazy(() => import("./pages/Report"));
   const ResetPassword = lazy(() => import("./pages/ResetPassword"));
-  const isProduction = import.meta.env.MODE === "production";
-
-  if (isProduction) {
-    console.warn = () => {}; //Suppress warnings which is mostly being displayed by razorpay
-  }
 
   return (
     <Suspense fallback={<Loading />}>

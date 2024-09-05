@@ -5,9 +5,10 @@ const asyncHandler = require("express-async-handler");
 
 const requireAuth = asyncHandler(async (req, res, next) => {
   const { authorization } = req.headers;
+
   if (!authorization) {
     res.status(401);
-    throw new Error("Authorization token Required!");
+    throw new Error("Authorization token is Required!");
   }
   const token = authorization.split(" ")[1];
 

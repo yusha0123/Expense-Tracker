@@ -71,9 +71,19 @@ const verifyOrder = asyncHandler(async (req, res, next) => {
 
 const leaderboard = asyncHandler(async (req, res, next) => {
   try {
-    const result = await User.find()
-      .select("name totalExpenses -_id")
-      .sort({ totalExpenses: -1 });
+
+    const result = await User.aggregate([
+      {
+        $sort: { totalExpenses: -1 }
+      },
+      {
+        $project: {
+          name: 1,
+          totalExpenses: 1,
+          _id: { $cond: { if: { $eq: ["$_id", req.user._id] }, then: "$_id", else: "$$REMOVE" } }
+        }
+      }
+    ]);
     res.status(200).json(result);
   } catch (error) {
     res.status(500);
@@ -83,20 +93,25 @@ const leaderboard = asyncHandler(async (req, res, next) => {
 
 const getReport = asyncHandler(async (req, res, next) => {
   const type = req.query.type;
-  if (type != "monthly" && type != "yearly") {
+  const allowedTypes = ["monthly", "yearly", "weekly"];
+
+  if (!allowedTypes.includes(type)) {
     res.status(400);
     throw new Error("Invalid Type Specified!");
   }
 
-  let startDate;
-  if (type === "monthly") {
-    startDate = new Date();
+  let startDate = new Date();
+
+  if (type === "weekly") {
+    startDate.setDate(startDate.getDate() - 7);
+  } else if (type === "monthly") {
     startDate.setMonth(startDate.getMonth() - 1);
   } else {
-    startDate = new Date();
     startDate.setFullYear(startDate.getFullYear() - 1);
   }
+
   const docsToSelect = { createdAt: 1, description: 1, category: 1, amount: 1 };
+
   try {
     const expenses = await Expense.find(
       {
@@ -105,6 +120,7 @@ const getReport = asyncHandler(async (req, res, next) => {
       },
       docsToSelect
     ).lean();
+
     res.status(200).json(expenses);
   } catch (error) {
     res.status(500);

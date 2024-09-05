@@ -24,6 +24,7 @@ const ConfettiProvider = () => {
   return (
     <ReactConfetti
       style={{
+        position: "fixed",
         pointerEvents: "none",
         zIndex: 99,
       }}

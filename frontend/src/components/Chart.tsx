@@ -14,7 +14,7 @@ const Chart = ({
   data,
   type,
 }: {
-  type: "monthly" | "yearly";
+  type: "weekly" | "monthly" | "yearly";
   data: ReportData[];
 }) => {
   const chartRef = useRef<ReactECharts>(null);

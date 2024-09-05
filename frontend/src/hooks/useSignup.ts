@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 import { useAuthContext } from "./useAuthContext";
 
 export const useSignup = () => {
@@ -12,11 +13,15 @@ export const useSignup = () => {
       return data;
     },
     onSuccess: (data) => {
+      const token = data?.token;
+      const decoded: DecodedToken = jwtDecode(token);
+
       const user = {
-        email: data.email,
-        token: data.token,
-        isPremium: data.isPremium,
+        email: decoded.email,
+        isPremium: decoded.isPremium,
+        token,
       };
+
       dispatch({
         type: "LOGIN",
         payload: user,

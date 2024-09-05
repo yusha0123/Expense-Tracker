@@ -1,3 +1,4 @@
+import { jwtDecode } from "jwt-decode";
 import { createContext, useEffect, useReducer, ReactNode } from "react";
 
 interface AuthState {
@@ -24,12 +25,12 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
     case "LOGIN": {
       const user = action.payload;
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", user.token as string);
       return { user, showConfetti: state.showConfetti };
     }
     case "LOGOUT": {
       localStorage.removeItem("user");
-      return { user: null, showConfetti: state.showConfetti };
+      return { user: null, showConfetti: false };
     }
     case "UPGRADE":
       return { ...state, user: { ...state.user!, isPremium: true } };
@@ -49,11 +50,27 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({
   });
 
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "null");
-    if (user) {
+    try {
+      const token = localStorage.getItem("user");
+
+      if (token && typeof token === "string") {
+        const decoded: DecodedToken = jwtDecode(token);
+
+        const user = {
+          email: decoded.email,
+          isPremium: decoded.isPremium,
+          token,
+        };
+
+        dispatch({
+          type: "LOGIN",
+          payload: user,
+        });
+      }
+    } catch (error) {
+      console.error("Error decoding token:", error);
       dispatch({
-        type: "LOGIN",
-        payload: user,
+        type: "LOGOUT",
       });
     }
   }, []);

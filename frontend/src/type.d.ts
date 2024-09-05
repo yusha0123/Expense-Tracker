@@ -73,3 +73,9 @@ type RazorpayResponse = {
     razorpay_payment_id: string
     razorpay_signature: string
 }
+
+interface DecodedToken {
+    _id: string;
+    email: string;
+    isPremium: boolean;
+}

@@ -2,12 +2,12 @@ const validator = require("validator");
 const nodemailer = require("nodemailer");
 const { v4: uuidv4 } = require("uuid");
 const asyncHandler = require("express-async-handler");
-const path = require("path");
 const mongoose = require("mongoose");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const ResetPassword = require("../models/resetPassword");
 let emailTemplate = require("../views/emailTemplate");
-const bcrypt = require('bcrypt');
 
 const createUser = asyncHandler(async (req, res, next) => {
   try {
@@ -46,13 +46,13 @@ const createUser = asyncHandler(async (req, res, next) => {
       email,
       password,
     });
+
     const token = result.generateAuthToken();
+
     return res.status(201).json({
       success: true,
       message: "User Registered Successfully!",
       token,
-      email,
-      isPremium: false,
     });
   } catch (error) {
     res.status(500);
@@ -91,14 +91,38 @@ const login = asyncHandler(async (req, res, next) => {
       success: true,
       message: "User Logged in Successfully!",
       token,
-      email,
-      isPremium: result.isPremium,
     });
   } catch (error) {
     res.status(500);
     throw new Error("Internal Server Error!");
   }
 });
+
+const refreshToken = asyncHandler(async (req, res, next) => {
+  try {
+    const { _id, isPremium, email } = req.user;
+
+    const updatedToken = jwt.sign(
+      {
+        _id,
+        email,
+        isPremium,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    res.json({
+      token: updatedToken
+    })
+
+  } catch (error) {
+    res.status(500);
+    throw new Error("Internal Server Error!");
+  }
+})
 
 const resetPassword = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
@@ -187,7 +211,7 @@ const validateToken = asyncHandler(async (req, res, next) => {
     return res.status(400).send("Link expired, Please request a new One!");
   }
 
-  res.send("Token validated successfully!")
+  res.send("Token validated successfully!");
 });
 
 const changePassword = asyncHandler(async (req, res, next) => {
@@ -226,7 +250,7 @@ const changePassword = asyncHandler(async (req, res, next) => {
 
     await User.updateOne(
       { _id: result.userId },
-      { password: hashedPassword },
+      { password: hashedPassword }
     ).session(session);
 
     // Delete the token from the database to ensure that each link works only once
@@ -253,4 +277,5 @@ module.exports = {
   resetPassword,
   validateToken,
   changePassword,
+  refreshToken
 };
