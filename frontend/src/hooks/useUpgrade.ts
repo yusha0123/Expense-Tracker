@@ -8,7 +8,7 @@ export const useUpgrade = () => {
 
   const { mutate } = useMutation({
     mutationFn: async () => {
-      const { data } = await axios.post("/api/auth/refresh", null, {
+      const { data } = await axios.get("/api/auth/refresh", {
         headers: {
           Authorization: `Bearer ${user?.token}`,
         },

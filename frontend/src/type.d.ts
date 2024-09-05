@@ -7,6 +7,7 @@ type User = {
 type LeaderboardData = {
     name: string;
     totalExpenses: number;
+    email?: string
 };
 
 type ReportData = {

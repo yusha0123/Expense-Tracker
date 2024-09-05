@@ -45,7 +45,11 @@ const Navlink = ({
             Authorization: `Bearer ${user?.token}`,
           },
         });
-        handleOpenRazorPay(data);
+        if (Razorpay) {
+          handleOpenRazorPay(data);
+        } else {
+          toast.error("Razorpay failed to load!");
+        }
       } catch (error) {
         verify(error);
       }

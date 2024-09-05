@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { Loading } from "../components/Loading";
-import Navbar from "../components/Navbar";
+import { Loading } from "@/components/Loading";
+import Navbar from "@/components/Navbar";
 
 export const PrivateRoute = ({
   user,
@@ -11,24 +11,24 @@ export const PrivateRoute = ({
   isPremiumRoute: boolean;
 }) => {
   if (isPremiumRoute) {
-    if (user && user.isPremium) {
-      return (
-        <>
-          <Navbar />
-          <Suspense fallback={<Loading />}>
-            <main className="mt-16 md:mt-20">
-              <Outlet />
-            </main>
-          </Suspense>
-        </>
-      );
+    if (user) {
+      if (user.isPremium) {
+        return (
+          <>
+            <Navbar />
+            <Suspense fallback={<Loading />}>
+              <main className="mt-16 md:mt-20">
+                <Outlet />
+              </main>
+            </Suspense>
+          </>
+        );
+      } else {
+        return <Navigate to={"/dashboard"} replace />;
+      }
+    } else {
+      return <Navigate to={"/auth?action=login"} replace />;
     }
-
-    if (user && !user.isPremium) {
-      return <Navigate to={"/dashboard"} replace />;
-    }
-
-    return <Navigate to={"/auth?action=login"} replace />;
   } else {
     if (user) {
       return (

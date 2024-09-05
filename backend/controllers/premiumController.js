@@ -78,9 +78,10 @@ const leaderboard = asyncHandler(async (req, res, next) => {
       },
       {
         $project: {
+          _id: 0,
           name: 1,
           totalExpenses: 1,
-          _id: { $cond: { if: { $eq: ["$_id", req.user._id] }, then: "$_id", else: "$$REMOVE" } }
+          email: { $cond: { if: { $eq: ["$email", req.user.email] }, then: "$email", else: "$$REMOVE" } }
         }
       }
     ]);

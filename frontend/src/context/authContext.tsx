@@ -56,6 +56,10 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({
       if (token && typeof token === "string") {
         const decoded: DecodedToken = jwtDecode(token);
 
+        if (!("email" in decoded) || !("isPremium" in decoded)) {
+          throw new Error("Decoded token is missing required properties.");
+        }
+
         const user = {
           email: decoded.email,
           isPremium: decoded.isPremium,

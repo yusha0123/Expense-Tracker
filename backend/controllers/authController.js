@@ -100,11 +100,10 @@ const login = asyncHandler(async (req, res, next) => {
 
 const refreshToken = asyncHandler(async (req, res, next) => {
   try {
-    const { _id, isPremium, email } = req.user;
+    const { isPremium, email } = req.user;
 
     const updatedToken = jwt.sign(
       {
-        _id,
         email,
         isPremium,
       },

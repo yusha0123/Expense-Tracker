@@ -66,19 +66,22 @@ const Leaderboard = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {data.map((user, index) => (
-                <Tr key={index}>
+              {data.map((userData, index) => (
+                <Tr
+                  key={index}
+                  bg={userData.email === user?.email ? "gray.100" : "white"}
+                >
                   <Td textAlign={"center"}>
                     {index === 0 && <Icon as={FaTrophy} color="gold" />}
                     {index === 1 && <Icon as={FaTrophy} color="silver" />}
                     {index === 2 && <Icon as={FaTrophy} color="peru" />}
                     {index > 2 && index + 1}
                   </Td>
-                  <Td textAlign={"center"}>{user.name}</Td>
+                  <Td textAlign={"center"}>{userData.name}</Td>
                   <Td textAlign={"center"}>
                     <CountUp
                       start={0}
-                      end={user?.totalExpenses || 0}
+                      end={userData?.totalExpenses || 0}
                       duration={2}
                       separator=","
                     />

@@ -11,7 +11,7 @@ const protected = require("../middleware/auth");
 
 router.route("/signup").post(createUser);
 router.route("/login").post(login);
-router.route("/refresh").post(protected, refreshToken)
+router.route("/refresh").get(protected, refreshToken)
 router.route("/token").post(resetPassword);
 router.route("/reset-password").get(validateToken);
 router.route("/reset-password/:token").put(changePassword);
