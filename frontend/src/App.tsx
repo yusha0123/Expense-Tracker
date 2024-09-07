@@ -12,7 +12,7 @@ axios.defaults.baseURL = import.meta.env.VITE_SERVER_ADDRESS;
 
 function App() {
   const {
-    state: { user },
+    state: { user, isInitializing },
   } = useAuthContext();
   const Auth = lazy(() => import("./pages/Auth"));
   const Root = lazy(() => import("./pages/Root"));
@@ -25,14 +25,32 @@ function App() {
   return (
     <Suspense fallback={<Loading />}>
       <Routes>
-        <Route element={<PublicRoute user={user} />}>
+        <Route
+          element={<PublicRoute user={user} isInitializing={isInitializing} />}
+        >
           <Route path="/" element={<Root />} />
           <Route path="/auth" element={<Auth />} />
         </Route>
-        <Route element={<PrivateRoute user={user} isPremiumRoute={false} />}>
+        <Route
+          element={
+            <PrivateRoute
+              user={user}
+              isPremiumRoute={false}
+              isInitializing={isInitializing}
+            />
+          }
+        >
           <Route path="/dashboard" element={<Dashboard />} />
         </Route>
-        <Route element={<PrivateRoute user={user} isPremiumRoute={true} />}>
+        <Route
+          element={
+            <PrivateRoute
+              user={user}
+              isPremiumRoute={true}
+              isInitializing={isInitializing}
+            />
+          }
+        >
           <Route path="/leaderboard" element={<Leaderboard />} />
           <Route path="/reports" element={<Report />} />
         </Route>

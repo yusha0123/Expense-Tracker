@@ -6,10 +6,16 @@ import Navbar from "@/components/Navbar";
 export const PrivateRoute = ({
   user,
   isPremiumRoute,
+  isInitializing,
 }: {
   user: User | null;
   isPremiumRoute: boolean;
+  isInitializing: boolean;
 }) => {
+  if (isInitializing) {
+    return <Loading />;
+  }
+
   if (isPremiumRoute) {
     if (user) {
       if (user.isPremium) {

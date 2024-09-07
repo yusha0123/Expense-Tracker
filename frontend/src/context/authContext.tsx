@@ -4,13 +4,15 @@ import { createContext, useEffect, useReducer, ReactNode } from "react";
 interface AuthState {
   user: User | null;
   showConfetti: boolean;
+  isInitializing: boolean;
 }
 
 type AuthAction =
   | { type: "LOGIN"; payload: User }
   | { type: "LOGOUT" }
   | { type: "UPGRADE" }
-  | { type: "TOGGLE_CONFETTI" };
+  | { type: "TOGGLE_CONFETTI" }
+  | { type: "SET_INITIALIZING"; payload: boolean };
 
 interface AuthContextType {
   state: AuthState;
@@ -26,16 +28,18 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     case "LOGIN": {
       const user = action.payload;
       localStorage.setItem("user", user.token as string);
-      return { user, showConfetti: state.showConfetti };
+      return { ...state, user };
     }
     case "LOGOUT": {
       localStorage.removeItem("user");
-      return { user: null, showConfetti: false };
+      return { ...state, user: null, showConfetti: false };
     }
     case "UPGRADE":
       return { ...state, user: { ...state.user!, isPremium: true } };
     case "TOGGLE_CONFETTI":
       return { ...state, showConfetti: !state.showConfetti };
+    case "SET_INITIALIZING":
+      return { ...state, isInitializing: action.payload };
     default:
       return state;
   }
@@ -47,36 +51,43 @@ export const AuthContextProvider: React.FC<{ children: ReactNode }> = ({
   const [state, dispatch] = useReducer(authReducer, {
     user: null,
     showConfetti: false,
+    isInitializing: true,
   });
 
   useEffect(() => {
-    try {
-      const token = localStorage.getItem("user");
+    const initializeAuth = async () => {
+      dispatch({ type: "SET_INITIALIZING", payload: true });
 
-      if (token && typeof token === "string") {
-        const decoded: DecodedToken = jwtDecode(token);
+      try {
+        const token = localStorage.getItem("user");
 
-        if (!("email" in decoded) || !("isPremium" in decoded)) {
-          throw new Error("Decoded token is missing required properties.");
+        if (token && typeof token === "string") {
+          const decoded: DecodedToken = jwtDecode(token);
+
+          if (!("email" in decoded) || !("isPremium" in decoded)) {
+            throw new Error("Decoded token is missing required properties.");
+          }
+
+          const user = {
+            email: decoded.email,
+            isPremium: decoded.isPremium,
+            token,
+          };
+
+          dispatch({
+            type: "LOGIN",
+            payload: user,
+          });
         }
-
-        const user = {
-          email: decoded.email,
-          isPremium: decoded.isPremium,
-          token,
-        };
-
-        dispatch({
-          type: "LOGIN",
-          payload: user,
-        });
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        dispatch({ type: "LOGOUT" });
+      } finally {
+        dispatch({ type: "SET_INITIALIZING", payload: false });
       }
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      dispatch({
-        type: "LOGOUT",
-      });
-    }
+    };
+
+    initializeAuth();
   }, []);
 
   return (
