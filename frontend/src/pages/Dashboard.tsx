@@ -1,8 +1,8 @@
+import useDeleteExpense from "@/hooks/useDeleteExpense";
 import useOverlayStore from "@/hooks/useOverlayStore";
 import {
   Box,
   Button,
-  Center,
   Grid,
   HStack,
   Heading,
@@ -10,7 +10,8 @@ import {
   Input,
   ScaleFade,
   Select,
-  Spinner,
+  Skeleton,
+  Stack,
   Table,
   TableContainer,
   Tbody,
@@ -32,7 +33,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
 import useTitle from "../hooks/useTitle";
-import useDeleteExpense from "@/hooks/useDeleteExpense";
 
 const Dashboard = () => {
   const {
@@ -214,9 +214,18 @@ const Dashboard = () => {
         </Box>
       </ScaleFade>
       {isPending && (
-        <Center mt={20}>
-          <Spinner size="lg" />
-        </Center>
+        <Stack>
+          {Array.from({ length: 5 }).map((_, index) => (
+            <Skeleton
+              key={index}
+              height="55px"
+              rounded={"7px"}
+              w={{ base: "90%", md: "80%", lg: "70%" }}
+              mx="auto"
+              maxW="1180px"
+            />
+          ))}
+        </Stack>
       )}
       {(data?.expenses?.length ?? 0) > 0 && (
         <TableContainer

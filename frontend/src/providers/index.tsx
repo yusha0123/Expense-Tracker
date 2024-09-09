@@ -1,41 +1,10 @@
+import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
-import ReactConfetti from "react-confetti";
 import { ToastContainer } from "react-toastify";
-import useWindowSize from "react-use/lib/useWindowSize";
-import { AuthContextProvider } from "@/context/authContext";
-import { useAuthContext } from "@/hooks/useAuthContext";
-import OverlayProvider from "@/overlays/OverlayProvider";
-
-const ConfettiProvider = () => {
-  const {
-    state: { showConfetti },
-    dispatch,
-  } = useAuthContext();
-  const { width, height } = useWindowSize();
-
-  const handleComplete = () => {
-    dispatch({ type: "TOGGLE_CONFETTI" });
-  };
-
-  if (!showConfetti) return null;
-
-  return (
-    <ReactConfetti
-      style={{
-        position: "fixed",
-        pointerEvents: "none",
-        zIndex: 99,
-      }}
-      width={width}
-      height={height}
-      numberOfPieces={1000}
-      recycle={false}
-      onConfettiComplete={handleComplete}
-    />
-  );
-};
+import OverlayProvider from "./OverlayProvider";
+import ConfettiProvider from "./ConfettiProvider";
+import AuthProvider from "./AuthProvider";
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({
@@ -53,7 +22,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <ChakraProvider>
-          <AuthContextProvider>
+          <AuthProvider>
             <ConfettiProvider />
             <ToastContainer
               position="top-center"
@@ -69,7 +38,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
             />
             {children}
             <OverlayProvider />
-          </AuthContextProvider>
+          </AuthProvider>
         </ChakraProvider>
       </QueryClientProvider>
     </React.StrictMode>

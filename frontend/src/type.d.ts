@@ -4,6 +4,20 @@ type User = {
     isPremium: boolean | null;
 };
 
+type AuthState = {
+    user: User | null;
+    showConfetti: boolean;
+    isInitializing: boolean;
+}
+
+type AuthAction =
+    | { type: "LOGIN"; payload: User }
+    | { type: "LOGOUT" }
+    | { type: "UPGRADE" }
+    | { type: "TOGGLE_CONFETTI" }
+    | { type: "SET_INITIALIZING"; payload: boolean };
+
+
 type LeaderboardData = {
     name: string;
     totalExpenses: number;
@@ -76,7 +90,6 @@ type RazorpayResponse = {
 }
 
 interface DecodedToken {
-    _id: string;
     email: string;
     isPremium: boolean;
 }
