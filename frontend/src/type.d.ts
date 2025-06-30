@@ -93,3 +93,24 @@ interface DecodedToken {
     email: string;
     isPremium: boolean;
 }
+
+type LeaderboardUser = {
+    name: string;
+    totalExpenses: number;
+    email?: string;
+};
+
+type LeaderboardResponse = {
+    leaderboard: LeaderboardUser[];
+    totalPages: number;
+    totalItems: number;
+    currentPage: number;
+    currentUser: CurrentUserRankInfo | null;
+};
+
+interface CurrentUserRankInfo {
+    name: string;
+    email: string;
+    totalExpenses: number;
+    rank: number;
+}

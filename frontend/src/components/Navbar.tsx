@@ -66,12 +66,22 @@ export default function Navbar() {
                 <FaUserCircle />
               </MenuButton>
               <MenuList>
-                <MenuItem display={"flex"} alignItems={"center"} gap={3}>
+                <MenuItem
+                  display={"flex"}
+                  alignItems={"center"}
+                  gap={3}
+                  cursor={"default"}
+                >
                   <Icon as={AiOutlineMail} />
                   {user?.email}
                 </MenuItem>
                 <MenuDivider />
-                <MenuItem display={"flex"} alignItems={"center"} gap={3}>
+                <MenuItem
+                  display={"flex"}
+                  alignItems={"center"}
+                  gap={3}
+                  cursor={"default"}
+                >
                   <Icon as={user?.isPremium ? PiCrownBold : FaUser} />
                   {user?.isPremium ? "Premium" : "Freemium"} User
                 </MenuItem>

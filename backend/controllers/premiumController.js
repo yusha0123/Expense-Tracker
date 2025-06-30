@@ -71,21 +71,63 @@ const verifyOrder = asyncHandler(async (req, res, next) => {
 
 const leaderboard = asyncHandler(async (req, res, next) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const perPage = parseInt(req.query.rows) || 10;
+    const skip = (page - 1) * perPage;
+
+    const totalItems = await User.countDocuments();
+
+    const sortedUsers = await User.find()
+      .sort({ totalExpenses: -1 })
+      .select("email");
+
+    const currentUserIndex = sortedUsers.findIndex(
+      (user) => user.email === req.user.email
+    );
+
+    const currentUserRank = currentUserIndex !== -1 ? currentUserIndex + 1 : null;
 
     const result = await User.aggregate([
-      {
-        $sort: { totalExpenses: -1 }
-      },
+      { $sort: { totalExpenses: -1 } },
       {
         $project: {
           _id: 0,
           name: 1,
           totalExpenses: 1,
-          email: { $cond: { if: { $eq: ["$email", req.user.email] }, then: "$email", else: "$$REMOVE" } }
-        }
-      }
+          email: {
+            $cond: {
+              if: { $eq: ["$email", req.user.email] },
+              then: "$email",
+              else: "$$REMOVE",
+            },
+          },
+        },
+      },
+      { $skip: skip },
+      { $limit: perPage },
     ]);
-    res.status(200).json(result);
+
+    const totalPages = Math.ceil(totalItems / perPage);
+
+    const currentUser = await User.findOne({ email: req.user.email }).select(
+      "name totalExpenses email"
+    );
+
+    res.status(200).json({
+      leaderboard: result,
+      currentPage: page,
+      totalPages,
+      totalItems,
+      currentUser:
+        currentUser && currentUserRank
+          ? {
+            name: currentUser.name,
+            totalExpenses: currentUser.totalExpenses,
+            email: currentUser.email,
+            rank: currentUserRank,
+          }
+          : null,
+    });
   } catch (error) {
     res.status(500);
     throw new Error("Something went wrong!");
