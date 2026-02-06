@@ -120,4 +120,66 @@ const deleteUserExpense = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { addExpense, getUserExpenses, deleteUserExpense };
+const updateUserExpense = asyncHandler(async (req, res, next) => {
+  const { amount, category, description } = req.body;
+  const expenseId = req.params.id;
+
+  if (!expenseId) {
+    res.status(400);
+    throw new Error("Please provide an Expense Id!");
+  }
+
+  if (!amount || !category || !description) {
+    res.status(400);
+    throw new Error("All fields are Mandatory!");
+  }
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const existingExpense = await Expense.findOne({
+      _id: expenseId,
+      userId: req.user._id,
+    }).session(session);
+
+    if (!existingExpense) {
+      res.status(404);
+      throw new Error("Expense not found!");
+    }
+
+    const amountDifference =
+      Number(amount) - Number(existingExpense.amount);
+
+    await Expense.updateOne(
+      { _id: expenseId },
+      {
+        amount,
+        category,
+        description,
+      },
+      { session }
+    );
+
+    await User.updateOne(
+      { _id: req.user._id },
+      { $inc: { totalExpenses: amountDifference } },
+      { session }
+    );
+
+    await session.commitTransaction();
+
+    res.status(200).json({
+      success: true,
+      message: "Expense updated successfully!",
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    res.status(500);
+    throw new Error("Something went Wrong!");
+  } finally {
+    session.endSession();
+  }
+});
+
+module.exports = { addExpense, getUserExpenses, updateUserExpense, deleteUserExpense };

@@ -5,6 +5,7 @@ import { ToastContainer } from "react-toastify";
 import OverlayProvider from "./OverlayProvider";
 import ConfettiProvider from "./ConfettiProvider";
 import AuthProvider from "./AuthProvider";
+import theme from "@/theme";
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   const queryClient = new QueryClient({
@@ -21,7 +22,7 @@ export const AppProvider = ({ children }: { children: React.ReactNode }) => {
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <ChakraProvider>
+        <ChakraProvider theme={theme}>
           <AuthProvider>
             <ConfettiProvider />
             <ToastContainer

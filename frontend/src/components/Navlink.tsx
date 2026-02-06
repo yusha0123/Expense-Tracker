@@ -63,7 +63,7 @@ const Navlink = ({
 
   const handleOpenRazorPay = (data: Order) => {
     const options = {
-      key: import.meta.env.RAZOR_PAY_KEY,
+      key: import.meta.env.VITE_RAZOR_PAY_KEY,
       name: "Expensify",
       order_id: data.id,
       amount: data.amount_due.toString(),
