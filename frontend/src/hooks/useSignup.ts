@@ -1,15 +1,16 @@
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import { useAuthContext } from "./useAuthContext";
+import axiosInstance from "@/lib/axios";
+import { authStorage } from "@/utils/authStorage";
 
 export const useSignup = () => {
   const { dispatch } = useAuthContext();
 
   return useMutation({
     mutationFn: async (formData: Record<string, unknown>) => {
-      const { data } = await axios.post("/api/auth/signup", formData);
+      const { data } = await axiosInstance.post("/auth/signup", formData);
       return data;
     },
     onSuccess: (data) => {
@@ -21,6 +22,7 @@ export const useSignup = () => {
         isPremium: decoded.isPremium,
         token,
       };
+      authStorage.setToken(token);
 
       dispatch({
         type: "LOGIN",

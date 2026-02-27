@@ -40,14 +40,15 @@ const createUser = asyncHandler(async (req, res, next) => {
       });
     }
     //Signup the user
-
-    const result = await User.create({
+    const user = new User({
       name,
       email,
       password,
     });
 
-    const token = result.generateAuthToken();
+    await user.save();
+
+    const token = user.generateAuthToken();
 
     return res.status(201).json({
       success: true,
@@ -55,6 +56,7 @@ const createUser = asyncHandler(async (req, res, next) => {
       token,
     });
   } catch (error) {
+    console.log(error);
     res.status(500);
     throw new Error("Internal Server Error!");
   }

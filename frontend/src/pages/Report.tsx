@@ -1,3 +1,6 @@
+import Chart from "@/components/Chart";
+import useOverlayStore from "@/hooks/useOverlayStore";
+import axiosInstance from "@/lib/axios";
 import {
   Alert,
   AlertDescription,
@@ -13,17 +16,14 @@ import {
   Select,
 } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import moment from "moment";
 import { useRef, useState } from "react";
 import { FaDownload, FaHistory } from "react-icons/fa";
-import { toast, Id } from "react-toastify";
+import { Id, toast } from "react-toastify";
 import { Loading } from "../components/Loading";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
 import useTitle from "../hooks/useTitle";
-import useOverlayStore from "@/hooks/useOverlayStore";
-import Chart from "@/components/Chart";
 
 const Report = () => {
   useTitle("Expensify - Reports");
@@ -39,7 +39,7 @@ const Report = () => {
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["user-report", type],
     queryFn: async () => {
-      const { data } = await axios.get(`/api/premium/report?type=${type}`, {
+      const { data } = await axiosInstance.get(`/api/premium/report?type=${type}`, {
         headers: {
           Authorization: `Bearer ${user?.token}`,
         },
@@ -53,7 +53,7 @@ const Report = () => {
   const downloadReport = useMutation({
     mutationFn: () => {
       toastRef.current = toast.loading("Generating file...");
-      return axios.post(
+      return axiosInstance.post(
         "/api/premium/report/download",
         {
           data,
@@ -177,8 +177,8 @@ const Report = () => {
             {type === "monthly"
               ? `Total Expenses in ${moment(new Date()).format("MMMM")} : `
               : `Total Expenses in the year ${moment(new Date()).format(
-                  "YYYY"
-                )} : `}
+                "YYYY"
+              )} : `}
             &#x20B9;{totalAmount}
           </Badge>
         </Center>

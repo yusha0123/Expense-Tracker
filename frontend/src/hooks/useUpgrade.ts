@@ -1,5 +1,5 @@
+import axiosInstance from "@/lib/axios";
 import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
 import { toast } from "react-toastify";
 import { useAuthContext } from "./useAuthContext";
 
@@ -8,7 +8,7 @@ export const useUpgrade = () => {
 
   const { mutate } = useMutation({
     mutationFn: async () => {
-      const { data } = await axios.get("/api/auth/refresh", {
+      const { data } = await axiosInstance.get("/api/auth/refresh", {
         headers: {
           Authorization: `Bearer ${user?.token}`,
         },

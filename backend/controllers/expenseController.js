@@ -82,9 +82,9 @@ const getUserExpenses = asyncHandler(async (req, res, next) => {
 
 const deleteUserExpense = asyncHandler(async (req, res, next) => {
   const id = req.params.id;
-  if (!id) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
     res.status(400);
-    throw new Error("Please provide an Id!");
+    throw new Error("Invalid Expense Id!");
   }
 
   const session = await mongoose.startSession();
@@ -124,9 +124,9 @@ const updateUserExpense = asyncHandler(async (req, res, next) => {
   const { amount, category, description } = req.body;
   const expenseId = req.params.id;
 
-  if (!expenseId) {
+  if (!mongoose.Types.ObjectId.isValid(expenseId)) {
     res.status(400);
-    throw new Error("Please provide an Expense Id!");
+    throw new Error("Invalid Expense Id!");
   }
 
   if (!amount || !category || !description) {

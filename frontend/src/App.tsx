@@ -1,4 +1,3 @@
-import axios from "axios";
 import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
@@ -7,8 +6,6 @@ import { Loading } from "./components/Loading";
 import { PrivateRoute } from "./hoc/PrivateRoute";
 import { PublicRoute } from "./hoc/PublicRoute";
 import { useAuthContext } from "./hooks/useAuthContext";
-
-axios.defaults.baseURL = import.meta.env.VITE_SERVER_ADDRESS;
 
 function App() {
   const {

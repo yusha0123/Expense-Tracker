@@ -22,14 +22,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { motion } from "framer-motion";
 import moment from "moment";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
 import useTitle from "../hooks/useTitle";
 import {
@@ -39,12 +37,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { FiEdit, FiTrash2 } from "react-icons/fi";
+import axiosInstance from "@/lib/axios";
 
 
 const Dashboard = () => {
-  const {
-    state: { user },
-  } = useAuthContext();
   useTitle("Expensify - Dashboard");
   const queryClient = useQueryClient();
   const { onOpen } = useOverlayStore();
@@ -61,13 +57,8 @@ const Dashboard = () => {
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["user-expenses", { currentPage, rows }],
     queryFn: async () => {
-      const response = await axios.get(
-        `/api/expense/?page=${currentPage}&rows=${rows}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
+      const response = await axiosInstance.get(
+        `/expense/?page=${currentPage}&rows=${rows}`
       );
       const data = response.data as DashboardData;
       navigate(`/dashboard?page=${data.currentPage}`);
@@ -81,11 +72,7 @@ const Dashboard = () => {
 
   const createExpense = useMutation({
     mutationFn: (formData: Record<string, unknown>) => {
-      return axios.post("/api/expense", formData, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
+      return axiosInstance.post("/expense", formData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -136,7 +123,7 @@ const Dashboard = () => {
               size="sm"
               variant="ghost"
               colorScheme="blue"
-            // onClick={() => navigate(`/expense/edit/${item._id}`)}
+              onClick={() => onOpen("EDIT_DIALOG", item)}
             />
 
             <IconButton

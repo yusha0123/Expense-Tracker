@@ -1,28 +1,28 @@
-import {
-  Table,
-  Thead,
-  Tbody,
-  Tr,
-  Th,
-  Td,
-  TableContainer,
-  Icon,
-  Select,
-  IconButton,
-  HStack,
-  Box,
-} from "@chakra-ui/react";
-import { useAuthContext } from "@/hooks/useAuthContext";
-import axios from "axios";
-import { useError } from "@/hooks/useError";
-import { FaTrophy } from "react-icons/fa";
 import { Loading } from "@/components/Loading";
-import { useQuery } from "@tanstack/react-query";
+import { useAuthContext } from "@/hooks/useAuthContext";
+import { useError } from "@/hooks/useError";
 import useTitle from "@/hooks/useTitle";
-import CountUp from "react-countup";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import axiosInstance from "@/lib/axios";
+import {
+  Box,
+  HStack,
+  Icon,
+  IconButton,
+  Select,
+  Table,
+  TableContainer,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+} from "@chakra-ui/react";
+import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { GrCaretPrevious, GrCaretNext } from "react-icons/gr";
+import CountUp from "react-countup";
+import { FaTrophy } from "react-icons/fa";
+import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Leaderboard = () => {
   const {
@@ -41,7 +41,7 @@ const Leaderboard = () => {
   const { data, isPending, isError, error } = useQuery({
     queryKey: ["leaderboard", { currentPage, rows }],
     queryFn: async () => {
-      const res = await axios.get(
+      const res = await axiosInstance.get(
         `/api/premium/leaderboard?page=${currentPage}&rows=${rows}`,
         {
           headers: {

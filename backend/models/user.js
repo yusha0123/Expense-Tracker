@@ -33,7 +33,7 @@ UserSchema.pre("save", async function () {
   if (!this.isModified("password")) return;
 
   const saltRounds = 10;
-  this.password = bcrypt.hash(this.password, saltRounds);
+  this.password = await bcrypt.hash(this.password, saltRounds);
 });
 
 UserSchema.methods.comparePassword = async function (password) {

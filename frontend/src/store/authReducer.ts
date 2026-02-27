@@ -2,12 +2,9 @@
 export const authReducer = (state: AuthState, action: AuthAction): AuthState => {
     switch (action.type) {
         case "LOGIN": {
-            const user = action.payload;
-            localStorage.setItem("user", user.token as string);
-            return { ...state, user };
+            return { ...state, user: action.payload };
         }
         case "LOGOUT": {
-            localStorage.removeItem("user");
             return { ...state, user: null, showConfetti: false };
         }
         case "UPGRADE":

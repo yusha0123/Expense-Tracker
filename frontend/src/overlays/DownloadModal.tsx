@@ -1,3 +1,7 @@
+import { useAuthContext } from "@/hooks/useAuthContext";
+import { useError } from "@/hooks/useError";
+import useOverlayStore from "@/hooks/useOverlayStore";
+import axiosInstance from "@/lib/axios";
 import {
   Alert,
   AlertIcon,
@@ -22,13 +26,9 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { motion } from "framer-motion";
 import moment from "moment";
 import { FaDownload } from "react-icons/fa";
-import { useAuthContext } from "@/hooks/useAuthContext";
-import { useError } from "@/hooks/useError";
-import useOverlayStore from "@/hooks/useOverlayStore";
 
 const DownloadModal = () => {
   const {
@@ -47,7 +47,7 @@ const DownloadModal = () => {
   const { data, isPending, error, isError } = useQuery({
     queryKey: ["downloads", isOpen],
     queryFn: async () => {
-      const { data } = await axios.get("/api/premium/report/download-history", {
+      const { data } = await axiosInstance.get("/api/premium/report/download-history", {
         headers: {
           Authorization: `Bearer ${user?.token}`,
         },

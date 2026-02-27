@@ -1,5 +1,6 @@
 import { AuthContext } from "@/store/authContext";
 import { authReducer } from "@/store/authReducer";
+import { authStorage } from "@/utils/authStorage";
 import { jwtDecode } from "jwt-decode";
 import { ReactNode, useEffect, useReducer } from "react";
 
@@ -15,7 +16,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
       dispatch({ type: "SET_INITIALIZING", payload: true });
 
       try {
-        const token = localStorage.getItem("user");
+        const token = authStorage.getToken();
 
         if (token && typeof token === "string") {
           const decoded: DecodedToken = jwtDecode(token);
@@ -37,6 +38,7 @@ const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         }
       } catch (error) {
         console.error("Error decoding token:", error);
+        authStorage.clear();
         dispatch({ type: "LOGOUT" });
       } finally {
         dispatch({ type: "SET_INITIALIZING", payload: false });

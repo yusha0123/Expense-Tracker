@@ -2,8 +2,8 @@ import { useAuthContext } from "@/hooks/useAuthContext";
 import { useError } from "@/hooks/useError";
 import useOverlayStore from "@/hooks/useOverlayStore";
 import { useUpgrade } from "@/hooks/useUpgrade";
+import axiosInstance from "@/lib/axios";
 import { Box, Icon } from "@chakra-ui/react";
-import axios from "axios";
 import { AiOutlineLock } from "react-icons/ai";
 import { MdOutlineLeaderboard } from "react-icons/md";
 import { PiCrownBold } from "react-icons/pi";
@@ -40,7 +40,7 @@ const Navlink = ({
     onClose();
     if (link == "Buy Premium" && !user?.isPremium) {
       try {
-        const { data } = await axios.get("/api/premium/create-order", {
+        const { data } = await axiosInstance.get("/api/premium/create-order", {
           headers: {
             Authorization: `Bearer ${user?.token}`,
           },
@@ -70,7 +70,7 @@ const Navlink = ({
       currency: data.currency,
       handler: async function (response: RazorpayResponse) {
         try {
-          const { data } = await axios.post(
+          const { data } = await axiosInstance.post(
             "/api/premium/verify-order",
             response,
             {
