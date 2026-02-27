@@ -1,16 +1,15 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import { Loading } from "./components/Loading";
 import { PrivateRoute } from "./hoc/PrivateRoute";
 import { PublicRoute } from "./hoc/PublicRoute";
-import { useAuthContext } from "./hooks/useAuthContext";
+import { useAuthStore } from "./store/authStore";
 
 function App() {
-  const {
-    state: { user, isInitializing },
-  } = useAuthContext();
+  const { initialize, isInitializing, user } = useAuthStore();
+
   const Auth = lazy(() => import("./pages/Auth"));
   const Root = lazy(() => import("./pages/Root"));
   const NotFound = lazy(() => import("./pages/NotFound"));
@@ -18,6 +17,10 @@ function App() {
   const Dashboard = lazy(() => import("./pages/Dashboard"));
   const Report = lazy(() => import("./pages/Report"));
   const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+
+  useEffect(() => {
+    initialize();
+  }, []);
 
   return (
     <Suspense fallback={<Loading />}>

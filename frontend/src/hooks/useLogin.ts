@@ -1,11 +1,9 @@
-import { useMutation } from "@tanstack/react-query";
-import { useAuthContext } from "./useAuthContext";
-import { jwtDecode } from "jwt-decode";
 import axiosInstance from "@/lib/axios";
-import { authStorage } from "@/utils/authStorage";
+import { useAuthStore } from "@/store/authStore";
+import { useMutation } from "@tanstack/react-query";
 
 export const useLogin = () => {
-  const { dispatch } = useAuthContext();
+  const { login } = useAuthStore();
 
   return useMutation({
     mutationFn: (formData: Record<string, unknown>) => {
@@ -13,20 +11,8 @@ export const useLogin = () => {
     },
     onSuccess: (response) => {
       const token = response?.data?.token;
-      const decoded: DecodedToken = jwtDecode(token);
 
-      authStorage.setToken(token);
-
-      const user = {
-        email: decoded.email,
-        isPremium: decoded.isPremium,
-        token,
-      };
-
-      dispatch({
-        type: "LOGIN",
-        payload: user,
-      });
+      login(token);
     },
   });
 };

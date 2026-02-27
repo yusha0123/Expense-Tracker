@@ -17,17 +17,15 @@ import { FaUser, FaUserCircle } from "react-icons/fa";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { HiOutlineLogout } from "react-icons/hi";
 import { PiCrownBold } from "react-icons/pi";
-import { useAuthContext } from "../hooks/useAuthContext";
 import { useLogout } from "../hooks/useLogout";
 import Logo from "./Logo";
 import Navlink from "./Navlink";
+import { useAuthStore } from "@/store/authStore";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useOverlayStore();
-  const {
-    state: { user },
-  } = useAuthContext();
   const { logout } = useLogout();
+  const user = useAuthStore((s) => s.user);
 
   const handleClick = () => {
     if (isOpen) {
@@ -38,7 +36,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="px-4 bg-gray-100 shadow fixed top-0 inset-x-0 z-10">
+    <nav className="px-4 bg-gray-100 shadow-sm fixed top-0 inset-x-0 z-10">
       <Flex
         h={{
           base: 12,

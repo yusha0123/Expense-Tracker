@@ -21,16 +21,12 @@ import { useRef, useState } from "react";
 import { FaDownload, FaHistory } from "react-icons/fa";
 import { Id, toast } from "react-toastify";
 import { Loading } from "../components/Loading";
-import { useAuthContext } from "../hooks/useAuthContext";
 import { useError } from "../hooks/useError";
 import useTitle from "../hooks/useTitle";
 
 const Report = () => {
   useTitle("Expensify - Reports");
   const [type, setType] = useState<"monthly" | "yearly" | "weekly">("monthly");
-  const {
-    state: { user },
-  } = useAuthContext();
   const { verify } = useError();
   const toastRef = useRef<Id | null>(null);
   const { onOpen, isOpen } = useOverlayStore();
@@ -39,11 +35,7 @@ const Report = () => {
   const { isPending, isError, data, error } = useQuery({
     queryKey: ["user-report", type],
     queryFn: async () => {
-      const { data } = await axiosInstance.get(`/api/premium/report?type=${type}`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
+      const { data } = await axiosInstance.get(`/premium/report?type=${type}`);
       return data as ReportData[];
     },
   });
@@ -54,18 +46,12 @@ const Report = () => {
     mutationFn: () => {
       toastRef.current = toast.loading("Generating file...");
       return axiosInstance.post(
-        "/api/premium/report/download",
-        {
-          data,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-          responseType: "blob",
-        }
+        "/premium/report/download",
+        { data },
+        { responseType: "blob", }
       );
     },
+
     onSuccess: (response) => {
       const blob = new Blob([response.data], { type: "text/csv" });
       const url = window.URL.createObjectURL(blob);
@@ -146,7 +132,7 @@ const Report = () => {
             aria-label="download-btn"
             icon={<FaDownload />}
             onClick={() => downloadReport.mutate()}
-            colorScheme="messenger"
+            colorScheme="blue"
             size={{
               base: "sm",
               md: "md",

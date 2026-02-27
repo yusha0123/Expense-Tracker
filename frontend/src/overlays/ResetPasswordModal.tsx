@@ -30,7 +30,7 @@ const ResetPasswordModal = () => {
 
   const resetPassword = useMutation({
     mutationFn: (formData: Record<string, unknown>) => {
-      return axiosInstance.post("/api/auth/token", formData);
+      return axiosInstance.post("/auth/token", formData);
     },
     onSuccess: () => {
       toast.success("Password reset email sent!");
@@ -76,7 +76,7 @@ const ResetPasswordModal = () => {
               </FormControl>
               <Button
                 rightIcon={<Icon as={AiOutlineMail} />}
-                colorScheme="messenger"
+                colorScheme="cyan"
                 type="submit"
                 isLoading={resetPassword.isPending}
                 loadingText="Please wait..."

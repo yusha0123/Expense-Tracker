@@ -79,7 +79,7 @@ const Signup = () => {
           </InputGroup>
         </FormControl>
         <Button
-          colorScheme="messenger"
+          colorScheme="cyan"
           type="submit"
           mt={4}
           isLoading={signUp.isPending}

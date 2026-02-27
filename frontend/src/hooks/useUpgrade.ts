@@ -1,25 +1,20 @@
 import axiosInstance from "@/lib/axios";
+import { useAuthStore } from "@/store/authStore";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "react-toastify";
-import { useAuthContext } from "./useAuthContext";
 
 export const useUpgrade = () => {
-  const { dispatch, state: { user } } = useAuthContext();
+  const { toggleConfetti, login, upgrade } = useAuthStore();
 
   const { mutate } = useMutation({
     mutationFn: async () => {
-      const { data } = await axiosInstance.get("/api/auth/refresh", {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
-
+      const { data } = await axiosInstance.get("/auth/refresh");
       return data;
     },
     onSuccess: (data) => {
-      dispatch({ type: "TOGGLE_CONFETTI" });
-      dispatch({ type: "UPGRADE" });
-      localStorage.setItem("user", data?.token);
+      login(data?.token);
+      toggleConfetti();
+      upgrade();
       toast.success("You are now a Pro Member!");
     },
     onError: () => {

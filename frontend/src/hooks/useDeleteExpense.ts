@@ -3,7 +3,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useError } from "../hooks/useError";
-import { useAuthContext } from "./useAuthContext";
 import useOverlayStore from "./useOverlayStore";
 
 const useDeleteExpense = () => {
@@ -11,19 +10,13 @@ const useDeleteExpense = () => {
     const [searchParams] = useSearchParams();
     const currentPage = parseInt(searchParams.get("page") ?? "1");
     const rows = JSON.parse(localStorage.getItem("rows") ?? "10");
-    const {
-        state: { user },
-    } = useAuthContext();
+
     const { verify } = useError();
     const { onClose } = useOverlayStore();
 
     return useMutation({
         mutationFn: (dataId: string) => {
-            return axiosInstance.delete(`/api/expense/${dataId}`, {
-                headers: {
-                    Authorization: `Bearer ${user?.token}`,
-                },
-            });
+            return axiosInstance.delete(`/expense/${dataId}`);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({

@@ -1,7 +1,7 @@
 import Navlink from "@/components/Navlink";
-import { useAuthContext } from "@/hooks/useAuthContext";
 import { useLogout } from "@/hooks/useLogout";
 import useOverlayStore from "@/hooks/useOverlayStore";
+import { useAuthStore } from "@/store/authStore";
 import {
   Box,
   Button,
@@ -24,9 +24,7 @@ import { PiCrownBold } from "react-icons/pi";
 
 const SideDrawer = () => {
   const { isOpen, onClose, type } = useOverlayStore();
-  const {
-    state: { user },
-  } = useAuthContext();
+  const { user } = useAuthStore();
   const { logout } = useLogout();
 
   return (

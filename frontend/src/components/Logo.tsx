@@ -1,10 +1,11 @@
-import { Text, Icon } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
+import { useAuthStore } from "@/store/authStore";
+import { Icon, Text } from "@chakra-ui/react";
 import { BiMoneyWithdraw } from "react-icons/bi";
-import { useAuthContext } from "../hooks/useAuthContext";
+import { Link } from "react-router-dom";
 
 const Logo = () => {
-  const { user } = useAuthContext();
+  const { user } = useAuthStore();
+
   return (
     <Link to={user ? "/dashboard" : "/"}>
       <Text

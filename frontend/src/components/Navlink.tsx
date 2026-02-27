@@ -1,8 +1,8 @@
-import { useAuthContext } from "@/hooks/useAuthContext";
 import { useError } from "@/hooks/useError";
 import useOverlayStore from "@/hooks/useOverlayStore";
 import { useUpgrade } from "@/hooks/useUpgrade";
 import axiosInstance from "@/lib/axios";
+import { useAuthStore } from "@/store/authStore";
 import { Box, Icon } from "@chakra-ui/react";
 import { AiOutlineLock } from "react-icons/ai";
 import { MdOutlineLeaderboard } from "react-icons/md";
@@ -27,24 +27,18 @@ const Navlink = ({
   showReport,
   showLeaderBoard,
 }: NavLinkProps) => {
-  const {
-    state: { user },
-  } = useAuthContext();
   const navigate = useNavigate();
   const { upgrade } = useUpgrade();
   const { verify } = useError();
   const { onClose } = useOverlayStore();
   const [Razorpay] = useRazorpay();
+  const user = useAuthStore((s) => s.user);
 
   const handleNavclick = async (link: string) => {
     onClose();
     if (link == "Buy Premium" && !user?.isPremium) {
       try {
-        const { data } = await axiosInstance.get("/api/premium/create-order", {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        });
+        const { data } = await axiosInstance.get("/premium/create-order");
         if (Razorpay) {
           handleOpenRazorPay(data);
         } else {
@@ -71,13 +65,8 @@ const Navlink = ({
       handler: async function (response: RazorpayResponse) {
         try {
           const { data } = await axiosInstance.post(
-            "/api/premium/verify-order",
-            response,
-            {
-              headers: {
-                Authorization: `Bearer ${user?.token}`,
-              },
-            }
+            "/premium/verify-order",
+            response
           );
           if (data.success) {
             upgrade();

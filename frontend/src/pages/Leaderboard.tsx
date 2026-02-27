@@ -1,8 +1,8 @@
 import { Loading } from "@/components/Loading";
-import { useAuthContext } from "@/hooks/useAuthContext";
 import { useError } from "@/hooks/useError";
 import useTitle from "@/hooks/useTitle";
 import axiosInstance from "@/lib/axios";
+import { useAuthStore } from "@/store/authStore";
 import {
   Box,
   HStack,
@@ -25,9 +25,7 @@ import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Leaderboard = () => {
-  const {
-    state: { user },
-  } = useAuthContext();
+  const user = useAuthStore(state => state.user);
   const { verify } = useError();
   useTitle("Expensify - Leaderboard");
 
@@ -42,12 +40,7 @@ const Leaderboard = () => {
     queryKey: ["leaderboard", { currentPage, rows }],
     queryFn: async () => {
       const res = await axiosInstance.get(
-        `/api/premium/leaderboard?page=${currentPage}&rows=${rows}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
+        `/premium/leaderboard?page=${currentPage}&rows=${rows}`
       );
       return res.data as LeaderboardResponse;
     },

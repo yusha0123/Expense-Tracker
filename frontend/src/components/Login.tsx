@@ -83,7 +83,7 @@ const Login = () => {
           Forgot Password ?
         </Button>
         <Button
-          colorScheme="messenger"
+          colorScheme="cyan"
           type="submit"
           mt={2}
           isLoading={login.isPending}

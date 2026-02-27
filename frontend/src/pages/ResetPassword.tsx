@@ -44,7 +44,7 @@ const ResetPassword = () => {
   const { isPending, isError, error } = useQuery({
     queryKey: ["validate-token"],
     queryFn: async () => {
-      const { data } = await axiosInstance.get("/api/auth/reset-password", {
+      const { data } = await axiosInstance.get("/auth/reset-password", {
         params: {
           token,
         },
@@ -58,7 +58,7 @@ const ResetPassword = () => {
   const resetPass = useMutation({
     mutationFn: async (formData: Record<string, unknown>) => {
       const { data } = await axiosInstance.put(
-        `/api/auth/reset-password/${token}`,
+        `/auth/reset-password/${token}`,
         formData
       );
       return data;
