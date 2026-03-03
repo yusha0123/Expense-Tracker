@@ -1,11 +1,13 @@
 import { Box, Button, Grid, GridItem, Heading, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import HeroImage from "../assets/Hero-image.webp";
-import Logo from "../components/Logo";
+import HeroImage from "@/assets/Hero-image.webp";
+import Logo from "@/components/Logo";
+import { useTitle } from 'react-use';
 
 const Root = () => {
   const navigate = useNavigate();
+  useTitle("Expensify - Your Pocket's BestFriend");
 
   const variants = {
     hidden: { opacity: 0, x: -100 },

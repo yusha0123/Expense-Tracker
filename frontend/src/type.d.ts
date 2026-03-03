@@ -1,36 +1,9 @@
-type User = {
-    email: string | null;
-    token: string | null;
-    isPremium: boolean | null;
-};
-
-type AuthState = {
-    user: User | null;
-    showConfetti: boolean;
-    isInitializing: boolean;
-}
-
-type AuthAction =
-    | { type: "LOGIN"; payload: User }
-    | { type: "LOGOUT" }
-    | { type: "UPGRADE" }
-    | { type: "TOGGLE_CONFETTI" }
-    | { type: "SET_INITIALIZING"; payload: boolean };
-
-
 type LeaderboardData = {
     name: string;
     totalExpenses: number;
     email?: string
 };
 
-type ReportData = {
-    _id: string;
-    amount: number;
-    category: string;
-    createdAt: Date;
-    description: string;
-};
 
 type Expense = {
     _id: string;
@@ -87,11 +60,6 @@ type RazorpayResponse = {
     razorpay_order_id: string
     razorpay_payment_id: string
     razorpay_signature: string
-}
-
-interface DecodedToken {
-    email: string;
-    isPremium: boolean;
 }
 
 type LeaderboardUser = {

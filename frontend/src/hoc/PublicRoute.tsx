@@ -1,4 +1,5 @@
 import { Loading } from "@/components/Loading";
+import { User } from "@/types/auth";
 import { Navigate, Outlet } from "react-router-dom";
 
 export const PublicRoute = ({

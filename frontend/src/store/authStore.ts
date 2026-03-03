@@ -1,29 +1,7 @@
 import { create } from "zustand";
 import { jwtDecode } from "jwt-decode";
 import { authStorage } from "@/utils/authStorage";
-
-export interface User {
-    email: string;
-    isPremium: boolean;
-    token: string;
-}
-
-interface AuthState {
-    user: User | null;
-    showConfetti: boolean;
-    isInitializing: boolean;
-
-    login: (token: string) => void;
-    logout: () => void;
-    upgrade: () => void;
-    toggleConfetti: () => void;
-    initialize: () => Promise<void>;
-}
-
-interface DecodedToken {
-    email: string;
-    isPremium: boolean;
-}
+import { AuthState, DecodedToken } from "@/types/auth";
 
 export const useAuthStore = create<AuthState>((set, get) => ({
     user: null,
@@ -45,7 +23,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
             set({ user });
         } catch (err) {
-            console.error("Invalid token");
+            console.error("Invalid token", err);
             authStorage.clear();
             set({ user: null });
         }

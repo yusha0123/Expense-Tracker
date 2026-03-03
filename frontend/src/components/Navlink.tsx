@@ -1,4 +1,3 @@
-import { useError } from "@/hooks/useError";
 import useOverlayStore from "@/hooks/useOverlayStore";
 import { useUpgrade } from "@/hooks/useUpgrade";
 import axiosInstance from "@/lib/axios";
@@ -29,7 +28,6 @@ const Navlink = ({
 }: NavLinkProps) => {
   const navigate = useNavigate();
   const { upgrade } = useUpgrade();
-  const { verify } = useError();
   const { onClose } = useOverlayStore();
   const [Razorpay] = useRazorpay();
   const user = useAuthStore((s) => s.user);
@@ -44,8 +42,9 @@ const Navlink = ({
         } else {
           toast.error("Razorpay failed to load!");
         }
-      } catch (error) {
-        verify(error);
+      } catch (e) {
+        console.error(e);
+        toast.error("Something went wrong!");
       }
     } else if (!user?.isPremium) {
       toast.warning("Purchase premium membership!");
@@ -71,8 +70,9 @@ const Navlink = ({
           if (data.success) {
             upgrade();
           }
-        } catch (error) {
-          verify(error);
+        } catch (e) {
+          console.log(e);
+          toast.error("Something went wrong!");
         }
       },
     };

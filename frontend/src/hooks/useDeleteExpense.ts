@@ -2,7 +2,6 @@ import axiosInstance from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { useError } from "../hooks/useError";
 import useOverlayStore from "./useOverlayStore";
 
 const useDeleteExpense = () => {
@@ -11,7 +10,6 @@ const useDeleteExpense = () => {
     const currentPage = parseInt(searchParams.get("page") ?? "1");
     const rows = JSON.parse(localStorage.getItem("rows") ?? "10");
 
-    const { verify } = useError();
     const { onClose } = useOverlayStore();
 
     return useMutation({
@@ -24,7 +22,6 @@ const useDeleteExpense = () => {
             });
             toast.info("Expense Deleted!", { autoClose: 2000 });
         },
-        onError: (error) => verify(error),
         onSettled: () => onClose(),
     });
 };

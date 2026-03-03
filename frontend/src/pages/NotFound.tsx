@@ -1,13 +1,11 @@
+import Logo from "@/components/Logo";
+import { useAuthStore } from "@/store/authStore";
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import Logo from "@/components/Logo";
-import { useAuthContext } from "@/hooks/useAuthContext";
-import useTitle from "@/hooks/useTitle";
+import { useTitle } from 'react-use';
 
 const NotFound = () => {
-  const {
-    state: { user },
-  } = useAuthContext();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
   useTitle("Expensify - Page not found");
 

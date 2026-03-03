@@ -1,4 +1,3 @@
-import { useError } from "@/hooks/useError";
 import useOverlayStore from "@/hooks/useOverlayStore";
 import axiosInstance from "@/lib/axios";
 import {
@@ -38,9 +37,8 @@ const DownloadModal = () => {
     md: "md",
     lg: "lg",
   });
-  const { verify } = useError();
 
-  const { data, isPending, error, isError } = useQuery({
+  const { data, isPending, isError } = useQuery({
     queryKey: ["downloads", isOpen],
     queryFn: async () => {
       const { data } = await axiosInstance.get("/premium/report/download-history");
@@ -48,10 +46,6 @@ const DownloadModal = () => {
     },
     enabled: isOpen && type === "DOWNLOAD_MODAL",
   });
-
-  if (isError) {
-    verify(error);
-  }
 
   const downloadFile = (url: string) => {
     const anchor = document.createElement("a");

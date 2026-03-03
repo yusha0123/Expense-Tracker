@@ -28,8 +28,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useError } from "../hooks/useError";
-import useTitle from "../hooks/useTitle";
+import { useTitle } from 'react-use';
 import {
   ColumnDef,
   flexRender,
@@ -50,11 +49,10 @@ const Dashboard = () => {
   const [rows, setRows] = useState<number>(
     JSON.parse(localStorage.getItem("rows") ?? "10")
   );
-  const { verify } = useError();
   const { register, handleSubmit, reset } = useForm();
   const deleteExpense = useDeleteExpense();
 
-  const { isPending, isError, data, error } = useQuery({
+  const { isPending, data } = useQuery({
     queryKey: ["user-expenses", { currentPage, rows }],
     queryFn: async () => {
       const response = await axiosInstance.get(
@@ -66,10 +64,6 @@ const Dashboard = () => {
     },
   });
 
-  if (isError) {
-    verify(error);
-  }
-
   const createExpense = useMutation({
     mutationFn: (formData: Record<string, unknown>) => {
       return axiosInstance.post("/expense", formData);
@@ -79,9 +73,6 @@ const Dashboard = () => {
         queryKey: ["user-expenses", { currentPage, rows }],
       });
       reset();
-    },
-    onError: (error) => {
-      verify(error);
     },
   });
 

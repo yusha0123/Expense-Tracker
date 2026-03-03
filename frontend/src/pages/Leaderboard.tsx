@@ -1,6 +1,5 @@
 import { Loading } from "@/components/Loading";
-import { useError } from "@/hooks/useError";
-import useTitle from "@/hooks/useTitle";
+import { useTitle } from 'react-use';
 import axiosInstance from "@/lib/axios";
 import { useAuthStore } from "@/store/authStore";
 import {
@@ -26,7 +25,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 const Leaderboard = () => {
   const user = useAuthStore(state => state.user);
-  const { verify } = useError();
   useTitle("Expensify - Leaderboard");
 
   const navigate = useNavigate();
@@ -36,7 +34,7 @@ const Leaderboard = () => {
     JSON.parse(localStorage.getItem("leaderboard-rows") ?? "10")
   );
 
-  const { data, isPending, isError, error } = useQuery({
+  const { data, isPending } = useQuery({
     queryKey: ["leaderboard", { currentPage, rows }],
     queryFn: async () => {
       const res = await axiosInstance.get(
@@ -71,8 +69,6 @@ const Leaderboard = () => {
   const isUserInCurrentPage = data?.leaderboard?.some(
     (entry) => entry.email === user?.email
   );
-
-  if (isError) verify(error);
 
   if (isPending) return <Loading />;
 

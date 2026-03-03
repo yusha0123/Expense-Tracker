@@ -1,6 +1,6 @@
 import { Loading } from "@/components/Loading";
 import Logo from "@/components/Logo";
-import useTitle from "@/hooks/useTitle";
+import { useTitle } from 'react-use';
 import axiosInstance from "@/lib/axios";
 import {
   Alert,
