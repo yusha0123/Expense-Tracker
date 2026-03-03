@@ -1,26 +1,25 @@
-import axiosInstance from "@/lib/axios";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import useOverlayStore from "./useOverlayStore";
+import useOverlayStore, { ExpensePayload } from "./useOverlayStore";
+import axiosInstance from "@/lib/axios";
 
 const useDeleteExpense = () => {
     const queryClient = useQueryClient();
     const [searchParams] = useSearchParams();
     const currentPage = parseInt(searchParams.get("page") ?? "1");
     const rows = JSON.parse(localStorage.getItem("rows") ?? "10");
-
     const { onClose } = useOverlayStore();
 
     return useMutation({
-        mutationFn: (dataId: string) => {
-            return axiosInstance.delete(`/expense/${dataId}`);
+        mutationFn: (expensePayload: ExpensePayload) => {
+            return axiosInstance.patch(`/expense/${expensePayload._id}`, expensePayload);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({
                 queryKey: ["user-expenses", { currentPage, rows }],
             });
-            toast.info("Expense Deleted!", { autoClose: 2000 });
+            toast.info("Expense updated successfully!", { autoClose: 2000 });
         },
         onSettled: () => onClose(),
     });

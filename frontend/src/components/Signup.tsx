@@ -30,11 +30,11 @@ const Signup = () => {
     <form onSubmit={signUpForm.handleSubmit(handleSignup)}>
       <Stack spacing={1}>
         {signUp.isError && (
-          <Alert status="error" rounded={5}>
+          <Alert status="error" rounded={5} mb={4}>
             <AlertIcon />
             <AlertTitle>
               {isAxiosError(signUp.error) &&
-              signUp.error?.response?.data?.message
+                signUp.error?.response?.data?.message
                 ? signUp.error.response.data.message
                 : "Something went wrong!"}
             </AlertTitle>
@@ -79,7 +79,7 @@ const Signup = () => {
           </InputGroup>
         </FormControl>
         <Button
-          colorScheme="messenger"
+          colorScheme="cyan"
           type="submit"
           mt={4}
           isLoading={signUp.isPending}

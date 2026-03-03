@@ -32,7 +32,7 @@ const Login = () => {
     <form onSubmit={loginForm.handleSubmit(handleLogin)}>
       <Stack spacing={1}>
         {login.isError && (
-          <Alert status="error" rounded={5}>
+          <Alert status="error" rounded={5} mb={4}>
             <AlertIcon />
             <AlertTitle>
               {isAxiosError(login.error) && login.error.response?.data?.message
@@ -83,7 +83,7 @@ const Login = () => {
           Forgot Password ?
         </Button>
         <Button
-          colorScheme="messenger"
+          colorScheme="cyan"
           type="submit"
           mt={2}
           isLoading={login.isPending}

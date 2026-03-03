@@ -1,3 +1,4 @@
+import axiosInstance from "@/lib/axios";
 import {
   Button,
   Divider,
@@ -15,12 +16,12 @@ import {
   Stack,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
+import { AiOutlineMail } from "react-icons/ai";
 import { toast } from "react-toastify";
 import useModalStore from "../hooks/useOverlayStore";
-import { useMutation } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
-import { AiOutlineMail } from "react-icons/ai";
 
 const ResetPasswordModal = () => {
   const modalSize = useBreakpointValue({ base: "sm", md: "md", xl: "lg" });
@@ -29,7 +30,7 @@ const ResetPasswordModal = () => {
 
   const resetPassword = useMutation({
     mutationFn: (formData: Record<string, unknown>) => {
-      return axios.post("/api/auth/token", formData);
+      return axiosInstance.post("/auth/token", formData);
     },
     onSuccess: () => {
       toast.success("Password reset email sent!");
@@ -75,7 +76,7 @@ const ResetPasswordModal = () => {
               </FormControl>
               <Button
                 rightIcon={<Icon as={AiOutlineMail} />}
-                colorScheme="messenger"
+                colorScheme="cyan"
                 type="submit"
                 isLoading={resetPassword.isPending}
                 loadingText="Please wait..."

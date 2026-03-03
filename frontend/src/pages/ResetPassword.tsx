@@ -1,3 +1,7 @@
+import { Loading } from "@/components/Loading";
+import Logo from "@/components/Logo";
+import { useTitle } from 'react-use';
+import axiosInstance from "@/lib/axios";
 import {
   Alert,
   AlertDescription,
@@ -15,16 +19,13 @@ import {
   ScaleFade,
   Stack,
 } from "@chakra-ui/react";
-import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { isAxiosError } from "axios";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import useTitle from "@/hooks/useTitle";
-import Logo from "@/components/Logo";
 import { BiSolidHide, BiSolidShow } from "react-icons/bi";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import axios, { isAxiosError } from "axios";
+import { Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import { Loading } from "@/components/Loading";
 
 const ResetPassword = () => {
   useTitle("Expensify - Reset Password");
@@ -43,7 +44,7 @@ const ResetPassword = () => {
   const { isPending, isError, error } = useQuery({
     queryKey: ["validate-token"],
     queryFn: async () => {
-      const { data } = await axios.get("/api/auth/reset-password", {
+      const { data } = await axiosInstance.get("/auth/reset-password", {
         params: {
           token,
         },
@@ -56,8 +57,8 @@ const ResetPassword = () => {
 
   const resetPass = useMutation({
     mutationFn: async (formData: Record<string, unknown>) => {
-      const { data } = await axios.put(
-        `/api/auth/reset-password/${token}`,
+      const { data } = await axiosInstance.put(
+        `/auth/reset-password/${token}`,
         formData
       );
       return data;
@@ -136,7 +137,7 @@ const ResetPassword = () => {
                   <AlertIcon />
                   <AlertTitle>
                     {isAxiosError(resetPass.error) &&
-                    resetPass.error.response?.data?.message
+                      resetPass.error.response?.data?.message
                       ? resetPass.error.response.data.message
                       : "Something went wrong!"}
                   </AlertTitle>

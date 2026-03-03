@@ -11,7 +11,7 @@ import {
 import { useSearchParams } from "react-router-dom";
 import Logo from "@/components/Logo";
 import Signup from "@/components/Signup";
-import useTitle from "@/hooks/useTitle";
+import { useTitle } from 'react-use';
 import Login from "@/components/Login";
 
 const Auth = () => {

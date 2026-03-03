@@ -1,44 +1,33 @@
 import React from "react";
 import { ChakraProvider } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ToastContainer } from "react-toastify";
 import OverlayProvider from "./OverlayProvider";
 import ConfettiProvider from "./ConfettiProvider";
-import AuthProvider from "./AuthProvider";
+import theme from "@/theme";
+import { queryClient } from "@/lib/queryClient";
 
 export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: 1,
-      },
-      mutations: {
-        retry: 1,
-      },
-    },
-  });
 
   return (
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
-        <ChakraProvider>
-          <AuthProvider>
-            <ConfettiProvider />
-            <ToastContainer
-              position="top-center"
-              autoClose={4000}
-              hideProgressBar={false}
-              newestOnTop={false}
-              closeOnClick
-              rtl={false}
-              pauseOnFocusLoss={false}
-              draggable
-              pauseOnHover
-              theme="colored"
-            />
-            {children}
-            <OverlayProvider />
-          </AuthProvider>
+        <ChakraProvider theme={theme}>
+          <ConfettiProvider />
+          <ToastContainer
+            position="top-center"
+            autoClose={4000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss={false}
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
+          {children}
+          <OverlayProvider />
         </ChakraProvider>
       </QueryClientProvider>
     </React.StrictMode>

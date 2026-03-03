@@ -22,22 +22,24 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { motion } from "framer-motion";
 import moment from "moment";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { AiFillDelete } from "react-icons/ai";
 import { GrCaretNext, GrCaretPrevious } from "react-icons/gr";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useError } from "../hooks/useError";
-import useTitle from "../hooks/useTitle";
+import { useTitle } from 'react-use';
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { FiEdit, FiTrash2 } from "react-icons/fi";
+import axiosInstance from "@/lib/axios";
+
 
 const Dashboard = () => {
-  const {
-    state: { user },
-  } = useAuthContext();
   useTitle("Expensify - Dashboard");
   const queryClient = useQueryClient();
   const { onOpen } = useOverlayStore();
@@ -47,20 +49,14 @@ const Dashboard = () => {
   const [rows, setRows] = useState<number>(
     JSON.parse(localStorage.getItem("rows") ?? "10")
   );
-  const { verify } = useError();
   const { register, handleSubmit, reset } = useForm();
   const deleteExpense = useDeleteExpense();
 
-  const { isPending, isError, data, error } = useQuery({
+  const { isPending, data } = useQuery({
     queryKey: ["user-expenses", { currentPage, rows }],
     queryFn: async () => {
-      const response = await axios.get(
-        `/api/expense/?page=${currentPage}&rows=${rows}`,
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-        }
+      const response = await axiosInstance.get(
+        `/expense/?page=${currentPage}&rows=${rows}`
       );
       const data = response.data as DashboardData;
       navigate(`/dashboard?page=${data.currentPage}`);
@@ -68,17 +64,9 @@ const Dashboard = () => {
     },
   });
 
-  if (isError) {
-    verify(error);
-  }
-
   const createExpense = useMutation({
     mutationFn: (formData: Record<string, unknown>) => {
-      return axios.post("/api/expense", formData, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
+      return axiosInstance.post("/expense", formData);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -86,10 +74,70 @@ const Dashboard = () => {
       });
       reset();
     },
-    onError: (error) => {
-      verify(error);
-    },
   });
+
+  const columns: ColumnDef<Expense>[] = [
+    {
+      header: "#",
+      cell: ({ row }) => row.index + 1,
+    },
+    {
+      header: "Date",
+      accessorKey: "createdAt",
+      cell: ({ getValue }) =>
+        moment(getValue() as string).format("DD MMMM YYYY"),
+    },
+    {
+      header: "Amount",
+      accessorKey: "amount",
+      cell: ({ getValue }) =>
+        Number(getValue()).toLocaleString(),
+    },
+    {
+      header: "Category",
+      accessorKey: "category",
+    },
+    {
+      header: "Description",
+      accessorKey: "description",
+    },
+    {
+      header: "Actions",
+      cell: ({ row }) => {
+        const item = row.original;
+
+        return (
+          <HStack justify="center" spacing={2}>
+            <IconButton
+              aria-label="edit-expense"
+              icon={<FiEdit />}
+              size="sm"
+              variant="ghost"
+              colorScheme="blue"
+              onClick={() => onOpen("EDIT_DIALOG", item)}
+            />
+
+            <IconButton
+              aria-label="delete-expense"
+              icon={<FiTrash2 />}
+              size="sm"
+              variant="ghost"
+              colorScheme="red"
+              onClick={() => onOpen("DELETE_DIALOG", item._id)}
+              isDisabled={deleteExpense.isPending}
+            />
+          </HStack>
+        );
+      },
+    },
+  ];
+
+  const table = useReactTable({
+    data: data?.expenses ?? [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
 
   const handlePreviousPage = () => {
     if (currentPage > 1) {
@@ -229,88 +277,93 @@ const Dashboard = () => {
       )}
       {(data?.expenses?.length ?? 0) > 0 && (
         <TableContainer
-          boxShadow={"md"}
+          boxShadow="md"
           w={{ base: "90%", md: "80%", lg: "70%" }}
-          mx={"auto"}
-          maxW={"1180px"}
+          mx="auto"
+          maxW="1180px"
           my={5}
         >
-          <Table variant="striped" size={"sm"} colorScheme="blackAlpha">
+          <Table variant="striped" size="sm" colorScheme="blackAlpha" sx={{
+            fontSize: "14px",
+            fontWeight: 500,
+            letterSpacing: "0.01em",
+          }}>
             <Thead>
-              <Tr>
-                <Th textAlign={"center"}>#</Th>
-                <Th textAlign={"center"}>Date</Th>
-                <Th textAlign={"center"}>Amount</Th>
-                <Th textAlign={"center"}>Category</Th>
-                <Th textAlign={"center"}>Description</Th>
-                <Th textAlign={"center"}>Action</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {data?.expenses?.map((item, index) => (
-                <motion.tr
-                  key={item._id}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Td textAlign={"center"}>{index + 1}</Td>
-                  <Td textAlign={"center"}>
-                    {moment(item.createdAt).format("DD MMMM YYYY")}
-                  </Td>
-                  <Td textAlign={"center"}>{item.amount.toLocaleString()}</Td>
-                  <Td textAlign={"center"}>{item.category}</Td>
-                  <Td textAlign={"center"}>{item.description}</Td>
-                  <Td textAlign={"center"}>
-                    <IconButton
-                      icon={<AiFillDelete />}
-                      aria-label="delete-btn"
-                      colorScheme="red"
-                      onClick={() => onOpen("DELETE_DIALOG", item._id)}
-                      isDisabled={deleteExpense.isPending}
-                    />
-                  </Td>
-                </motion.tr>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <Tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <Th key={header.id} textAlign="center">
+                      {flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                    </Th>
+                  ))}
+                </Tr>
               ))}
+            </Thead>
+
+            <Tbody>
+              {isPending
+                ? Array.from({ length: rows }).map((_, i) => (
+                  <Tr key={i}>
+                    {columns.map((_, idx) => (
+                      <Td key={idx}>
+                        <Skeleton height="18px" rounded="md" />
+                      </Td>
+                    ))}
+                  </Tr>
+                ))
+                : table.getRowModel().rows.map((row) => (
+                  <motion.tr
+                    key={row.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <Td key={cell.id} textAlign="center">
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </Td>
+                    ))}
+                  </motion.tr>
+                ))}
             </Tbody>
           </Table>
-          <HStack justifyContent={"center"} my={3} spacing={4}>
+
+          {/* pagination footer stays EXACTLY the same */}
+          <HStack justifyContent="center" my={3} spacing={4}>
             <IconButton
               icon={<GrCaretPrevious />}
               aria-label="previous-page-btn"
               onClick={handlePreviousPage}
               isDisabled={currentPage === 1}
-              size={{
-                base: "sm",
-                xl: "md",
-              }}
+              size={{ base: "sm", xl: "md" }}
             />
             <IconButton
               icon={<GrCaretNext />}
-              size={{
-                base: "sm",
-                xl: "md",
-              }}
               aria-label="next-page-btn"
               onClick={handleNextPage}
               isDisabled={currentPage === data?.totalPages}
+              size={{ base: "sm", xl: "md" }}
             />
             <Box>
               Page {currentPage} of {data?.totalPages}
             </Box>
             <Select
               size="sm"
-              width={"fit-content"}
+              width="fit-content"
               value={rows}
               onChange={handleRowChange}
             >
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="25">25</option>
-              <option value="50">50</option>
-              <option value="100">100</option>
+              {[5, 10, 15, 20, 25, 50, 100].map((r) => (
+                <option key={r} value={r}>
+                  {r}
+                </option>
+              ))}
             </Select>
           </HStack>
         </TableContainer>

@@ -1,17 +1,10 @@
-import { useAuthContext } from "@/hooks/useAuthContext";
-import useWindowSize from "react-use/lib/useWindowSize";
+import { useAuthStore } from "@/store/authStore";
 import ReactConfetti from "react-confetti";
+import useWindowSize from "react-use/lib/useWindowSize";
 
 const ConfettiProvider = () => {
-  const {
-    state: { showConfetti },
-    dispatch,
-  } = useAuthContext();
+  const { showConfetti, toggleConfetti } = useAuthStore();
   const { width, height } = useWindowSize();
-
-  const handleComplete = () => {
-    dispatch({ type: "TOGGLE_CONFETTI" });
-  };
 
   if (!showConfetti) return null;
 
@@ -26,7 +19,7 @@ const ConfettiProvider = () => {
       height={height}
       numberOfPieces={1000}
       recycle={false}
-      onConfettiComplete={handleComplete}
+      onConfettiComplete={toggleConfetti}
     />
   );
 };

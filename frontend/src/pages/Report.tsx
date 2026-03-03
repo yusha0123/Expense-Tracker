@@ -1,3 +1,8 @@
+import Chart from "@/components/Chart";
+import { useDownloadReport } from "@/hooks/useDownloadReport";
+import useOverlayStore from "@/hooks/useOverlayStore";
+import axiosInstance from "@/lib/axios";
+import { ReportData, ReportType } from "@/types/report";
 import {
   Alert,
   AlertDescription,
@@ -12,97 +17,37 @@ import {
   IconButton,
   Select,
 } from "@chakra-ui/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { FaDownload, FaHistory } from "react-icons/fa";
-import { toast, Id } from "react-toastify";
 import { Loading } from "../components/Loading";
-import { useAuthContext } from "../hooks/useAuthContext";
-import { useError } from "../hooks/useError";
-import useTitle from "../hooks/useTitle";
-import useOverlayStore from "@/hooks/useOverlayStore";
-import Chart from "@/components/Chart";
+import { useTitle } from 'react-use';
 
 const Report = () => {
   useTitle("Expensify - Reports");
-  const [type, setType] = useState<"monthly" | "yearly" | "weekly">("monthly");
-  const {
-    state: { user },
-  } = useAuthContext();
-  const { verify } = useError();
-  const toastRef = useRef<Id | null>(null);
-  const { onOpen, isOpen } = useOverlayStore();
-  const queryClient = useQueryClient();
+  const [type, setType] = useState<ReportType>("monthly");
+  const { onOpen } = useOverlayStore();
+  const downloadReport = useDownloadReport();
 
-  const { isPending, isError, data, error } = useQuery({
+  const { isPending, data } = useQuery({
     queryKey: ["user-report", type],
     queryFn: async () => {
-      const { data } = await axios.get(`/api/premium/report?type=${type}`, {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
+      const { data } = await axiosInstance.get(`/premium/report?type=${type}`);
       return data as ReportData[];
     },
   });
 
-  if (isError) verify(error);
-
-  const downloadReport = useMutation({
-    mutationFn: () => {
-      toastRef.current = toast.loading("Generating file...");
-      return axios.post(
-        "/api/premium/report/download",
-        {
-          data,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${user?.token}`,
-          },
-          responseType: "blob",
-        }
-      );
-    },
-    onSuccess: (response) => {
-      const blob = new Blob([response.data], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = "Expensify.csv";
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      if (toastRef.current !== null) {
-        toast.update(toastRef.current, {
-          type: "success",
-          isLoading: false,
-          render: "File generated successfully!",
-          autoClose: 3000,
-        });
-      }
-      queryClient.invalidateQueries({
-        queryKey: ["downloads", isOpen], //prevent caching
-      });
-    },
-    onError: (error) => {
-      toast.dismiss();
-      verify(error);
-    },
-  });
-
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value as "monthly" | "yearly" | "weekly";
+    const value = e.target.value as ReportType;
     setType(value);
   };
+
+  const totalAmount = data?.reduce((total, item) => total + item.amount, 0);
 
   if (isPending) {
     return <Loading />;
   }
-
-  const totalAmount = data?.reduce((total, item) => total + item.amount, 0);
 
   return (
     <section>
@@ -145,13 +90,13 @@ const Report = () => {
           <IconButton
             aria-label="download-btn"
             icon={<FaDownload />}
-            onClick={() => downloadReport.mutate()}
-            colorScheme="messenger"
+            onClick={() => downloadReport.mutate({ data: data ?? [] })}
+            colorScheme="blue"
             size={{
               base: "sm",
               md: "md",
             }}
-            isDisabled={data?.length === 0 || downloadReport.isPending}
+            isDisabled={!data?.length || downloadReport.isPending}
           />
           <IconButton
             icon={<FaHistory />}
@@ -177,8 +122,8 @@ const Report = () => {
             {type === "monthly"
               ? `Total Expenses in ${moment(new Date()).format("MMMM")} : `
               : `Total Expenses in the year ${moment(new Date()).format(
-                  "YYYY"
-                )} : `}
+                "YYYY"
+              )} : `}
             &#x20B9;{totalAmount}
           </Badge>
         </Center>

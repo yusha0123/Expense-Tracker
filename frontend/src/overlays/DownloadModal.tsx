@@ -1,3 +1,5 @@
+import useOverlayStore from "@/hooks/useOverlayStore";
+import axiosInstance from "@/lib/axios";
 import {
   Alert,
   AlertIcon,
@@ -22,18 +24,11 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { motion } from "framer-motion";
 import moment from "moment";
 import { FaDownload } from "react-icons/fa";
-import { useAuthContext } from "@/hooks/useAuthContext";
-import { useError } from "@/hooks/useError";
-import useOverlayStore from "@/hooks/useOverlayStore";
 
 const DownloadModal = () => {
-  const {
-    state: { user },
-  } = useAuthContext();
   const { onClose, isOpen, type } = useOverlayStore();
 
   const modalSize = useBreakpointValue({
@@ -42,24 +37,15 @@ const DownloadModal = () => {
     md: "md",
     lg: "lg",
   });
-  const { verify } = useError();
 
-  const { data, isPending, error, isError } = useQuery({
+  const { data, isPending, isError } = useQuery({
     queryKey: ["downloads", isOpen],
     queryFn: async () => {
-      const { data } = await axios.get("/api/premium/report/download-history", {
-        headers: {
-          Authorization: `Bearer ${user?.token}`,
-        },
-      });
+      const { data } = await axiosInstance.get("/premium/report/download-history");
       return data as DownloadData[];
     },
     enabled: isOpen && type === "DOWNLOAD_MODAL",
   });
-
-  if (isError) {
-    verify(error);
-  }
 
   const downloadFile = (url: string) => {
     const anchor = document.createElement("a");
@@ -126,7 +112,7 @@ const DownloadModal = () => {
                         <IconButton
                           icon={<FaDownload />}
                           aria-label="download"
-                          colorScheme="whatsapp"
+                          colorScheme="green"
                           onClick={() => downloadFile(item.url)}
                         />
                       </Td>

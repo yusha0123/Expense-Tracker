@@ -1,11 +1,13 @@
 import { Box, Button, Grid, GridItem, Heading, Text } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
-import HeroImage from "../assets/Hero-image.webp";
-import Logo from "../components/Logo";
+import HeroImage from "@/assets/Hero-image.webp";
+import Logo from "@/components/Logo";
+import { useTitle } from 'react-use';
 
 const Root = () => {
   const navigate = useNavigate();
+  useTitle("Expensify - Your Pocket's BestFriend");
 
   const variants = {
     hidden: { opacity: 0, x: -100 },
@@ -13,12 +15,12 @@ const Root = () => {
   };
 
   return (
-    <section className="overflow-x-hidden relative h-[100dvh] w-full">
-      <header className="absolute top-0 inset-x-0 z-10 shadow-sm">
-        <div className="flex justify-between items-center p-3 md:px-5 xl:px-8 md:py-4 max-w-screen-xl">
+    <section className="overflow-x-hidden relative h-dvh w-full">
+      <header className="absolute top-0 inset-x-0 z-10 shadow-xs">
+        <div className="flex justify-between items-center p-3 md:px-5 xl:px-8 md:py-4 max-w-(--breakpoint-xl)">
           <Logo />
           <Button
-            colorScheme="linkedin"
+            colorScheme="cyan"
             onClick={() => navigate("/auth")}
             size={{ base: "sm", md: "md" }}
           >
